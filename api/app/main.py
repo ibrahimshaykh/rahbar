@@ -16,13 +16,26 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
-from .config import get_settings
+from .config import Settings, get_settings
 from .logjson import configure_logging, request_id_var
 from .providers.llm import get_provider
 from .retrieval import get_retriever
 from .routes import ask, health, metrics
+from .services.pin import check_pin
 
 log = logging.getLogger("rahbar.api")
+
+
+def _redis_client(settings: Settings) -> object | None:
+    """None when the cache is disabled (offline tests, CI's test job)."""
+    if not settings.cache_enabled:
+        return None
+    import redis
+
+    return redis.Redis(host=settings.redis_host, port=settings.redis_port,
+                       decode_responses=True,
+                       socket_connect_timeout=settings.redis_timeout_seconds,
+                       socket_timeout=settings.redis_timeout_seconds)
 
 
 @asynccontextmanager
@@ -32,9 +45,31 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.settings = settings
     app.state.retriever = get_retriever(settings)
     app.state.provider = get_provider(settings)
-    # STARTER-TODO(4.4): compare the collection's embedding-model metadata with
-    # settings.embed_model here, and make /readyz fail on a mismatch.
-    # This process only reads the index. The indexer Job writes it.
+    app.state.redis = _redis_client(settings)
+    app.state.cache = None  # wired up in services/cache.py once the cache ships
+
+    # Section 4.4: log the pin state once at startup for the operator. The
+    # authoritative refusal lives in /readyz, re-evaluated on every probe - a
+    # transient Chroma outage at boot must not crash the process (that would
+    # be CrashLoopBackOff, which never recovers once the ConfigMap is fixed
+    # because the pod cannot stay up long enough to re-read it).
+    if settings.retriever == "chroma":
+        try:
+            # collection_metadata() lives on ChromaRetriever only, deliberately
+            # not on the Retriever Protocol (StubRetriever has no collection).
+            get_metadata = getattr(app.state.retriever, "collection_metadata", None)
+            if get_metadata is None:
+                raise AttributeError("retriever has no collection_metadata()")
+            status = check_pin(get_metadata(), settings.embed_model)
+            if not status.ok:
+                log.error("embedding pin conflict", extra={"conflict": status.conflict})
+            else:
+                log.info("embedding pin ok", extra={"embed_model": status.collection_model,
+                                                    "dimension": status.collection_dimension})
+        except Exception as exc:  # noqa: BLE001
+            log.warning("could not read collection metadata at startup",
+                        extra={"error": type(exc).__name__})
+
     log.info(
         "api started",
         extra={"retriever": settings.retriever, "llm_provider": settings.llm_provider,
