@@ -21,6 +21,7 @@ from .logjson import configure_logging, request_id_var
 from .providers.llm import get_provider
 from .retrieval import get_retriever
 from .routes import ask, health, metrics
+from .services.cache import SemanticCache
 from .services.pin import check_pin
 
 log = logging.getLogger("rahbar.api")
@@ -46,7 +47,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.retriever = get_retriever(settings)
     app.state.provider = get_provider(settings)
     app.state.redis = _redis_client(settings)
-    app.state.cache = None  # wired up in services/cache.py once the cache ships
+    app.state.cache = (
+        SemanticCache(settings, app.state.redis)
+        if settings.cache_enabled and app.state.redis is not None
+        else None
+    )
 
     # Section 4.4: log the pin state once at startup for the operator. The
     # authoritative refusal lives in /readyz, re-evaluated on every probe - a

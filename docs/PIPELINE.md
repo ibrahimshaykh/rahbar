@@ -154,6 +154,35 @@ mismatch, logging exactly which two values conflict. See ADR 0001 and section
 
 ## Semantic cache
 
+**Store: Redis**, defended in `docs/adr/0003-cache-store.md` against a second
+Chroma collection. `api/app/services/cache.py::SemanticCache` keys entries as
+`rahbar:cache:{generation}:e:{qid}` where `generation` is read from
+`rahbar:cache:gen` (an integer the indexer `INCR`s on every successful
+re-index) and `qid` is a content hash of the question. A lookup reads every
+entry in the current generation and computes cosine similarity in pure
+Python (`cosine()`, hand-written — no numpy, which is forbidden) against the
+question's embedding; a hit is the best match at or above
+`CACHE_THRESHOLD`. Each entry's vector is stored as base64-encoded float32
+(halves storage against float64, and the ~1e-7 precision loss is irrelevant
+at a 0.95 threshold). Both the entry and the generation's index set carry a
+TTL of `CACHE_TTL_SECONDS`.
+
+**Invalidation is one atomic integer.** Because every key is namespaced by
+`generation`, a single `INCR rahbar:cache:gen` from the indexer orphans every
+pre-existing cache entry at once — no scan, no delete loop, no partial state.
+
+**The four never-cache rules** (`is_cacheable` in `cache.py`): never cache a
+response whose validation `outcome` was not `"ok"` (retried or fell back);
+never cache an abstention (`answered_from_context: false`); never cache an
+answer with no surviving citations; never cache a `confidence: "low"` answer.
+Follow-up questions (`is_followup`, a lexical heuristic over pronouns and
+continuation phrases) skip the cache entirely, in both directions, rather
+than being flagged on the entry.
+
+**A dead Redis degrades the service to slow, never to broken**: every Redis
+call in `cache.py` is wrapped, and a failure on `get` is treated as a miss,
+a failure on `put` returns `False` — the request still succeeds.
+
 Thresholds tried, and the false hit that ruled one out: `PENDING-HUMAN(P15-T07)`,
 per the nine-pair probe protocol in
 `harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6. The ConfigMap default is

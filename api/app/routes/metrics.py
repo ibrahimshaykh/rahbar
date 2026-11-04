@@ -39,6 +39,20 @@ FALLBACKS = Counter("rahbar_fallbacks_total", "Safe canned responses", ["reason"
 LLM_TOKENS = Counter("rahbar_llm_tokens_total", "Provider tokens", ["direction"])
 
 
+def _counter_value(counter: Counter, **labels: str) -> float:
+    """Reach into prometheus_client internals to read one label combination's
+    current value. Isolated here in one small helper, with T-MET-05 as the
+    test that proves it still works if the library changes."""
+    try:
+        return float(counter.labels(**labels)._value.get())  # noqa: SLF001
+    except Exception:  # noqa: BLE001
+        return 0.0
+
+
 @router.get("/metrics")
 def metrics() -> Response:
+    hits = _counter_value(CACHE_LOOKUPS, result="hit")
+    misses = _counter_value(CACHE_LOOKUPS, result="miss")
+    total = hits + misses
+    CACHE_HIT_RATIO.set(hits / total if total else 0.0)
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

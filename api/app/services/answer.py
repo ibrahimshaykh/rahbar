@@ -22,15 +22,12 @@ from ..routes.metrics import (
     RETRIEVAL_SECONDS,
 )
 from ..schemas import AskResponse, RetrievedRef
-from .abstain import FOLLOWUP_PATTERN, abstention_answer, should_abstain
+from .abstain import abstention_answer, should_abstain
+from .cache import is_cacheable, is_followup
 from .citations import enforce_citations
 from .validate import safe_fallback
 
 log = logging.getLogger("rahbar.answer")
-
-
-def is_followup(question: str) -> bool:
-    return bool(FOLLOWUP_PATTERN.search(question))
 
 
 def answer_question(
@@ -136,18 +133,3 @@ def answer_question(
         "tokens_in": tokens_in, "tokens_out": tokens_out,
     })
     return response, cached_flag
-
-
-def is_cacheable(response: AskResponse, outcome: str) -> bool:
-    """The four never-cache rules (section 3.3). Defined here rather than in
-    cache.py so answer_question can call it before cache.py necessarily
-    exists in this build order; services/cache.py re-exports it."""
-    if outcome != "ok":                          # retried or fell back
-        return False
-    if not response.answered_from_context:       # abstention or out of scope
-        return False
-    if not response.citations:                   # nothing to attribute
-        return False
-    if response.confidence == "low":              # the model was unsure
-        return False
-    return True
