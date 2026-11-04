@@ -119,6 +119,27 @@ real corpus. Theoretical value for 400/50 is `1 + 50/400 = 1.125`; the measured
 figure typically sits slightly below that because short sections produce
 chunks with no predecessor to overlap with.
 
+## Storage
+
+`indexer/pipeline/store.py::store` is the **only** code in the system that
+writes to Chroma (enforced mechanically by `api/tests/test_architecture.py::
+test_api_never_writes_to_chroma`). A re-index rebuilds the collection with
+`delete_collection` immediately followed by `create_collection`: the window
+with no collection is seconds, during which `/readyz` honestly 503s and pods
+leave the Service — this trade-off, and the alternative (build-then-swap)
+that was rejected, is recorded in `docs/adr/0001-indexer-as-job.md`. Writes
+are batched at `STORE_BATCH_SIZE=256` records per `collection.add` call, since
+a single request of several thousand 768-float vectors would exceed Chroma's
+HTTP request-size comfort zone. The collection's `hnsw:space` is pinned to
+`"cosine"` — not Chroma's L2 default — because the API's
+`score = 1 - distance` conversion is only a similarity in cosine space; in L2
+space every score would be nonsensical and the relevance floor would reject
+everything silently. As the last step of a successful store, `store()` calls
+`bump_cache_generation`, which `INCR`s `rahbar:cache:gen` in Redis so every
+pre-existing cache entry is orphaned by a single atomic integer increment — a
+dead Redis here logs a warning and the index write still succeeds; the cache
+only goes briefly stale rather than the Job failing.
+
 ## Embedding
 
 Model: `nomic-embed-text` (768 dimensions), pinned via the `EMBED_MODEL` key in
