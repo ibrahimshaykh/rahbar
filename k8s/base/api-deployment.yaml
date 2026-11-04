@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: rahbar
+  labels:
+    app: api
+    app.kubernetes.io/name: api
+    app.kubernetes.io/part-of: rahbar
+    app.kubernetes.io/component: api
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0        # a rollout never reduces capacity below 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+        app.kubernetes.io/name: api
+        app.kubernetes.io/part-of: rahbar
+        app.kubernetes.io/component: api
+    spec:
+      serviceAccountName: rahbar-api
+      automountServiceAccountToken: false
+      # 30s budget: the preStop sleep is 5s, then uvicorn drains in-flight requests.
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: rahbar-api:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: rahbar-config
+            - secretRef:
+                name: rahbar-secret
+                optional: true
+          # Finished booting? Liveness and readiness wait while this runs.
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            failureThreshold: 30
+            periodSeconds: 2
+          # Still working? Failure: the kubelet kills and restarts the container.
+          # /healthz touches no dependency, so a slow Chroma cannot cause a
+          # cluster-wide restart storm.
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            periodSeconds: 20
+            failureThreshold: 3
+          # Can it take traffic now? Failure: removed from the Service, not restarted.
+          # /readyz requires Chroma reachable, a non-empty collection, a matching
+          # embedding pin, and Redis reachable.
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                # Leave the Service before refusing connections: endpoint removal
+                # is eventually consistent across kube-proxy on every node.
+                command: ["/bin/sh", "-c", "sleep 5"]
+          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+            requests:
+              cpu: 100m                  # the HPA divides usage by this
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

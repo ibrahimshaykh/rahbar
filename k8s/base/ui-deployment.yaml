@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui
+  namespace: rahbar
+  labels:
+    app: ui
+    app.kubernetes.io/name: ui
+    app.kubernetes.io/part-of: rahbar
+    app.kubernetes.io/component: ui
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+        app.kubernetes.io/name: ui
+        app.kubernetes.io/part-of: rahbar
+        app.kubernetes.io/component: ui
+    spec:
+      serviceAccountName: rahbar-ui
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101           # nginx-unprivileged's built-in nginx user
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: rahbar-ui:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          startupProbe:
+            httpGet: {path: /healthz, port: 8080}
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}

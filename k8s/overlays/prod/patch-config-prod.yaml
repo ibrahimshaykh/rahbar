@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-config
+  namespace: rahbar
+data:
+  LOG_LEVEL: "INFO"
+  RETRIEVER: "chroma"
+  LLM_PROVIDER: "ollama-host"
+  EMBED_MODEL: "nomic-embed-text"

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-config
+  namespace: rahbar
+data:
+  LOG_LEVEL: "DEBUG"
+  # Week 1 (P05): the whole cluster runs on stubs and the --dummy index.
+  # The dummy index records embed_model=dummy-768, so the pin agrees.
+  # Phase 15 changes these three lines to chroma / ollama-host / nomic-embed-text.
+  RETRIEVER: "stub"
+  LLM_PROVIDER: "stub"
+  EMBED_MODEL: "dummy-768"

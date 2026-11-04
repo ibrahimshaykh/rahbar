@@ -1,0 +1,14 @@
+# PENDING-HUMAN(P16-T07): values from docs/evidence/kubectl_top_indexer.txt
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: rahbar
+spec:
+  template:
+    spec:
+      containers:
+        - name: api
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}

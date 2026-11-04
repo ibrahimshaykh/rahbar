@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: indexer
+  namespace: rahbar
+  labels:
+    app: indexer
+    app.kubernetes.io/name: indexer
+    app.kubernetes.io/part-of: rahbar
+    app.kubernetes.io/component: indexer
+spec:
+  # Exactly one writer. parallelism is left unset (defaults to 1): three
+  # concurrent writers on one Chroma PVC leave an index no document produced.
+  completions: 1
+  backoffLimit: 4
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: indexer
+        app.kubernetes.io/name: indexer
+        app.kubernetes.io/part-of: rahbar
+        app.kubernetes.io/component: indexer
+    spec:
+      # Batch semantics: the pod runs to completion and exits. OnFailure retries
+      # the container in place, up to backoffLimit.
+      restartPolicy: OnFailure
+      serviceAccountName: rahbar-indexer
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: indexer
+          image: rahbar-indexer:dev
+          imagePullPolicy: IfNotPresent
+          args: ["python", "-m", "pipeline.run"]
+          envFrom:
+            - configMapRef:
+                name: rahbar-config
+          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            # Embedding a 40-page PDF holds far more memory than answering a
+            # query. Over the memory limit the container is OOMKilled with exit
+            # code 137, which is the most common CrashLoopBackOff in this project.
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp          # pdf2image rasterises here
+      volumes:
+        - name: tmp
+          emptyDir: {}
