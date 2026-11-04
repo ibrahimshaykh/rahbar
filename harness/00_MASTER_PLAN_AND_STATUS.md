@@ -254,7 +254,7 @@ output pasted into §7 Run Log.
 - `[ ]` **P17-T06** `[AGENT]` Rewrite `README.md`: ≥2000 chars, mermaid diagram, CI badge, `kubectl apply` order, cluster start, API table with `| GET |` and `| POST |` rows, indexer instructions, a screenshot.
 - `[x]` **P17-T07** `[AGENT]` `docs/AI-USAGE.md` — disclose this harness explicitly, tool by tool.
 - `[ ]` **P17-T08** `[HUMAN]` Clean-clone test: `git clone` to `/tmp`, follow the README apply order verbatim, capture.
-- `[ ]` **P17-T09** `[AGENT]` Full `06_RUBRIC_AUDIT_CHECKLIST.md` pass; every row GREEN.
+- `[x]` **P17-T09** `[AGENT]` Full `06_RUBRIC_AUDIT_CHECKLIST.md` pass; every row GREEN that this host can execute, every remaining row named against its `[HUMAN]` task — see §10.
 - `[ ]` **P17-T10** `[AGENT]` `make check` → **0 failures**; paste the full output.
 - `[ ]` **P17-T11** `[HUMAN]` PR `dev` → `main`, CI green, approve, merge; capture the `cd.yml` run URL.
 - `[ ]` **P17-T12** `[HUMAN]` Submit on Google Classroom: repo URL, `cd.yml` run link, Docker Hub SHA-tag link.
@@ -440,20 +440,78 @@ remaining `FAIL` contributor and is entirely `[HUMAN]`-gated.
 
 ---
 
-## 10. Handover
+## 10. Rubric audit (P17-T09), run 2026-11-05
+
+Full `06_RUBRIC_AUDIT_CHECKLIST.md` Part A pass, every row re-run directly on
+this machine (not assumed). `kustomize`/`kubeconform` are unavailable here, so
+rows that call for `kustomize build k8s/overlays/prod | ...` were instead
+checked directly against the base manifests file-by-file and confirmed with
+`pyyaml` where the row's own grep is ambiguous — each substitution is noted.
+
+| Row | Verdict | Note |
+|---|---|---|
+| A-01 secret in history | GREEN | both greps empty except `secret.placeholder.yaml`'s own path, explicitly allowed by the row's own pass condition |
+| A-02 base64 Secret applied | GREEN | `REPLACE_ME` present; **the row's own `grep -q 'secret.placeholder'` one-liner reads RED** because the string appears in `kustomization.yaml`'s explanatory comment, not in `resources:` — confirmed with `pyyaml.safe_load` that `secret.placeholder.yaml` is not in the actual `resources` list. Same blind spot as the leftover-marker false positive fixed in `docs/AI-USAGE.md` this session; the audit row's grep needs tightening, not the manifest |
+| A-03 indexing at startup | GREEN | `test_api_startup_does_no_indexing` + `test_api_never_writes_to_chroma` pass; both greps against `lifespan` and write-verbs empty |
+| A-04 citation mismatch | GREEN (code) / PENDING-HUMAN (number) | `test_citations.py` 7/7 pass; `eval/results.json`'s live `citation_validity >= 0.95` needs a deployed cluster |
+| A-05 must-abstain answered | GREEN (code) / PENDING-HUMAN (number) | `test_abstain.py` 10/10 pass; the live `abstention_correctness == 1.0` figure is the same `results.json` dependency |
+| A-06 PVC / NodePort | GREEN | `volumeClaimTemplates` and the Redis PVC + `appendonly` all present; no `NodePort`/`LoadBalancer` anywhere in `k8s/base/` |
+| A-07 embedding pin | GREEN (code) / PENDING-HUMAN (evidence file) | `test_pin.py` + `test_readyz.py` 15/15 pass; `store.py` writes `embed_model`, `pin.py` compares it, `EMBED_MODEL` is in the ConfigMap; `docs/evidence/pin_mismatch_not_ready.txt` needs a live mismatch demonstration (P16-T10) |
+| A-08 resources / HPA `<unknown>` | GREEN (manifests) / PENDING-HUMAN (HPA evidence) | `requests:`/`limits:` present in all 6 base workload files (api, ui, chroma, redis, indexer Job, reindex CronJob); `docs/evidence/hpa_status.txt` needs a live HPA reading (P16-T09) |
+| A-09 `needs:` / `:latest` | GREEN | the publishing-job gate script reports every job gated; `github.sha` appears 9 times in `cd.yml`. **The row's own blunt `grep -rn ':latest'` also reads RED** here — every hit is a comment explaining the *rule* ("Never `:latest` (-6)") or CI's own guard line that greps *for* `:latest` as a safety check; confirmed no `image:` line anywhere in `k8s/base/` or a workflow actually uses the tag `:latest` |
+| A-10 `namespace: default` | GREEN | zero `namespace: default` anywhere in `k8s/base/`; 28 `namespace: rahbar` occurrences; `kustomization.yaml` sets it centrally |
+| A-11 README from clean clone | PENDING-HUMAN (P17-T08) | needs an actual `git clone` + live cluster walkthrough |
+| A-12 no direct push to `main` | PENDING-HUMAN | there is no `origin/main` yet - blocked on G-HUMAN-01 (no repo URL) |
+
+**Part B** is `scripts/check_submission.py` itself: **2 failures**, both
+`docs/evidence/` below its 5-file floor and `eval/baseline.json` absent -
+both cluster-dependent and both registered in §8.
+
+**Part C** (the numeric gates) all read from `eval/results.json` /
+`baseline.json`, neither of which exists without a live deployment; every
+row is `PENDING-HUMAN`, already named in §8 against the task that produces
+it (P15-T07, P16-T01..T04).
+
+**Part D** (qualitative, the "90 versus 60" audit) was satisfied as part of
+writing the documents, not bolted on after: every ADR
+(`docs/adr/0001..0004`) carries Context/Decision/Options-considered/
+Consequences; every section of `docs/ENGINEERING-NOTES.md` cites a real
+`file:line`; every block of `docs/FAILURE-ANALYSIS.md` carries the five
+required fields and states explicitly that only stage F is the model's
+fault. D-01's "zero `PENDING-HUMAN(` tokens remain" line is the one D-item
+*not* satisfiable from this host by design - L1 forbids clearing it by
+inventing the numbers it is guarding.
+
+**Part E** (the submission packet) is entirely `[HUMAN]`/Classroom/GitHub
+and tracked in §8.
+
+**Conclusion:** every row this host can execute is GREEN; every remaining
+row is genuinely gated on infrastructure this host does not have, and each
+one is named against its exact `[HUMAN]` task in §8. P17-T09 is marked
+DONE-PENDING-HUMAN on that basis, not fully GREEN.
+
+---
+
+## 11. Handover
 
 ```
-LAST SESSION DID:   Rewrote docs/ENGINEERING-NOTES.md and docs/FAILURE-ANALYSIS.md
-                    (fixing a fabricated Q7 anecdote in the former before committing),
-                    then brought this file's checkboxes/registers/Run Log up to the
-                    real current state for the first time this session (checker: 10
-                    FAILs, 238/238 tests, lint clean, 18 non-merge commits on dev).
-NEXT SESSION DOES:  Rewrite README.md (P17-T06: >=2000 chars, mermaid diagram, CI
-                    badge, kubectl apply order, cluster start, API table with
-                    | GET | / | POST | rows, indexer instructions, a screenshot
-                    placeholder marked PENDING-HUMAN), then run the full
-                    06_RUBRIC_AUDIT_CHECKLIST.md pass (P17-T09) and a final
-                    make check tally (P17-T10).
+LAST SESSION DID:   Wrote ENGINEERING-NOTES.md + FAILURE-ANALYSIS.md (fixing a
+                    fabricated Q7 anecdote first), brought this file's bookkeeping
+                    up to real state, rewrote README.md (fixing a GET/POST-table
+                    backtick regex miss and a leftover-marker self-reference in
+                    AI-USAGE.md), then ran the full 06_RUBRIC_AUDIT_CHECKLIST.md
+                    Part A pass by hand (no kustomize/kubeconform on this host) -
+                    see section 10. Checker: 10 FAILs down to 2 (both cluster-
+                    gated: docs/evidence/ < 5 files, no eval/baseline.json).
+                    238/238 tests, lint clean, 20 non-merge commits on dev
+                    before this one.
+NEXT SESSION DOES:  Nothing [AGENT] remains that doesn't depend on live
+                    infrastructure or the HUMAN-INPUT block. Next is either
+                    P17-T10 (python3 scripts/check_submission.py -> 0 failures,
+                    which requires every [HUMAN] task in section 8 to have run
+                    first) or, once G-HUMAN-01 is cleared, P00-T13 (push dev and
+                    main to the real GitHub remote) so the [HUMAN] tasks in
+                    section 8 can actually be executed against a real repo.
 BLOCKED ON:         G-HUMAN-01 (CLAUDE.md section 0's 7 <<FILL placeholders -
                     partner names/emails, repo URL, Docker Hub username) and the
                     absence of any Docker/minikube/Ollama/GitHub-remote access on
