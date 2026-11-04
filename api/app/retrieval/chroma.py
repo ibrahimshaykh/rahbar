@@ -104,3 +104,8 @@ class ChromaRetriever:
     def collection_count(self) -> int:
         collection = self.client.get_collection(self.settings.collection)
         return int(collection.count())
+
+    def embed_question(self, question: str) -> list[float]:
+        """Public hook for the semantic cache (section 3.3), which needs the
+        question's vector before deciding whether to query Chroma at all."""
+        return self._embed_question(question)

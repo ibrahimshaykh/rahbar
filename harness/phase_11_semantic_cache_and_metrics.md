@@ -15,7 +15,7 @@ OB-03, OB-04.
 ```bash
 git rev-parse --abbrev-ref HEAD    # dev
 cd api && ../.venv/bin/pytest -q    # green
-grep -rn 'STARTER-TODO\|NotImplementedError' api/app/   # empty after P10
+grep -rn 'SPEC-REF\|NotImplementedError' api/app/   # empty after P10
 ```
 
 ---

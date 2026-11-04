@@ -278,7 +278,7 @@ Run every command from the **repository root** unless the table says otherwise.
 | Manifest validation (dev) | `kustomize build k8s/overlays/dev \| kubeconform -strict -summary -ignore-missing-schemas` | `0 invalid` |
 | Submission checker | `make check` | failure count must never increase |
 | Checker, failures only | `python3 scripts/check_submission.py \| grep FAIL` | |
-| Find starter leftovers | `grep -rn STARTER-TODO --exclude-dir=.venv --exclude-dir=.git .` | must end empty (excluding `STARTER.md`) |
+| Find starter leftovers | `grep -rn 'STARTER''-TODO' --exclude-dir=.venv --exclude-dir=.git .` | must end empty (excluding `STARTER.md`) |
 | Find stubs | `grep -rn 'raise NotImplementedError' --include='*.py' --exclude-dir=.venv .` | must end empty |
 | Build images | `make images` | `[HUMAN]` — needs Docker |
 | Apply dev overlay | `make apply` | `[HUMAN]` — needs a cluster |

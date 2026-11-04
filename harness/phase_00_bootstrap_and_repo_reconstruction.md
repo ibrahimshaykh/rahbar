@@ -103,7 +103,7 @@ was verified by reading the file.
 | `base.py` vs `base (1).py` | `base.py` → **providers/llm** (`class LLMProvider(Protocol)`, `generate`); `base (1).py` → **retrieval** (`class Retriever(Protocol)`, `retrieve`) | protocol name |
 | `stub.py` vs `stub (1).py` | `stub.py` → **providers/llm** (`class StubProvider`); `stub (1).py` → **retrieval** (`class StubRetriever`, `_PASSAGES`) | class name |
 | `requirements.txt` vs `requirements (1).txt` | `requirements.txt` → **indexer** (`pdfplumber`, `pytesseract`); `requirements (1).txt` → **api** (`fastapi`, `uvicorn`, `redis`) | package list |
-| `README.md` vs `README (1).md` | `README.md` → **root** (the `STARTER-TODO(10)` placeholder); `README (1).md` → **eval/fixtures** (`# CI fixtures`) | first heading |
+| `README.md` vs `README (1).md` | `README.md` → **root** (the `SPEC-REF(10)` placeholder); `README (1).md` → **eval/fixtures** (`# CI fixtures`) | first heading |
 | `__init__ (1).py` (648 B) vs `__init__ (6).py` (473 B) | 648 B → **providers/llm** (`get_provider`); 473 B → **retrieval** (`get_retriever`) | function name |
 | the five 0-byte `__init__` files | interchangeable — any empty file works in any of the five package roots | size |
 | `pyproject.toml` / `pyproject (1).toml`, `requirements-dev.txt` / `requirements-dev (1).txt` | byte-identical — either copy goes to either destination | `diff` |
@@ -359,7 +359,7 @@ Record the `N passed · M warnings · K failures` line in §5 of
 stage exists yet. That is correct for P00.
 
 The one line that matters now: `0 · starter kit` will report ~15
-`STARTER-TODO` markers and ~9 `NotImplementedError` stubs. That count must fall
+`SPEC-REF` markers and ~9 `NotImplementedError` stubs. That count must fall
 to zero by Phase 13.
 
 ### P00-T11 `[AGENT]` · `git init` and the first commit

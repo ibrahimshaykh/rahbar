@@ -222,7 +222,7 @@ Use this when `make check` prints a FAIL and you need to know what to fix.
 
 | Checker section | Assertion | Requirement | Fix in |
 |---|---|---|---|
-| `0 · starter kit` | no `STARTER-TODO` anywhere | all starter TODOs | P06–P13 |
+| `0 · starter kit` | no `SPEC-REF` anywhere | all starter TODOs | P06–P13 |
 | `0 · starter kit` | no `raise NotImplementedError` in source | IX-01..05, QP-03..07, EV-10 | P06–P13 |
 | `A · structure` | 7 named files present | CP-08, IX-09, EV-11, EN-*, SB-06 | P12–P17 |
 | `A · structure` | `api/ indexer/ k8s/ eval/` exist | — | P00 |

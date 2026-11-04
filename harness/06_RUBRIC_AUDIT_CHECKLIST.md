@@ -162,7 +162,7 @@ be a deliberate choice you can defend.
 
 | Assertion | Command | Pass |
 |---|---|---|
-| no `STARTER-TODO` left | `grep -rn STARTER-TODO --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . \| grep -v '\.example\.'` | no output |
+| no `SPEC-REF` left | `grep -rn SPEC-REF --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . \| grep -v '\.example\.'` | no output |
 | no `NotImplementedError` in source | `grep -rn 'raise NotImplementedError' --include='*.py' --exclude-dir=.venv --exclude-dir=tests .` | no output |
 
 > `STARTER.md`, `scripts/check_submission.py`, any `*.example.*` file and
@@ -434,7 +434,7 @@ make test                                  # all 164 green
 cd api && ../.venv/bin/pytest -q --cov=app --cov-fail-under=60 && cd ..
 kustomize build k8s/overlays/prod | kubeconform -strict -summary -ignore-missing-schemas
 grep -rn 'PENDING-HUMAN' docs/ README.md   # empty
-grep -rn STARTER-TODO --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.'   # empty
+grep -rn SPEC-REF --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.'   # empty
 python3 scripts/check_submission.py        # 0 failures
 ```
 
