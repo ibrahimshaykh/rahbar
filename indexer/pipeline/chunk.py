@@ -14,6 +14,13 @@ HEADING_PATTERN = re.compile(
     r"^\s{0,3}(?:"
     r"(?P<md>#{1,6})\s+(?P<mdtext>\S.*)"                      # markdown heading
     r"|(?P<num>\d{1,2}(?:\.\d{1,2}){0,3})[.)]?\s+(?P<numtext>\S.{0,110})"
+    # Roman-numeral chapter heading, e.g. "XII. Policy on Generative AI Based
+    # Tools" - common in handbook-style documents whose chapters are I, II, ...
+    # The lookahead requires at least one roman-numeral letter so a bare "."
+    # cannot match; the literal period immediately after is what distinguishes
+    # this from an ordinary ALL-CAPS word like "MIX" with no period.
+    r"|(?P<roman>(?=[IVXLCDM])M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|I{0,3}))"
+    r"\.\s+(?P<romantext>\S.{0,110})"
     r"|(?P<caps>[A-Z][A-Z0-9 &,'()/-]{5,70})"                 # ALL CAPS heading
     r")\s*$"
 )
@@ -28,6 +35,8 @@ def _normalise_heading(match: re.Match[str]) -> str:
         text = match.group("mdtext").strip()
     elif match.group("num") is not None:
         text = f"{match.group('num')} {match.group('numtext').strip()}"
+    elif match.group("roman") is not None:
+        text = f"{match.group('roman')}. {match.group('romantext').strip()}"
     else:
         text = match.group("caps").strip()
     text = re.sub(r"\s+", " ", text)

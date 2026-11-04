@@ -25,16 +25,78 @@ way. Both libraries are wrapped in `try/except Exception → ""` plus a warning
 log line: a missing `tesseract` binary, or a single malformed page, must not
 fail the whole indexing Job for the other nine documents in the corpus.
 
-**Which documents needed OCR, and the before/after table:** `PENDING-HUMAN(P12-T04, P06-T08)` —
-this is filled once the real corpus is fetched (Phase 12) and `scripts/table_example.py`
-is run against a real table page.
+**Which documents needed OCR, measured against the real corpus.** A
+`pypdf`-based per-page font/text-layer sweep (`docs/evidence/pdffonts_scan_proof.txt`
+— this host has no `poppler-utils`, so `pypdf`'s equivalent check stands in for
+`pdffonts` itself) found two documents that need real OCR to be usable:
+`faculty-entrepreneurship-and-technical-start-ups-policy.pdf` (**8 of 8 pages**
+scanned) and `undergraduate-academic-rules-aug-2023.pdf` (**24 of 26 pages**,
+2–25) — the latter is also our version-pair's superseded half, so its content
+is only recoverable once the indexer runs with `tesseract-ocr` and
+`poppler-utils` present (the indexer Docker image; `PENDING-HUMAN(P15-T02)` for
+the first real cluster run). On **this** host, running the real pipeline
+against the fetched corpus (`python scripts/amplification.py --corpus
+corpus/raw`) exercised the designed degrade path for real: `pdf2image` raised
+`PDFInfoNotInstalledError` (no `poppler-utils`), caught by `extract.py`'s
+`except Exception`, logged, and returned `""` — the Job did not crash, and the
+faculty policy correctly produced **zero chunks** (nothing to index without
+OCR), which is the honest, documented loss until a host with the OCR binaries
+runs it.
 
-**What is honestly not recovered.** If `pdfplumber.extract_tables()` cannot
-detect a table's grid lines (common in a scanned-then-OCR'd table, or a table
-with no visible borders), the table's content survives only as prose in
-`page.extract_text()`, with columns run together in reading order. We do not
-attempt table reconstruction beyond what `pdfplumber` gives us — that loss is
-acknowledged rather than silently guessed at.
+**One before-and-after example of a mangled table**, captured for real with
+`scripts/table_example.py corpus/raw/annual-report-2023-24.pdf 13` — page 13 of
+the 2023-24 Annual Report, a faculty-by-campus-and-rank table with a two-level
+merged header (`Assoc. Profs.` spans two sub-columns, `Lab Engrs.` spans
+another two). **Before** (`extract_text()` alone): the 8×26 grid survives as
+readable but column-ambiguous prose — `"Chiniot-Faisalabad 2 4 17 8 58 12 2
+103"` is only interpretable by counting across the header row by eye. **After**
+(tables flattened): `pdfplumber.extract_tables()` does not reconstruct one
+clean grid here — it fragments the page into **five partial table
+detections**, because its column-boundary heuristic cannot resolve the
+two-level merged header. The main 6-row body (one row per campus plus a
+`Total` row) comes through intact as seven clean pipe rows; the header's
+internal grouping (`Assoc. Profs.` over two numeric sub-columns) is lost and
+reappears as a handful of near-empty one-cell fragment tables. **What is
+honestly not recovered**: the semantic grouping of a merged multi-level table
+header. We do not attempt to reconstruct it beyond what `pdfplumber` gives
+us — that loss is acknowledged rather than silently guessed at, and it is
+exactly the "bad extraction: table columns come out jumbled" failure mode the
+assignment names for property 4.
+
+**A real bug found and fixed against the real corpus: Roman-numeral chapter
+headings.** `student-handbook-jun-2026.pdf`'s table of contents lists its
+chapters as "I. ... XII. Policy on Generative AI Based Tools"; the original
+`HEADING_PATTERN` recognised markdown, numbered-clause (`1.21`) and ALL-CAPS
+headings but not this form, so the entire GenAI chapter's content fell under
+whatever numbered clause heading happened to be active several pages earlier
+— destroying the section label this corpus's property-5 document most needs.
+Fixed by adding a Roman-numeral alternative
+(`(?=[IVXLCDM])M{0,4}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|I{0,3})\.`)
+guarded by a lookahead requiring at least one roman-numeral letter before the
+literal period, so an ordinary ALL-CAPS word like `"MIX"` with no following
+period cannot match it. `indexer/tests/test_chunk.py::test_splits_on_roman_numeral_headings`
+and `::test_roman_numeral_heading_does_not_match_ordinary_capitalised_sentence`
+cover it; re-running the chunker against the real document after the fix
+confirms page 48 now carries `section="XII. Policy on Generative AI Based
+Tools ..."` instead of an unrelated earlier clause number.
+
+**A real, honest, NOT-fixed limitation: two-column page layout.** Pages 12–13
+of the Student Handbook use a two-column layout (Dress Code in one column,
+Academic Integrity/Plagiarism in the other); `pdfplumber.extract_text()`'s
+default reading order interleaves the two columns line by line rather than
+reading one column fully before the other, producing garbled text such as
+`"The students...dress...d. Calling proxy attendance...Plagiarism
+encompasses..."` with two unrelated policies woven together sentence by
+sentence. The heading detector then picks up fragments of this interleaved
+text as a nonsensical section label. **We do not attempt column-aware
+extraction** — `pdfplumber` supports it via explicit bounding-box splitting,
+but detecting column boundaries reliably across arbitrary documents is a
+meaningfully larger feature, and two garbled pages out of 279 is a bounded,
+acknowledged loss rather than a silent one. The table of contents' dot-leader
+lines (`"XI. Policy on Retake Examination ... 38"`) are a second, smaller
+side-effect of the same Roman-numeral fix: a few TOC entries are themselves
+matched as headings. Both are documented here rather than hidden, per
+section 3.1's instruction to report "what you could not recover."
 
 **HTML and Markdown.** `_extract_html` is a standard-library
 `html.parser.HTMLParser` subclass (no `beautifulsoup4`, no `lxml` — forbidden

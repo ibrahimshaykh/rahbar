@@ -93,3 +93,17 @@ def test_empty_sections_are_dropped() -> None:                      # T-CHK-12
     text = "1.1 Empty\n\n1.2 Full\n\nThis section has a body."
     sections = {c.section for c in chunk(_doc(text), 400, 50)}
     assert sections == {"1.2 Full"}
+
+
+def test_splits_on_roman_numeral_headings() -> None:                # T-CHK-13
+    text = ("XII. Policy on Generative AI Based Tools\n\n"
+            "To optimize the advantages of Generative AI while minimizing "
+            "associated risks, it is imperative to establish precise objectives.")
+    chunks = chunk(_doc(text), 400, 50)
+    assert chunks[0].section == "XII. Policy on Generative AI Based Tools"
+
+
+def test_roman_numeral_heading_does_not_match_ordinary_capitalised_sentence() -> None:
+    text = "In the exam, students must bring ID cards to the examination hall."
+    sections = {c.section for c in chunk(_doc(text), 400, 50)}
+    assert sections == {"0 Preamble"}
