@@ -40,7 +40,16 @@ cluster: ## start minikube with Calico, then enable metrics-server and ingress
 	minikube addons enable metrics-server
 	minikube addons enable ingress
 
-images: ## build the three images and load them into minikube (needs yours: Dockerfiles)
+images: ## build the three images and load them into minikube
+	@mkdir -p indexer/corpus-baked
+	@rm -f indexer/corpus-baked/*.pdf indexer/corpus-baked/*.md indexer/corpus-baked/*.html 2>/dev/null; true
+	@if [ -n "$$(ls -A corpus/raw 2>/dev/null | grep -v '^\.')" ]; then \
+	  echo "baking the real corpus from corpus/raw/"; \
+	  cp corpus/raw/* indexer/corpus-baked/ 2>/dev/null || true; \
+	else \
+	  echo "corpus/raw is empty: baking the CI fixtures instead"; \
+	  cp eval/fixtures/*.md indexer/corpus-baked/; \
+	fi
 	docker build -t rahbar-api:$(TAG) api
 	docker build -t rahbar-indexer:$(TAG) indexer
 	docker build -t rahbar-ui:$(TAG) ui

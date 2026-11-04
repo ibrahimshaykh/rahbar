@@ -23,3 +23,7 @@ venv/
 # Local scratch
 *.log
 .DS_Store
+
+# built artefact: populated by make images
+indexer/corpus-baked/*
+!indexer/corpus-baked/.gitkeep
