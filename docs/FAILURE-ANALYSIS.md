@@ -161,23 +161,58 @@ the real run rather than guessed.
 - **Diagnosis, as if we had not caused it:** this is the one failure mode
   that produces a response indistinguishable from a correct one by every
   mechanical check the pipeline runs — valid JSON, valid citation, no
-  abstention, no retry, no fallback. The only way to catch it is to look at
-  what was actually retrieved, not just what was cited: the `retrieved`
-  field in the response (and the structured `answered` log line) carries
-  each passage's `metadatas`, and a passage with `doc_version` set to an
-  older value than the corpus's current one, surfaced for a question that
-  `is_version_question()` would classify as having no version intent, is the
-  tell. This cannot be ruled out by recall or citation-validity metrics
-  alone — both stay at their normal values, which is exactly why this stage
-  exists in the protocol: some failures are invisible to every other gate.
-- **The number that would have shown it:** `metadatas[].doc_version` in the
-  response showing a value earlier than the corpus's known-current version
-  for that document, on a question `VERSION_INTENT_PATTERN` does not match —
-  the real captured metadata field and document-version pair is
-  `PENDING-HUMAN(P16-T03)`, captured by asking the exact question from the
-  spec, reading the live response's `retrieved[].doc_version`, confirming it
-  names the superseded version, then reverting `_where_clause` and
-  re-asking to confirm the current version is restored.
+  abstention, no retry, no fallback. The real tell is not `doc_version` in
+  the client response — `api/app/schemas.py::RetrievedRef` does not expose
+  that field to callers, so a corrected prediction has to rely on
+  `retrieved[].source` instead, since this corpus's two policy versions
+  happen to have different filenames. A passage sourced from the known-
+  superseded filename, surfaced for a question `is_version_question()`
+  classifies as having no version intent, is the mechanical tell visible
+  from the API response alone, and `metadatas[].superseded` is visible to
+  anyone with direct Chroma access (`docs/evidence/stageE_broken.json`) for
+  a fully conclusive check. This cannot be ruled out by recall or citation-
+  validity metrics alone — both stay at their normal values, which is
+  exactly why this stage exists in the protocol: some failures are
+  invisible to every other gate.
+- **The number that would have shown it, measured for real** (live cluster,
+  2026-11-06), using the exact probe question ("What is the current minimum
+  attendance requirement for sitting a final examination?") — **and the
+  real result is a different, arguably more interesting failure than the
+  one predicted.** The response schema does not expose `doc_version` to the
+  client (`api/app/schemas.py::RetrievedRef` has no such field — the
+  write-up above assumed a field that does not actually exist; `source` is
+  the real tell instead, since this corpus's two policy versions have
+  different filenames). Querying Chroma directly for the two chunks
+  involved (`docs/evidence/stageE_broken.json`) confirms the break worked
+  mechanically exactly as designed: with the filter removed,
+  `undergraduate-academic-rules-aug-2023#p0007#c0027` (`superseded: true`,
+  score `0.744`) entered the top-5 retrieved set, displacing a current-doc
+  chunk that was present in the baseline (`docs/evidence/
+  stageE_before.json`). But the superseded chunk's actual text is just the
+  heading stub `"...Attendance Requirements"` — it carries no competing
+  number for the model to quote. What changed instead is the model's final
+  answer: baseline said `"4 or fewer instances of attendance"`; broken said
+  `"...is 60%."`, citing `academic-rules-handbook-jun-2026.pdf` section
+  `1.24` page 11 — the **current**, non-superseded document, not the
+  superseded one. Fetching that cited chunk's literal text directly from
+  Chroma (`academic-rules-handbook-jun-2026#p0011#c0060`) shows it is about
+  grading-scale exemptions on readmission and contains no `"60%"` anywhere,
+  and neither does any other chunk retrieved for that request. **The
+  repealed document's content never actually reached the answer text at
+  all** — the real mechanism is that crowding one correct chunk out of the
+  top-5 window was enough to destabilise the model into citing a real,
+  retrieved, but substantively unrelated chunk while asserting a number
+  that appears in no retrieved passage. This passes every mechanical check
+  the pipeline runs: valid JSON, `answered_from_context: true`, and
+  `enforce_citations()` finds nothing to drop because the cited chunk
+  *was* genuinely retrieved — citation enforcement verifies that a citation
+  points at a retrieved chunk, not that the chunk's content supports the
+  specific claim attached to it. That gap, not the originally predicted
+  "repealed figure quoted as current," is the real, demonstrated failure
+  mode of this stage. Reverting `_where_clause` and re-asking
+  (`docs/evidence/stageE_after.json`) reproduced the exact baseline answer
+  and retrieved set, confirming the fix and ruling out any other
+  confounding change during the drill.
 - **Remedy:** revert the one-line change to `_where_clause` immediately — no
   restart or re-index needed, since this is pure Python logic inside the
   already-running API process reached on the next request after a code

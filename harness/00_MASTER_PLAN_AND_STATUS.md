@@ -234,7 +234,7 @@ output pasted into §7 Run Log.
 
 - `[x]` **P16-T01** `[HUMAN]` Break stage **A**: index the scanned PDF with OCR disabled; capture symptom + the metric that shows it; restore. (done live - the predicted abstention did not happen; the real symptom was a confident high-confidence wrong-document answer, and the golden-set eval did not catch the break at all - see docs/FAILURE-ANALYSIS.md. Fully restored, confirmed /readyz ready with 1117 chunks)
 - `[x]` **P16-T02** `[HUMAN]` Break stage **C**: `TOP_K=1`; capture recall@5 collapse; restore. (done live: recall@5 0.357 -> 0.286, recall@3 unchanged - the k-limit signature; docs/evidence/failure_C.txt)
-- `[ ]` **P16-T03** `[HUMAN]` Break stage **E**: remove the superseded filter, ask a version question; capture the repealed clause being quoted; restore.
+- `[x]` **P16-T03** `[HUMAN]` Break stage **E**: remove the superseded filter, ask a version question; capture the repealed clause being quoted; restore. (done live, 2026-11-06 — the predicted "repealed figure quoted as current" did not happen; the real finding is more subtle: the superseded chunk entered the top-5 but was never quoted, and crowding out a current chunk instead made the model cite a real retrieved chunk whose text does not support the number stated, passing citation enforcement anyway — docs/FAILURE-ANALYSIS.md stage E, docs/evidence/stageE_before.json, stageE_broken.json, stageE_after.json. Reverted and confirmed byte-identical to shipped chroma.py; readyz 1117 chunks restored)
 - `[x]` **P16-T04** `[HUMAN]` Break stage **F**: `TEMPERATURE=1.2`; capture citation-validity drop; restore. (done live - the predicted drop did not clearly materialise; honest negative result recorded in docs/FAILURE-ANALYSIS.md)
 - `[x]` **P16-T05** `[AGENT]` Write `docs/FAILURE-ANALYSIS.md`: 4 blocks, ≥1200 chars, each with symptom / blind diagnosis / stage / remedy / the number that would have shown it.
 - `[x]` **P16-T06** `[HUMAN]` `kubectl top pods -n rahbar` during an index run; capture → **evidence file 4 of 5**. (real readings captured live, docs/evidence/kubectl_top_indexer.txt; true peak not pinned to a single snapshot, see the file's own note)
@@ -458,7 +458,7 @@ those phases claim is genuinely true right now.
 | P15-T07 | `make eval` then `python eval/run_eval.py --update-baseline`; commit `baseline.json` + `results.json` | not yet written | the CI gate's own baseline | `[ ]` |
 | P16-T01 | `OCR_ENABLED=false`, re-index, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage A numbers | `[ ]` |
 | P16-T02 | `TOP_K=1`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage C numbers | `[ ]` |
-| P16-T03 | remove the superseded filter for one probe question, capture, revert | not yet written | `docs/FAILURE-ANALYSIS.md` stage E numbers | `[ ]` |
+| P16-T03 | remove the superseded filter for one probe question, capture, revert | done live 2026-11-06, docs/evidence/stageE_*.json | `docs/FAILURE-ANALYSIS.md` stage E numbers | `[x]` |
 | P16-T04 | `TEMPERATURE=1.2`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage F numbers | `[ ]` |
 | P16-T06 | `kubectl top pods -n rahbar` during an index run | not yet written | **evidence file 4 of 5**; P16-T07's margin recompute | `[ ]` |
 | P16-T08 | `kubectl set image` → `rollout status` → `rollout undo` | not yet written | evidence | `[ ]` |
