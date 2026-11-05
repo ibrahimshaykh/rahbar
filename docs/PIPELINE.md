@@ -161,26 +161,36 @@ the document's filename stem and `ordinal` is a document-wide counter. The
 same document chunked twice with unchanged inputs produces identical ids,
 which is what makes a diff between two chunking-experiment runs meaningful.
 
-**Config A (400/50, shipped), measured for real** against the live cluster
-(real Chroma, real `nomic-embed-text`, the full real corpus, 2026-11-05):
-`recall_at_3 = 0.286`, `recall_at_5 = 0.357`, `1117` chunks stored
-(`eval/results.json`). Configs B (250/40) and C (700/80) each need their own
-full re-index cycle (~20 minutes on this development machine's 2-core CPU)
-and are `PENDING-HUMAN(P15-T02)` — not fabricated, and not yet run, since
-each additional configuration is a genuinely separate measurement, not a
-cheap recomputation.
+**Configs A (400/50, shipped) and B (250/40), measured for real** against
+the live cluster (real Chroma, real `nomic-embed-text`, the full real
+corpus, 2026-11-05): both land at **exactly the same recall figures**
+despite B producing 73 more chunks from its smaller window
+(`eval/results.json`, `eval/experiments/results-B.json`). Config C (700/80)
+needs its own full re-index cycle (~20 minutes on this development
+machine's 2-core CPU) and is `PENDING-HUMAN(P15-T02)` — not fabricated, and
+not yet run, since each additional configuration is a genuinely separate
+measurement, not a cheap recomputation.
 
 | Size (words) | Overlap (words) | recall@3 | recall@5 | Chunks stored |
 | --- | --- | --- | --- | --- |
 | 400 (A, shipped) | 50 | **0.286** | **0.357** | **1117** |
-| 250 (B) | 40 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
+| 250 (B) | 40 | **0.286** | **0.357** | **1190** |
 | 700 (C) | 80 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
 
 Config A's own real recall is lower than a reader might hope for a shipped
 default. We are reporting the real number rather than switching to a more
 flattering-looking unmeasured one: see `docs/ENGINEERING-NOTES.md` question
 5 for the honest per-type breakdown and diagnosis (the `version` question
-type is the main drag on this figure, not a general chunking failure).
+type is the main drag on this figure, not a general chunking failure). The
+real, measured surprise is that B does not improve on A at all — the two
+configurations' `by_type` breakdowns are identical down to `recall@5 exact
+= 0.5` and `recall@5 ordinary = 0.333` on both. Chunk size in this 250-400
+word range is not what recall is sensitive to on this corpus; what did
+change between A and B was `answered_count` (12 → 10) — smaller chunks
+produced more individually weaker passages, pushing a couple of borderline
+questions below the relevance floor into an honest abstention rather than
+a worse answer. See `docs/adr/0002-chunking-strategy.md` for the full
+measured table and this finding's implication for config C.
 
 **Storage amplification** (stored words / original words), measured for
 real with `scripts/amplification.py --corpus corpus/raw --size 400

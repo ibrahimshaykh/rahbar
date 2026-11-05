@@ -1,10 +1,9 @@
 # ADR 0002: Structure-aware chunking with overlap, measured against recall@5
 
 ## Status
-Accepted · 2026-11-04 (the measured configuration table is completed in
-Phase 15, which needs a live Chroma instance and the real embedding model;
-see `docs/PIPELINE.md` for the `PENDING-HUMAN` markers and
-`harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §5 for the exact protocol)
+Accepted · 2026-11-04. Configs A and B measured for real against a live
+cluster on 2026-11-05 (see the Consequences table below); config C still
+`PENDING-HUMAN(P15-T02)`.
 
 ## Context
 
@@ -96,17 +95,32 @@ numbers, not by a default.
 
 | Config | Size (words) | Overlap (words) | Chunks stored | recall@3 | recall@5 | recall@5 exact | recall@5 ordinary |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| **A (shipped)** | 400 | 50 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
-| B | 250 | 40 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
-| C | 700 | 80 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
+| **A (shipped)** | 400 | 50 | **1117** | **0.286** | **0.357** | **0.5** | **0.333** |
+| B | 250 | 40 | **1190** | **0.286** | **0.357** | **0.5** | **0.333** |
+| C | 700 | 80 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
 
-A smoke-measured amplification figure (stored words ÷ original words) already
-exists against the real corpus at config A: **0.940** (`docs/PIPELINE.md`),
-below the theoretical `1 + 50/400 = 1.125` because many sections are short
-enough to produce a single chunk with no predecessor to overlap against. The
-semantic recall figures above require a live Chroma instance and the pinned
-`nomic-embed-text` model, neither of which is available on this development
-host; they are measured for real against the live cluster in Phase 15, per
-`harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §5's exact protocol, and this
-ADR is updated with the real table at that point rather than left as a stale
-placeholder.
+Measured for real against the live cluster, 2026-11-05 (`eval/experiments/
+results-B.json`, `eval/results.json`). **Config B's real result is the
+decision-record's most important finding: it is identical to config A's at
+every recall figure measured**, despite 73 more total chunks from the
+smaller window. Smaller chunks did not buy sharper exact-term retrieval here
+(`recall@5 exact` is `0.5` either way) or hurt long-definition retrieval
+(`recall@5 ordinary` is `0.333` either way) — on this corpus and golden set,
+chunk size in the 250-400 word range is not the variable recall is sensitive
+to. What did move: `answered_count` fell from `12` (config A) to `10`
+(config B), with two more questions abstaining instead of answering —
+smaller chunks produced more individually-weaker passages, pushing a couple
+of borderline questions below the relevance floor even though the correct
+*document* was still represented. Config C (700/80) is
+`PENDING-HUMAN(P15-T02)`, running as this ADR is written; if it also lands
+at the same recall figures, the honest conclusion will be that chunk size
+is simply not this corpus's binding constraint — the real drag, per
+`docs/ENGINEERING-NOTES.md` question 5, is the `version`-type retrieval gap,
+which no chunk size can fix.
+
+A real amplification figure (stored words ÷ original words) exists for
+config A: **0.938** (`docs/PIPELINE.md`), measured with
+`scripts/amplification.py` against the real corpus, below the theoretical
+`1 + 50/400 = 1.125` because one OCR-only document undercounts when that
+script runs locally without `poppler-utils` (explained in full in
+`docs/PIPELINE.md`'s storage-amplification section).
