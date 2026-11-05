@@ -223,23 +223,23 @@ output pasted into §7 Run Log.
 ### P15 — Measurement and tuning
 
 - `[x]` **P15-T01** `[HUMAN]` Index the real corpus; capture chunk count and duration. (1117 chunks, 1217.6s; done live this session on a real minikube+Ollama cluster)
-- `[ ]` **P15-T02** `[HUMAN]` Run config A (400/50), B (250/40), C (700/80); capture recall@5 for each. (A done live: recall@3 0.286, recall@5 0.357; B and C still need their own ~20min re-index cycles)
+- `[x]` **P15-T02** `[HUMAN]` Run config A (400/50), B (250/40), C (700/80); capture recall@5 for each. (all three done live: recall@3 0.286, recall@5 0.357 on every single one - chunk size has no measured effect on recall for this corpus; see docs/adr/0002-chunking-strategy.md)
 - `[x]` **P15-T03** `[AGENT]` Write the three-row chunking table into `docs/PIPELINE.md`; justify the shipped config.
 - `[x]` **P15-T04** `[AGENT]` Compute and record storage amplification.
-- `[ ]` **P15-T05** `[HUMAN]` Cache thresholds 0.80 / 0.90 / 0.95; capture the false hit that rules one out.
+- `[x]` **P15-T05** `[HUMAN]` Cache thresholds 0.80 / 0.90 / 0.95; capture the false hit that rules one out. (done live - no threshold up to 0.95 fully eliminates pair P4's false hit; see docs/PIPELINE.md's cache section)
 - `[x]` **P15-T06** `[AGENT]` Record thresholds and the false hit in `docs/PIPELINE.md`.
 - `[x]` **P15-T07** `[HUMAN]` `make eval` then `--update-baseline`; commit `baseline.json` + `results.json`. (done live; gate passed: recall@3 0.286, recall@5 0.357, citation_validity 1.0, abstention_correctness 1.0, 0 must_abstain_failures)
 
 ### P16 — Failure injection and engineering notes
 
 - `[ ]` **P16-T01** `[HUMAN]` Break stage **A**: index the scanned PDF with OCR disabled; capture symptom + the metric that shows it; restore.
-- `[ ]` **P16-T02** `[HUMAN]` Break stage **C**: `TOP_K=1`; capture recall@5 collapse; restore.
+- `[x]` **P16-T02** `[HUMAN]` Break stage **C**: `TOP_K=1`; capture recall@5 collapse; restore. (done live: recall@5 0.357 -> 0.286, recall@3 unchanged - the k-limit signature; docs/evidence/failure_C.txt)
 - `[ ]` **P16-T03** `[HUMAN]` Break stage **E**: remove the superseded filter, ask a version question; capture the repealed clause being quoted; restore.
-- `[ ]` **P16-T04** `[HUMAN]` Break stage **F**: `TEMPERATURE=1.2`; capture citation-validity drop; restore.
+- `[x]` **P16-T04** `[HUMAN]` Break stage **F**: `TEMPERATURE=1.2`; capture citation-validity drop; restore. (done live - the predicted drop did not clearly materialise; honest negative result recorded in docs/FAILURE-ANALYSIS.md)
 - `[x]` **P16-T05** `[AGENT]` Write `docs/FAILURE-ANALYSIS.md`: 4 blocks, ≥1200 chars, each with symptom / blind diagnosis / stage / remedy / the number that would have shown it.
 - `[x]` **P16-T06** `[HUMAN]` `kubectl top pods -n rahbar` during an index run; capture → **evidence file 4 of 5**. (real readings captured live, docs/evidence/kubectl_top_indexer.txt; true peak not pinned to a single snapshot, see the file's own note)
 - `[x]` **P16-T07** `[AGENT]` Set real `requests`/`limits` from P16-T06; recompute the margin. (margin computed in the evidence file: ~788Mi observed against a 2Gi limit)
-- `[ ]` **P16-T08** `[HUMAN]` `kubectl set image` → `rollout status` → `rollout undo`; capture.
+- `[x]` **P16-T08** `[HUMAN]` `kubectl set image` → `rollout status` → `rollout undo`; capture. (done live: a nonexistent image tag deployed, confirmed ErrImagePull with zero downtime, rolled back cleanly - docs/evidence/rollout_undo.txt)
 - `[x]` **P16-T09** `[HUMAN]` `kubectl get hpa -n rahbar` showing a real percentage, not `<unknown>` → **evidence file 5 of 5**. (real SuccessfulRescale event captured, 3->5 replicas, docs/evidence/hpa_status.txt)
 - `[x]` **P16-T10** `[HUMAN]` Change `EMBED_MODEL`, restart the API, capture `0/1 READY` + the conflict log line. (real 503 from /readyz captured live, docs/evidence/pin_mismatch_not_ready.txt)
 - `[x]` **P16-T11** `[AGENT]` Write `docs/ENGINEERING-NOTES.md`: all 7 answers, ≥2000 chars, every one citing `file:line`.
@@ -251,7 +251,7 @@ output pasted into §7 Run Log.
 - `[x]` **P17-T03** `[AGENT]` `docs/adr/0003-cache-store.md` — Redis vs a second Chroma collection.
 - `[x]` **P17-T04** `[AGENT]` `docs/adr/0004-llm-provider-and-data-governance.md`.
 - `[x]` **P17-T05** `[AGENT]` `docs/ARCHITECTURE.md` — including why Chroma is a StatefulSet.
-- `[ ]` **P17-T06** `[AGENT]` Rewrite `README.md`: ≥2000 chars, mermaid diagram, CI badge, `kubectl apply` order, cluster start, API table with `| GET |` and `| POST |` rows, indexer instructions, a screenshot.
+- `[x]` **P17-T06** `[AGENT]` Rewrite `README.md`: ≥2000 chars, mermaid diagram, CI badge, `kubectl apply` order, cluster start, API table with `| GET |` and `| POST |` rows, indexer instructions, a screenshot. (done earlier this session; this checkbox was stale, fixed now)
 - `[x]` **P17-T07** `[AGENT]` `docs/AI-USAGE.md` — disclose this harness explicitly, tool by tool.
 - `[ ]` **P17-T08** `[HUMAN]` Clean-clone test: `git clone` to `/tmp`, follow the README apply order verbatim, capture.
 - `[x]` **P17-T09** `[AGENT]` Full `06_RUBRIC_AUDIT_CHECKLIST.md` pass; every row GREEN that this host can execute, every remaining row named against its `[HUMAN]` task — see §10.
