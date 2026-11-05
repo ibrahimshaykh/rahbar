@@ -24,6 +24,7 @@ venv/
 *.log
 .DS_Store
 .claude/
+.playwright-mcp/
 
 # built artefact: populated by make images
 indexer/corpus-baked/*
