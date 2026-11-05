@@ -15,20 +15,25 @@ the entire harness. Do not guess it; do not invent names or emails.
 ```yaml
 # HUMAN-INPUT: fill both rows, then delete nothing else from this block.
 partner_a:
-  name:  "<<FILL: Partner A full name>>"
-  email: "<<FILL: Partner A GitHub account email>>"
+  name:  "Ibrahim Ahmed"
+  email: "ibrahimshaykh05@gmail.com"
 partner_b:
   name:  "<<FILL: Partner B full name>>"
   email: "<<FILL: Partner B GitHub account email>>"
-github_repo_url: "<<FILL: https://github.com/<owner>/<repo>>>"
-dockerhub_user:  "<<FILL: Docker Hub username>>"
+github_repo_url: "https://github.com/ibrahimshaykh/rahbar"
+dockerhub_user:  "ibrahimshk"
 ```
 
 **Gate G-HUMAN-01.** Before any commit in Phase 00 task `P00-T09`, run:
 
 ```bash
-grep -c '<<FILL' CLAUDE.md
+grep -c '<<''FILL' CLAUDE.md
 ```
+
+(Written as two concatenated quoted strings so this instruction does not
+itself contain the literal placeholder marker and self-match; bash
+concatenates adjacent quoted strings with no space between them, so this
+runs identically to the unescaped single-string form of this same command.)
 
 If the result is anything other than `0`, stop Phase 00, write
 `BLOCKED: G-HUMAN-01` into the Blocked register in
