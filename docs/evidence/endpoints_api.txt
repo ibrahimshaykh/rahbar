@@ -1,0 +1,19 @@
+# P05-T06 captured 2026-11-05T07:40:17Z
+# requirement: K8-02 (3 replicas), K8-25 (endpoints list that many IPs)
+
+$ kubectl get deploy api -n rahbar
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+api    3/3     3            3           7m41s
+
+$ kubectl get pods -n rahbar -l app=api -o wide
+NAME                   READY   STATUS    RESTARTS   AGE     IP              NODE       NOMINATED NODE   READINESS GATES
+api-59cd95d4f8-2cg5r   1/1     Running   0          7m40s   10.244.120.73   minikube   <none>           <none>
+api-59cd95d4f8-9swlw   1/1     Running   0          7m40s   10.244.120.71   minikube   <none>           <none>
+api-59cd95d4f8-p9dhc   1/1     Running   0          7m40s   10.244.120.72   minikube   <none>           <none>
+
+$ kubectl get endpoints api -n rahbar -o wide
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME   ENDPOINTS                                                  AGE
+api    10.244.120.71:8000,10.244.120.72:8000,10.244.120.73:8000   7m43s
+
+# The Service selector found these pods by label. We never touched the Service.

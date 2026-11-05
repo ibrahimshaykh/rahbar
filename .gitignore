@@ -23,6 +23,7 @@ venv/
 # Local scratch
 *.log
 .DS_Store
+.claude/
 
 # built artefact: populated by make images
 indexer/corpus-baked/*

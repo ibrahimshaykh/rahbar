@@ -1,0 +1,32 @@
+# P05-T01 captured 2026-11-05T07:40:29Z
+# requirement: K8-22 (metrics-server), and Calico so NetworkPolicy is enforced
+
+$ minikube version
+minikube version: v1.39.0
+commit: 7a9f6a841470a207de8cf4bafcccee0969d8ba10
+
+$ kubectl get nodes -o wide
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION                              CONTAINER-RUNTIME
+minikube   Ready    control-plane   34m   v1.37.0   192.168.49.2   <none>        Debian GNU/Linux 12 (bookworm)   6.18.40.1-microsoft-standard-WSL2 (amd64)   containerd://2.3.4
+
+$ minikube addons list | grep -E 'metrics-server|ingress'
+│ ingress                     │ minikube │ disabled   │ Kubernetes                             │
+│ ingress-dns                 │ minikube │ disabled   │ minikube                               │
+│ [32mmetrics-server[0m              │ [32mminikube[0m │ [32menabled ✅[0m │ [32mKubernetes[0m                             │
+
+$ kubectl get pods -n kube-system -l k8s-app=calico-node
+calico-kube-controllers-db57f7644-9xvxp   1/1     Running   0          33m
+calico-node-gk67v                         1/1     Running   0          33m
+
+$ kubectl get pods -n ingress-nginx
+NAME                                       READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-dm5qs       0/1     Completed   0          33m
+ingress-nginx-admission-patch-j4jgj        0/1     Completed   0          33m
+ingress-nginx-controller-d7cd8c989-czm2s   1/1     Running     0          33m
+
+$ minikube ip
+192.168.49.2
+
+$ minikube ssh "grep host.minikube.internal /etc/hosts"
+192.168.65.254	host.minikube.internal
+# ^ put that IP into k8s/overlays/dev/patch-host-ipblock.yaml
