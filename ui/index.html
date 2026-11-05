@@ -394,7 +394,8 @@ function errorCard(message, question) {
   box.append(el("span", {}, message));
   const retry = el("button", { type: "button", class: "retry" });
   retry.append(svgIcon(ICON_RETRY, { width: "13", height: "13" }), el("span", {}, "Try again"));
-  retry.addEventListener("click", () => { box.remove(); ask(question); }, { once: true });
+  // Re-ask without echoing the question again: it is already above this error.
+  retry.addEventListener("click", () => { box.remove(); ask(question, true); }, { once: true });
   box.append(retry);
   return box;
 }
@@ -432,9 +433,9 @@ function autosize() {
   input.style.height = Math.max(46, Math.min(input.scrollHeight, 150)) + "px";
 }
 
-async function ask(question) {
+async function ask(question, isRetry = false) {
   examples.closest(".examples")?.remove();
-  thread.append(riseIn(el("div", { class: "q" }, question)));
+  if (!isRetry) thread.append(riseIn(el("div", { class: "q" }, question)));
   const pending = pendingCard();
   thread.append(pending);
   pending.scrollIntoView({ behavior: "smooth", block: "end" });

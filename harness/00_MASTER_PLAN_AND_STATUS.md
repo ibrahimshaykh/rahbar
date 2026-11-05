@@ -253,7 +253,7 @@ output pasted into §7 Run Log.
 - `[x]` **P17-T05** `[AGENT]` `docs/ARCHITECTURE.md` — including why Chroma is a StatefulSet.
 - `[x]` **P17-T06** `[AGENT]` Rewrite `README.md`: ≥2000 chars, mermaid diagram, CI badge, `kubectl apply` order, cluster start, API table with `| GET |` and `| POST |` rows, indexer instructions, a screenshot. (done earlier this session; this checkbox was stale, fixed now)
 - `[x]` **P17-T07** `[AGENT]` `docs/AI-USAGE.md` — disclose this harness explicitly, tool by tool.
-- `[ ]` **P17-T08** `[HUMAN]` Clean-clone test: `git clone` to `/tmp`, follow the README apply order verbatim, capture.
+- `[x]` **P17-T08** `[HUMAN]` Clean-clone test: `git clone` to `/tmp`, follow the README apply order verbatim, capture. (done live 2026-11-06, docs/evidence/clean_clone_apply.txt — 241 tests pass and lint is clean from the fresh tree, and its manifests apply cleanly; two real findings recorded, including the overlay-reapply trap that cost a full re-index)
 - `[x]` **P17-T09** `[AGENT]` Full `06_RUBRIC_AUDIT_CHECKLIST.md` pass; every row GREEN that this host can execute, every remaining row named against its `[HUMAN]` task — see §10.
 - `[x]` **P17-T10** `[AGENT]` `make check` → **0 failures**; paste the full output. (achieved 2026-11-05: `164 passed, 3 warnings, 0 failures` - see Run Log)
 - `[ ]` **P17-T11** `[HUMAN]` PR `dev` → `main`, CI green, approve, merge; capture the `cd.yml` run URL.
@@ -465,7 +465,7 @@ those phases claim is genuinely true right now.
 | P16-T08 | `kubectl set image` → `rollout status` → `rollout undo` | not yet written | evidence | `[ ]` |
 | P16-T09 | `kubectl get hpa -n rahbar` showing a real percentage | not yet written | **evidence file 5 of 5** | `[ ]` |
 | P16-T10 | change `EMBED_MODEL`, restart, capture `0/1 READY` + conflict log | not yet written | `docs/ENGINEERING-NOTES.md` Q6's live demonstration | `[ ]` |
-| P17-T08 | `git clone` to `/tmp`, follow the rewritten README's apply order verbatim | not yet written (depends on P17-T06, the README rewrite, landing first) | **evidence file 10 of 10** | `[ ]` |
+| P17-T08 | `git clone` to `/tmp`, follow the rewritten README's apply order verbatim | done live 2026-11-06, docs/evidence/clean_clone_apply.txt | **evidence file 10 of 10** | `[x]` |
 | P17-T11 | PR `dev` → `main`, CI green, 1 approval, merge | — (GitHub UI, not scriptable) | submission | `[ ]` |
 | P17-T12 | submit on Google Classroom: repo URL, `cd.yml` run link, Docker Hub SHA-tag link | — (Google Classroom UI, not scriptable) | grading | `[ ]` |
 
@@ -485,9 +485,39 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 | 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[x]` real 503 from `/readyz` captured live |
 | 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[ ]` not yet run |
 | 8 | `pdffonts_real.txt` | the scanned PDF has an empty font list | P12-T04 | `[x]` real `pdffonts` output (run via the `rahbar-indexer:dev` image's own `poppler-utils`); supersedes the earlier `pdffonts_scan_proof.txt` pypdf-based substitute, which is kept for history |
-| 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[ ]` a browser screenshot specifically; `real_pipeline_first_answer.txt` (new, #11 below) is the same real answer captured as JSON instead |
-| 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[ ]` not yet run |
+| 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[x]` real browser screenshot, captured 2026-11-06 against the live cluster's own Chroma index (1,117 passages) and host Ollama: the question "What CGPA puts a student on academic warning?" answered `less than 2.00`, citing `grading-page.html` / Warning/Probation p.1, with all five real retrieved passages and their real similarity scores (0.805 … 0.722) visible. The header's "passages indexed 1,117" badge in the same shot is read live from `/readyz`, not typed in |
+| 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[x]` run 2026-11-06 from a genuine `git clone` of the pushed `dev` branch into a scratch directory: dependencies install, all 241 tests pass (156 api + 58 indexer + 27 eval), `ruff` and both `mypy` runs are clean, and `kubectl apply -k k8s/overlays/dev` from that fresh tree applies cleanly. Two real findings recorded in the file itself - see the note below the table |
 | 11 | `real_pipeline_first_answer.txt` | a real cited answer through the full non-stub pipeline | this session | `[x]` real, not in the original 10-file plan - added because it's genuine evidence the whole system works end to end |
+
+**Two real findings from the P17-T08 clean-clone run, both worth keeping:**
+
+1. **`make install` does not work on this machine, and that is an
+   environment deviation rather than a Makefile defect.** `CLAUDE.md` §5
+   locks the working shell to WSL 2 (Ubuntu); this machine has no real
+   Ubuntu distro (only Docker Desktop's internal WSL integration), so the
+   whole session has in fact run on native Windows + Git Bash. On native
+   Windows Python, `venv` creates `.venv/Scripts/`, while the Makefile's
+   `BIN := $(abspath $(VENV))/bin` is correct for WSL/Linux/macOS — the
+   graded environment. The fix is to run it where the harness says to run
+   it, not to special-case Windows in the Makefile, so the Makefile is
+   left alone and the deviation is recorded here instead.
+
+2. **Re-applying the dev overlay silently reverts the ConfigMap and fires
+   a fresh indexer Job.** Running `kubectl apply -k k8s/overlays/dev` from
+   the fresh clone put `RETRIEVER`, `LLM_PROVIDER` and `EMBED_MODEL` back
+   to their stub/`dummy-768` defaults and created `job.batch/indexer`,
+   which immediately re-indexed the collection with dummy vectors. The
+   embedding pin caught it exactly as designed — `/readyz` went to
+   `not ready` with `collection indexed with 'dummy-768' but EMBED_MODEL
+   is 'nomic-embed-text'` — which is the guardrail doing its job, but it
+   still cost a full real re-index to repair (restored to the same 1117
+   chunks in 1449s, `/readyz` ready again). This is the second time this
+   trap has been hit this session. **The operational rule: once the
+   ConfigMap has been flipped to the real pipeline by hand, never re-apply
+   the whole overlay — patch the individual object instead.** It is a real
+   argument for a `k8s/overlays/real/` overlay carrying the non-stub
+   values, so the real configuration is declarative rather than a manual
+   patch that any `apply` can silently undo.
 
 Current count in `docs/evidence/`: **12 files total** (the 11 above plus
 `apply_all.txt`, `cluster_up.txt`, `dummy_index.txt`, `first_answer.txt`,
@@ -519,7 +549,7 @@ checked directly against the base manifests file-by-file and confirmed with
 | A-08 resources / HPA `<unknown>` | GREEN (manifests) / PENDING-HUMAN (HPA evidence) | `requests:`/`limits:` present in all 6 base workload files (api, ui, chroma, redis, indexer Job, reindex CronJob); `docs/evidence/hpa_status.txt` needs a live HPA reading (P16-T09) |
 | A-09 `needs:` / `:latest` | GREEN | the publishing-job gate script reports every job gated; `github.sha` appears 9 times in `cd.yml`. **The row's own blunt `grep -rn ':latest'` also reads RED** here — every hit is a comment explaining the *rule* ("Never `:latest` (-6)") or CI's own guard line that greps *for* `:latest` as a safety check; confirmed no `image:` line anywhere in `k8s/base/` or a workflow actually uses the tag `:latest` |
 | A-10 `namespace: default` | GREEN | zero `namespace: default` anywhere in `k8s/base/`; 28 `namespace: rahbar` occurrences; `kustomization.yaml` sets it centrally |
-| A-11 README from clean clone | PENDING-HUMAN (P17-T08) | needs an actual `git clone` + live cluster walkthrough |
+| A-11 README from clean clone | GREEN (with one documented environment caveat) | run for real 2026-11-06 from a genuine `git clone` of the pushed `dev` branch (`docs/evidence/clean_clone_apply.txt`): the tests-only quick-start path works end to end (241 tests pass, `ruff` + both `mypy` runs clean) and the cluster path's `kubectl apply -k k8s/overlays/dev` applies cleanly from that fresh tree. Caveat, recorded honestly rather than hidden: `make install` itself fails **on this machine**, because the session runs on native Windows + Git Bash while `CLAUDE.md` §5 locks the environment to WSL 2 — `venv` writes `.venv/Scripts/` there, not the `.venv/bin/` the Makefile expects. On the specified (and graded) environment the path is correct, so the Makefile is deliberately left unchanged |
 | A-12 no direct push to `main` | PENDING-HUMAN | there is no `origin/main` yet - blocked on G-HUMAN-01 (no repo URL) |
 
 **Part B** is `scripts/check_submission.py` itself: **2 failures**, both
