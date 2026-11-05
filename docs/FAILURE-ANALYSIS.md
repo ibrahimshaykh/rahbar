@@ -26,36 +26,63 @@ the real run rather than guessed.
   extracted text is below `_OCR_MIN_CHARS` (40 characters), but skips the
   rasterise-and-`pytesseract` fallback and returns the page as effectively
   empty.
-- **Symptom:** the scanned document contributes zero or near-zero chunks to
-  the index. Any golden question whose answer lives only in that document
-  (per `eval/golden.yaml`'s `source` field) either abstains outright
-  (`should_abstain` sees no passage clear the relevance floor) or is answered
-  from the wrong document, because the real evidence was never indexed to
-  compete for the top-k slots.
-- **Diagnosis, as if we had not caused it:** the answer is a clean
-  abstention — fluent, correctly formatted, no malformed JSON — which rules
-  out stage F (the model is behaving exactly as told: say nothing rather than
-  invent). The retrieved-passage list for the affected question is either
-  empty or entirely from other documents, which rules out stage E (no
-  superseded chunk is being surfaced — there is simply no chunk at all) and
-  rules out stage C (a `TOP_K` cut only explains fewer passages, not zero
-  evidence from one entire source). The indexer's own structured log line
-  during the re-index is the first thing to check, before touching the API
-  at all: `indexer/pipeline/extract.py` logs a page-level warning whenever
-  `_page_needs_ocr` is true and OCR is disabled, naming the document and
-  page. Seeing that line for every page of the scanned document, combined
-  with the chunk count for that `source` in `store.py`'s post-index summary
-  dropping to zero, is conclusive before a single query is ever sent.
-- **The number that would have shown it:** the indexer's reported
-  `chunk_count` for the affected source drops from its real-corpus value to
-  0, and the overall collection's `chunk_count` metadata
-  (`indexer/pipeline/store.py::store`) falls by exactly that document's
-  share. The real before/after chunk counts and the exact log line text are
-  `PENDING-HUMAN(P16-T01)` — captured by re-running `make index` with
-  `OCR_ENABLED=false` against the real corpus, diffing the reported chunk
-  count against the baseline from `docs/evidence/indexer_run.txt`, then
-  restoring `OCR_ENABLED=true` and re-indexing before any other stage is
-  touched.
+- **Symptom, measured for real (live cluster, 2026-11-05) — and it is not
+  the symptom we predicted.** We expected a clean abstention. What actually
+  happened, asking a question squarely about the now-empty document's
+  content ("What is the university's policy on faculty entrepreneurship
+  and technical start-ups?"): the system answered **with `confidence:
+  "high"` and `answered_from_context: true`**, citing
+  `annual-report-2023-24.pdf` and `annual-report-2019-20.pdf` instead -
+  documents that mention "research labs" and "academia-industry
+  collaboration" in passing, topically adjacent but not the actual policy
+  document. The retrieved similarity scores (`0.634`-`0.651`) cleared the
+  relevance floor, so `should_abstain` correctly did its job *on the
+  evidence it was given* - the evidence itself was just the wrong
+  document, confidently dressed up as a real answer
+  (`docs/evidence/failure_A_sample_answer.json`). This is a more
+  dangerous failure mode than the one predicted: a clean abstention tells
+  a reader "the system doesn't know"; this tells a reader something
+  specific and plausible-sounding that is not what they actually asked
+  about.
+- **A second, equally important real finding: the golden-set eval gate
+  did not catch this at all.** `eval/golden.yaml` has no question whose
+  `relevant.source` names the affected document, so
+  `recall_at_5` was unchanged at `0.357` and `recall_at_3` actually rose
+  slightly to `0.357` (`eval/experiments/results-stageA.json`) - the gate
+  would have reported green on this exact break if the only check run
+  were the automated one. The manual probe above is what actually
+  surfaced the real damage. This is itself a lesson for `eval/golden.yaml`:
+  a 16-question golden set, however carefully built, cannot cover every
+  document, and a document silently going empty between one document and
+  the next is exactly the kind of regression a fixed golden set is blind
+  to unless a question specifically targets every corpus document.
+- **Diagnosis, as if we had not caused it:** because the symptom here
+  looks like a normal, confident, correctly-formatted answer - not an
+  error, not an abstention, nothing a dashboard would flag on its own -
+  this is the hardest of the four stages to notice without deliberately
+  checking it. The tell is in `retrieved[].source`: every citation and
+  every retrieved passage comes from documents other than the one the
+  question is actually about, at middling similarity scores (`0.63`-`0.65`,
+  noticeably lower than a genuine high-confidence match elsewhere in this
+  corpus, which typically clears `0.75`+). The indexer's own structured
+  log is the first thing to check once this pattern is suspected, before
+  trusting any individual answer: `indexer/pipeline/extract.py` logs
+  `"page has no text layer and OCR is disabled"` for every page of the
+  affected document, and the real per-document chunk count in the
+  indexer's `"chunked"` log line reads `"chunks": 0` for that source -
+  conclusive before a single query is sent.
+- **The number that would have shown it, measured for real:** the
+  collection's total `chunk_count` fell from the real-corpus baseline of
+  `1117` to `969` - a drop of exactly `148` chunks, matching the affected
+  document's full real contribution (confirmed independently by
+  `scripts/amplification.py`'s local run, which also lands at `969`
+  chunks for the same reason: no `poppler-utils` on that script's host
+  either). The indexer's own `"chunked"` log line for that specific
+  source reads `"chunks": 0`. The re-index also ran notably faster -
+  `840.5s` versus the real-pipeline baseline's `1217.6s` - because OCR,
+  not plain text extraction, is the slow part of this pipeline; a
+  suspiciously *fast* re-index is itself a secondary tell worth watching
+  for.
 - **Remedy:** restore `OCR_ENABLED=true` in the ConfigMap and re-index. This
   is the one stage of the four that requires a re-index to both break and
   fix, since the damage is in what got written to Chroma, not in a
