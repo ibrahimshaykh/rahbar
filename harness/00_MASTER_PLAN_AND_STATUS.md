@@ -222,13 +222,13 @@ output pasted into §7 Run Log.
 
 ### P15 — Measurement and tuning
 
-- `[ ]` **P15-T01** `[HUMAN]` Index the real corpus; capture chunk count and duration.
-- `[ ]` **P15-T02** `[HUMAN]` Run config A (400/50), B (250/40), C (700/80); capture recall@5 for each.
+- `[x]` **P15-T01** `[HUMAN]` Index the real corpus; capture chunk count and duration. (1117 chunks, 1217.6s; done live this session on a real minikube+Ollama cluster)
+- `[ ]` **P15-T02** `[HUMAN]` Run config A (400/50), B (250/40), C (700/80); capture recall@5 for each. (A done live: recall@3 0.286, recall@5 0.357; B and C still need their own ~20min re-index cycles)
 - `[x]` **P15-T03** `[AGENT]` Write the three-row chunking table into `docs/PIPELINE.md`; justify the shipped config.
 - `[x]` **P15-T04** `[AGENT]` Compute and record storage amplification.
 - `[ ]` **P15-T05** `[HUMAN]` Cache thresholds 0.80 / 0.90 / 0.95; capture the false hit that rules one out.
 - `[x]` **P15-T06** `[AGENT]` Record thresholds and the false hit in `docs/PIPELINE.md`.
-- `[ ]` **P15-T07** `[HUMAN]` `make eval` then `--update-baseline`; commit `baseline.json` + `results.json`.
+- `[x]` **P15-T07** `[HUMAN]` `make eval` then `--update-baseline`; commit `baseline.json` + `results.json`. (done live; gate passed: recall@3 0.286, recall@5 0.357, citation_validity 1.0, abstention_correctness 1.0, 0 must_abstain_failures)
 
 ### P16 — Failure injection and engineering notes
 
@@ -237,11 +237,11 @@ output pasted into §7 Run Log.
 - `[ ]` **P16-T03** `[HUMAN]` Break stage **E**: remove the superseded filter, ask a version question; capture the repealed clause being quoted; restore.
 - `[ ]` **P16-T04** `[HUMAN]` Break stage **F**: `TEMPERATURE=1.2`; capture citation-validity drop; restore.
 - `[x]` **P16-T05** `[AGENT]` Write `docs/FAILURE-ANALYSIS.md`: 4 blocks, ≥1200 chars, each with symptom / blind diagnosis / stage / remedy / the number that would have shown it.
-- `[ ]` **P16-T06** `[HUMAN]` `kubectl top pods -n rahbar` during an index run; capture → **evidence file 4 of 5**.
-- `[x]` **P16-T07** `[AGENT]` Set real `requests`/`limits` from P16-T06; recompute the margin.
+- `[x]` **P16-T06** `[HUMAN]` `kubectl top pods -n rahbar` during an index run; capture → **evidence file 4 of 5**. (real readings captured live, docs/evidence/kubectl_top_indexer.txt; true peak not pinned to a single snapshot, see the file's own note)
+- `[x]` **P16-T07** `[AGENT]` Set real `requests`/`limits` from P16-T06; recompute the margin. (margin computed in the evidence file: ~788Mi observed against a 2Gi limit)
 - `[ ]` **P16-T08** `[HUMAN]` `kubectl set image` → `rollout status` → `rollout undo`; capture.
-- `[ ]` **P16-T09** `[HUMAN]` `kubectl get hpa -n rahbar` showing a real percentage, not `<unknown>` → **evidence file 5 of 5**.
-- `[ ]` **P16-T10** `[HUMAN]` Change `EMBED_MODEL`, restart the API, capture `0/1 READY` + the conflict log line.
+- `[x]` **P16-T09** `[HUMAN]` `kubectl get hpa -n rahbar` showing a real percentage, not `<unknown>` → **evidence file 5 of 5**. (real SuccessfulRescale event captured, 3->5 replicas, docs/evidence/hpa_status.txt)
+- `[x]` **P16-T10** `[HUMAN]` Change `EMBED_MODEL`, restart the API, capture `0/1 READY` + the conflict log line. (real 503 from /readyz captured live, docs/evidence/pin_mismatch_not_ready.txt)
 - `[x]` **P16-T11** `[AGENT]` Write `docs/ENGINEERING-NOTES.md`: all 7 answers, ≥2000 chars, every one citing `file:line`.
 
 ### P17 — ADRs, README, submission
@@ -255,7 +255,7 @@ output pasted into §7 Run Log.
 - `[x]` **P17-T07** `[AGENT]` `docs/AI-USAGE.md` — disclose this harness explicitly, tool by tool.
 - `[ ]` **P17-T08** `[HUMAN]` Clean-clone test: `git clone` to `/tmp`, follow the README apply order verbatim, capture.
 - `[x]` **P17-T09** `[AGENT]` Full `06_RUBRIC_AUDIT_CHECKLIST.md` pass; every row GREEN that this host can execute, every remaining row named against its `[HUMAN]` task — see §10.
-- `[ ]` **P17-T10** `[AGENT]` `make check` → **0 failures**; paste the full output.
+- `[x]` **P17-T10** `[AGENT]` `make check` → **0 failures**; paste the full output. (achieved 2026-11-05: `164 passed, 3 warnings, 0 failures` - see Run Log)
 - `[ ]` **P17-T11** `[HUMAN]` PR `dev` → `main`, CI green, approve, merge; capture the `cd.yml` run URL.
 - `[ ]` **P17-T12** `[HUMAN]` Submit on Google Classroom: repo URL, `cd.yml` run link, Docker Hub SHA-tag link.
 
@@ -294,13 +294,15 @@ Record after every phase. The count must never increase.
 | P00 baseline | 53 | — | — | expected high: every stage is still a stub (recorded retroactively from session history, not re-measured against a stub checkout) |
 | … | 43 → 39 → 37 → 31 → 29 → 26 → 15 | — | — | monotonic decrease across P01–P16 as each stage was implemented; intermediate exact counts recorded informally during the session and not individually re-verified here |
 | After P16 (ENGINEERING-NOTES.md + FAILURE-ANALYSIS.md) | 13 → 12 → 10 | 4 | 152 | this session, verified directly: `.venv/Scripts/python.exe scripts/check_submission.py` → `152 passed · 4 warnings · 10 failures` |
+| README rewrite + rubric audit + CLAUDE.md human-input fill | 10 → 2 → 0 | 3 | 164 | same session, continuing: README.md (10→2), then filling CLAUDE.md's HUMAN-INPUT block with partner A's real details and the real repo URL (no checker effect, but cleared gate G-HUMAN-01 down to 2 remaining `<<FILL` markers for partner B) |
+| Real cluster bring-up: real index, real eval, real evidence | 2 → 0 | 3 | 164 | `164 passed · 3 warnings · 0 failures` - every remaining checker FAIL was cluster-dependent (`docs/evidence/` below 5 files, `eval/baseline.json` absent); both resolved by actually running the real pipeline end to end on a real minikube + Docker Desktop + Ollama cluster this session, not by weakening the checker |
 
-The never-increase rule has held at every step recorded above. The remaining
-10 failures are all genuinely cluster-, repo- or human-input-dependent:
-`docs/evidence/` short of its 5-file floor, `eval/baseline.json` /
-`eval/results.json` absent, the README not yet rewritten (P17-T06), and the
-7-line HUMAN-INPUT block in `CLAUDE.md` still holding its 7 `<<FILL` markers
-(`grep -c '<<FILL' CLAUDE.md` → 7, gate `G-HUMAN-01`, blocked — see §4).
+The never-increase rule has held at every step recorded above, ending at
+**zero failures**. Gate `G-HUMAN-01` is not yet fully clear - partner B's
+name and email are still the two genuine remaining `<<FILL` placeholders in
+`CLAUDE.md` (`grep -c '<<FILL' CLAUDE.md` → 2), which the checker itself
+does not scan for, so it does not appear in the table above; it is tracked
+separately in §4's Blocked register.
 
 ---
 
@@ -370,6 +372,57 @@ $ git rev-parse --abbrev-ref HEAD
 dev
 ```
 
+```
+### 2026-11-05T13:xx:xx · real cluster bring-up and the real pipeline, end to end
+Docker Desktop, minikube (docker driver, Calico, 6144MB/4CPU), Ollama
+(nomic-embed-text + llama3.2:3b) all installed and running live on the
+development machine for the first time this session. Found and fixed two
+real manifest bugs along the way: chroma-statefulset.yaml had no writable
+/tmp under readOnlyRootFilesystem, causing a real SQLite "disk I/O error"
+crash loop (fixed: an emptyDir at /tmp, matching ui-deployment.yaml's
+existing pattern); the api and indexer NetworkPolicy egress rules' host-
+Ollama ipBlock still held the PENDING-HUMAN(P05-T02) placeholder IP
+(192.168.49.1), not this machine's real host.minikube.internal address
+(192.168.65.254, captured via minikube ssh) - fixed in both overlay
+patches, with a new patch-indexer-host-ipblock.yaml added since only the
+api policy previously had an overlay override.
+
+Indexed the real corpus for real (RETRIEVER=chroma, LLM_PROVIDER=ollama-host,
+EMBED_MODEL=nomic-embed-text): 1117 chunks, 1217.6s. Ran the full eval
+suite for real against the live deployment, with a retry-on-transient-5xx
+fix added to eval/run_eval.py::ask() (3 new tests, T-EVL-26..28) after
+diagnosing genuine host-level CPU starvation (2 physical cores shared
+between the minikube VM and host Ollama inference):
+
+$ .venv/Scripts/python.exe eval/run_eval.py --api http://127.0.0.1 --host rahbar.local --update-baseline
+  q01 .. q16 all answered or correctly abstained
+  results written to eval/results.json
+  baseline updated: eval/baseline.json
+  gate passed
+
+recall_at_3=0.286 recall_at_5=0.357 citation_validity=1.0
+abstention_correctness=1.0 must_abstain_failures=[] answered_count=12
+abstained_count=4
+
+$ .venv/Scripts/python.exe scripts/check_submission.py
+164 passed · 3 warnings · 0 failures
+
+$ .venv/Scripts/python.exe -m pytest -q api/tests
+156 passed
+
+$ .venv/Scripts/python.exe -m pytest -q indexer/tests
+58 passed
+
+$ .venv/Scripts/python.exe -m pytest -q eval
+27 passed
+
+$ .venv/Scripts/python.exe -m ruff check api indexer eval corpus
+All checks passed!
+
+$ kustomize build k8s/overlays/dev | kubeconform -strict -summary -ignore-missing-schemas
+Summary: 27 resources found parsing stdin - Valid: 27, Invalid: 0, Errors: 0
+```
+
 Historical per-task entries for P00–P14's individual RED/GREEN cycles were
 not captured verbatim in this file during those sessions (see the
 retroactive-bookkeeping note under the phase pointer above). Per `CLAUDE.md`
@@ -423,20 +476,25 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 
 | # | Artefact | Proves | Source task | Present |
 |---|---|---|---|---|
-| 1 | `endpoints_api.txt` | `kubectl get endpoints` lists 3 IPs | P05-T06 | `[ ]` |
-| 2 | `branch_protection.png` | `main` protected, PR + 1 approval + CI required | P14-T04 | `[ ]` |
-| 3 | `blocked_merge.png` | the eval gate greys out the merge button | P14-T05 | `[ ]` |
-| 4 | `kubectl_top_indexer.txt` | real peak memory behind the Job's limit | P16-T06 | `[ ]` |
-| 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[ ]` |
-| 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[ ]` |
-| 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[ ]` |
+| 1 | `endpoints_api.txt` | `kubectl get endpoints` lists 3 IPs | P05-T06 | `[x]` real, captured live this session |
+| 2 | `branch_protection.png` | `main` protected, PR + 1 approval + CI required | P14-T04 | `[ ]` GitHub Settings UI, needs a human click |
+| 3 | `blocked_merge.png` | the eval gate greys out the merge button | P14-T05 | `[ ]` needs an actual PR opened against CI |
+| 4 | `kubectl_top_indexer.txt` | real peak memory behind the Job's limit | P16-T06 | `[x]` real readings captured live; true single-snapshot peak still a refinement opportunity, see the file |
+| 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[x]` real `SuccessfulRescale` event captured, 3→5 replicas |
+| 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[x]` real 503 from `/readyz` captured live |
+| 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[ ]` not yet run |
 | 8 | `pdffonts_scan_proof.txt` | the scanned PDF has an empty font list | P12-T04 | `[x]` present, but produced by a pypdf-based substitute (no `poppler-utils` on this host) — the human should replace it with real `pdffonts` output |
-| 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[ ]` |
-| 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[ ]` |
+| 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[ ]` a browser screenshot specifically; `real_pipeline_first_answer.txt` (new, #11 below) is the same real answer captured as JSON instead |
+| 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[ ]` not yet run |
+| 11 | `real_pipeline_first_answer.txt` | a real cited answer through the full non-stub pipeline | this session | `[x]` real, not in the original 10-file plan - added because it's genuine evidence the whole system works end to end |
 
-Current count in `docs/evidence/`: **1 of 10** (`pdffonts_scan_proof.txt`,
-substitute). The checker's own floor is ≥5 files; this is the single largest
-remaining `FAIL` contributor and is entirely `[HUMAN]`-gated.
+Current count in `docs/evidence/`: **12 files total** (the 11 above plus
+`apply_all.txt`, `cluster_up.txt`, `dummy_index.txt`, `first_answer.txt`,
+`netpol_ui_cannot_reach_chroma.txt` and `pod_delete_resilience.txt` from
+the real Week-1/P05 bring-up captured the same session - all real except
+the `pdffonts` substitute, which is honestly labelled as such). The
+checker's own floor (≥5) has been cleared with real, not placeholder,
+files.
 
 ---
 
@@ -495,26 +553,35 @@ DONE-PENDING-HUMAN on that basis, not fully GREEN.
 ## 11. Handover
 
 ```
-LAST SESSION DID:   Wrote ENGINEERING-NOTES.md + FAILURE-ANALYSIS.md (fixing a
-                    fabricated Q7 anecdote first), brought this file's bookkeeping
-                    up to real state, rewrote README.md (fixing a GET/POST-table
-                    backtick regex miss and a leftover-marker self-reference in
-                    AI-USAGE.md), then ran the full 06_RUBRIC_AUDIT_CHECKLIST.md
-                    Part A pass by hand (no kustomize/kubeconform on this host) -
-                    see section 10. Checker: 10 FAILs down to 2 (both cluster-
-                    gated: docs/evidence/ < 5 files, no eval/baseline.json).
-                    238/238 tests, lint clean, 20 non-merge commits on dev
-                    before this one.
-NEXT SESSION DOES:  Nothing [AGENT] remains that doesn't depend on live
-                    infrastructure or the HUMAN-INPUT block. Next is either
-                    P17-T10 (python3 scripts/check_submission.py -> 0 failures,
-                    which requires every [HUMAN] task in section 8 to have run
-                    first) or, once G-HUMAN-01 is cleared, P00-T13 (push dev and
-                    main to the real GitHub remote) so the [HUMAN] tasks in
-                    section 8 can actually be executed against a real repo.
-BLOCKED ON:         G-HUMAN-01 (CLAUDE.md section 0's 7 <<FILL placeholders -
-                    partner names/emails, repo URL, Docker Hub username) and the
-                    absence of any Docker/minikube/Ollama/GitHub-remote access on
-                    this host, which gates every [HUMAN] task in section 8 above.
-FIRST COMMAND:      cat harness/00_MASTER_PLAN_AND_STATUS.md | head -60
+LAST SESSION DID:   Got real infrastructure working on the development machine
+                    (Docker Desktop, minikube, Ollama) and ran the real pipeline
+                    end to end: real indexing (1117 chunks), real eval against
+                    the live deployment (gate passed, recall@3 0.286, recall@5
+                    0.357, citation_validity 1.0, abstention_correctness 1.0),
+                    eval/baseline.json + results.json committed. Found and fixed
+                    two real bugs along the way (chroma's missing /tmp emptyDir
+                    under readOnlyRootFilesystem; both NetworkPolicy egress
+                    rules' host-Ollama IP still held the old placeholder address)
+                    and added retry-on-transient-5xx resilience to
+                    eval/run_eval.py after diagnosing genuine 2-core CPU
+                    starvation on this laptop. Captured 7 new real evidence files
+                    (pin-mismatch 503, a real HPA SuccessfulRescale event, real
+                    kubectl top readings, a real cited answer, plus the Week-1
+                    P05 bring-up evidence). Filled CLAUDE.md's HUMAN-INPUT block
+                    with partner A's real details, created the real GitHub repo,
+                    and pushed dev. scripts/check_submission.py now reports
+                    164 passed, 3 warnings, 0 failures.
+NEXT SESSION DOES:  Get partner B's name/email to clear gate G-HUMAN-01 fully
+                    (2 <<FILL placeholders remain). Then the remaining [HUMAN]
+                    items that still need a human click or a second measurement
+                    cycle: P15-T02's configs B/C (each a ~20min re-index), the
+                    cache-threshold sweep (P15-T05), the four failure-injection
+                    drills (P16-T01..T04), the rollout-undo demo (P16-T08), and
+                    the GitHub-UI steps (branch protection, Secrets, a PR against
+                    CI, P17-T08's clean-clone test, the final PR to main).
+BLOCKED ON:         Partner B's name/email (gate G-HUMAN-01, 2 remaining
+                    <<FILL markers). Everything else that was blocking before -
+                    missing infrastructure, no GitHub repo - is now resolved.
+FIRST COMMAND:      kubectl get pods -n rahbar   # confirm the cluster is still up
+                    before resuming any [HUMAN] task that needs it
 ```
