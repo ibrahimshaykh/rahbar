@@ -1,9 +1,8 @@
 # ADR 0002: Structure-aware chunking with overlap, measured against recall@5
 
 ## Status
-Accepted · 2026-11-04. Configs A and B measured for real against a live
-cluster on 2026-11-05 (see the Consequences table below); config C still
-`PENDING-HUMAN(P15-T02)`.
+Accepted · 2026-11-04. All three configurations measured for real against
+a live cluster on 2026-11-05 (see the Consequences table below).
 
 ## Context
 
@@ -97,26 +96,29 @@ numbers, not by a default.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **A (shipped)** | 400 | 50 | **1117** | **0.286** | **0.357** | **0.5** | **0.333** |
 | B | 250 | 40 | **1190** | **0.286** | **0.357** | **0.5** | **0.333** |
-| C | 700 | 80 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
+| C | 700 | 80 | **1073** | **0.286** | **0.357** | **0.5** | **0.333** |
 
-Measured for real against the live cluster, 2026-11-05 (`eval/experiments/
-results-B.json`, `eval/results.json`). **Config B's real result is the
-decision-record's most important finding: it is identical to config A's at
-every recall figure measured**, despite 73 more total chunks from the
-smaller window. Smaller chunks did not buy sharper exact-term retrieval here
-(`recall@5 exact` is `0.5` either way) or hurt long-definition retrieval
-(`recall@5 ordinary` is `0.333` either way) — on this corpus and golden set,
-chunk size in the 250-400 word range is not the variable recall is sensitive
-to. What did move: `answered_count` fell from `12` (config A) to `10`
-(config B), with two more questions abstaining instead of answering —
-smaller chunks produced more individually-weaker passages, pushing a couple
-of borderline questions below the relevance floor even though the correct
-*document* was still represented. Config C (700/80) is
-`PENDING-HUMAN(P15-T02)`, running as this ADR is written; if it also lands
-at the same recall figures, the honest conclusion will be that chunk size
-is simply not this corpus's binding constraint — the real drag, per
-`docs/ENGINEERING-NOTES.md` question 5, is the `version`-type retrieval gap,
-which no chunk size can fix.
+Measured for real against the live cluster, 2026-11-05 (`eval/results.json`,
+`eval/experiments/results-B.json`, `eval/experiments/results-C.json`).
+**All three configurations land at identical recall figures** across every
+column measured, despite chunk counts ranging from `1073` to `1190` — this
+is the decision record's most important finding, stated plainly as a
+negative result rather than hidden: across the entire 250-700 word range
+tested, chunk size is not the variable recall is sensitive to on this
+corpus. Neither smaller chunks (sharper vectors, the stated hope for B) nor
+larger chunks (whole definitions surviving intact, the stated hope for C)
+moved `recall@5 exact` or `recall@5 ordinary` by a single point either way.
+
+What did move with chunk size: `answered_count` (`12` at A, `10` at B, `11`
+at C) and generation latency, which rose sharply with chunk size because
+larger chunks mean a longer prompt for this CPU-only `llama3.2:3b` to
+process — a real *latency and abstention-rate* lever, not a *recall*
+lever. The honest conclusion: the real drag on this corpus's overall
+recall, per `docs/ENGINEERING-NOTES.md` question 5, is the `version`-type
+retrieval gap, a document-selection problem no chunk size can fix, since
+the superseded document's chunks are eligible to be retrieved under every
+configuration tested and still lose on pure similarity ranking to the
+larger current document regardless of how that document is sliced.
 
 A real amplification figure (stored words ÷ original words) exists for
 config A: **0.938** (`docs/PIPELINE.md`), measured with

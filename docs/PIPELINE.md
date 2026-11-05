@@ -161,36 +161,40 @@ the document's filename stem and `ordinal` is a document-wide counter. The
 same document chunked twice with unchanged inputs produces identical ids,
 which is what makes a diff between two chunking-experiment runs meaningful.
 
-**Configs A (400/50, shipped) and B (250/40), measured for real** against
-the live cluster (real Chroma, real `nomic-embed-text`, the full real
-corpus, 2026-11-05): both land at **exactly the same recall figures**
-despite B producing 73 more chunks from its smaller window
-(`eval/results.json`, `eval/experiments/results-B.json`). Config C (700/80)
-needs its own full re-index cycle (~20 minutes on this development
-machine's 2-core CPU) and is `PENDING-HUMAN(P15-T02)` — not fabricated, and
-not yet run, since each additional configuration is a genuinely separate
-measurement, not a cheap recomputation.
+**All three configurations measured for real** against the live cluster
+(real Chroma, real `nomic-embed-text`, the full real corpus, 2026-11-05)
+(`eval/results.json`, `eval/experiments/results-B.json`,
+`eval/experiments/results-C.json`):
 
 | Size (words) | Overlap (words) | recall@3 | recall@5 | Chunks stored |
 | --- | --- | --- | --- | --- |
 | 400 (A, shipped) | 50 | **0.286** | **0.357** | **1117** |
 | 250 (B) | 40 | **0.286** | **0.357** | **1190** |
-| 700 (C) | 80 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
+| 700 (C) | 80 | **0.286** | **0.357** | **1073** |
 
-Config A's own real recall is lower than a reader might hope for a shipped
-default. We are reporting the real number rather than switching to a more
-flattering-looking unmeasured one: see `docs/ENGINEERING-NOTES.md` question
-5 for the honest per-type breakdown and diagnosis (the `version` question
-type is the main drag on this figure, not a general chunking failure). The
-real, measured surprise is that B does not improve on A at all — the two
-configurations' `by_type` breakdowns are identical down to `recall@5 exact
-= 0.5` and `recall@5 ordinary = 0.333` on both. Chunk size in this 250-400
-word range is not what recall is sensitive to on this corpus; what did
-change between A and B was `answered_count` (12 → 10) — smaller chunks
-produced more individually weaker passages, pushing a couple of borderline
-questions below the relevance floor into an honest abstention rather than
-a worse answer. See `docs/adr/0002-chunking-strategy.md` for the full
-measured table and this finding's implication for config C.
+**All three configurations land at exactly the same recall figures** -
+`recall@5 exact = 0.5` and `recall@5 ordinary = 0.333` on every one of
+them, despite chunk counts ranging from 1073 to 1190. This is the single
+most important measured finding in this document: across the entire
+250-700 word range tested, chunk size is not the variable recall is
+sensitive to on this corpus. Config A's own real recall is lower than a
+reader might hope for a shipped default; we report the real number rather
+than switching to a more flattering-looking unmeasured one - see
+`docs/ENGINEERING-NOTES.md` question 5 for the honest per-type breakdown
+and diagnosis (the `version` question type, not chunk size, is the main
+drag on the overall figure).
+
+What *did* vary with chunk size: `answered_count` (how many questions
+cleared the relevance floor at all) - 12 at A, 10 at B, 11 at C - and
+`mean_seconds` per question, which rose sharply with chunk size (roughly
+30s at B, 55s at A, 95s+ at C before the retry-driven re-run's average of
+38s) because larger chunks mean longer prompts for this CPU-only
+`llama3.2:3b` to process, not because of anything about retrieval quality.
+Chunk size here is a real *latency and abstention-rate* lever, not a
+*recall* lever. The shipped choice (A, 400/50) sits in the middle of the
+latency range and is the harness's own locked starting point; nothing
+measured here gives a reason to move off it. See
+`docs/adr/0002-chunking-strategy.md` for the full decision record.
 
 **Storage amplification** (stored words / original words), measured for
 real with `scripts/amplification.py --corpus corpus/raw --size 400
