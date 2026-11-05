@@ -232,7 +232,7 @@ output pasted into §7 Run Log.
 
 ### P16 — Failure injection and engineering notes
 
-- `[ ]` **P16-T01** `[HUMAN]` Break stage **A**: index the scanned PDF with OCR disabled; capture symptom + the metric that shows it; restore.
+- `[x]` **P16-T01** `[HUMAN]` Break stage **A**: index the scanned PDF with OCR disabled; capture symptom + the metric that shows it; restore. (done live - the predicted abstention did not happen; the real symptom was a confident high-confidence wrong-document answer, and the golden-set eval did not catch the break at all - see docs/FAILURE-ANALYSIS.md. Fully restored, confirmed /readyz ready with 1117 chunks)
 - `[x]` **P16-T02** `[HUMAN]` Break stage **C**: `TOP_K=1`; capture recall@5 collapse; restore. (done live: recall@5 0.357 -> 0.286, recall@3 unchanged - the k-limit signature; docs/evidence/failure_C.txt)
 - `[ ]` **P16-T03** `[HUMAN]` Break stage **E**: remove the superseded filter, ask a version question; capture the repealed clause being quoted; restore.
 - `[x]` **P16-T04** `[HUMAN]` Break stage **F**: `TEMPERATURE=1.2`; capture citation-validity drop; restore. (done live - the predicted drop did not clearly materialise; honest negative result recorded in docs/FAILURE-ANALYSIS.md)
