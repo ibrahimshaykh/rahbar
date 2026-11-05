@@ -584,35 +584,43 @@ DONE-PENDING-HUMAN on that basis, not fully GREEN.
 ## 11. Handover
 
 ```
-LAST SESSION DID:   Got real infrastructure working on the development machine
-                    (Docker Desktop, minikube, Ollama) and ran the real pipeline
-                    end to end: real indexing (1117 chunks), real eval against
-                    the live deployment (gate passed, recall@3 0.286, recall@5
-                    0.357, citation_validity 1.0, abstention_correctness 1.0),
-                    eval/baseline.json + results.json committed. Found and fixed
-                    two real bugs along the way (chroma's missing /tmp emptyDir
-                    under readOnlyRootFilesystem; both NetworkPolicy egress
-                    rules' host-Ollama IP still held the old placeholder address)
-                    and added retry-on-transient-5xx resilience to
-                    eval/run_eval.py after diagnosing genuine 2-core CPU
-                    starvation on this laptop. Captured 7 new real evidence files
-                    (pin-mismatch 503, a real HPA SuccessfulRescale event, real
-                    kubectl top readings, a real cited answer, plus the Week-1
-                    P05 bring-up evidence). Filled CLAUDE.md's HUMAN-INPUT block
-                    with partner A's real details, created the real GitHub repo,
-                    and pushed dev. scripts/check_submission.py now reports
-                    164 passed, 3 warnings, 0 failures.
-NEXT SESSION DOES:  Get partner B's name/email to clear gate G-HUMAN-01 fully
-                    (2 <<FILL placeholders remain). Then the remaining [HUMAN]
-                    items that still need a human click or a second measurement
-                    cycle: P15-T02's configs B/C (each a ~20min re-index), the
-                    cache-threshold sweep (P15-T05), the four failure-injection
-                    drills (P16-T01..T04), the rollout-undo demo (P16-T08), and
-                    the GitHub-UI steps (branch protection, Secrets, a PR against
-                    CI, P17-T08's clean-clone test, the final PR to main).
-BLOCKED ON:         Partner B's name/email (gate G-HUMAN-01, 2 remaining
-                    <<FILL markers). Everything else that was blocking before -
-                    missing infrastructure, no GitHub repo - is now resolved.
-FIRST COMMAND:      kubectl get pods -n rahbar   # confirm the cluster is still up
-                    before resuming any [HUMAN] task that needs it
+LAST SESSION DID:   Closed every remaining [AGENT]-reachable task. Ran the last
+                    failure-injection drill, Stage E (P16-T03): the prediction
+                    was wrong in an instructive way - the superseded chunk did
+                    enter the top-5, but was never quoted; crowding a correct
+                    chunk out of the window instead made the model cite a real
+                    retrieved-but-unrelated chunk while stating a number present
+                    in no passage, which passes citation enforcement because
+                    enforcement only checks that a citation points at a retrieved
+                    chunk, not that the chunk supports the claim. Closed five
+                    [HUMAN] evidence tasks that this machine could actually run
+                    (P02-T06 images, P12-T02/T03 corpus fetch + verify, P12-T04
+                    with the REAL pdffonts via the indexer image's own
+                    poppler-utils, P13-T06 fixture run) and ticked P05-T01..T06,
+                    whose evidence was already real but unticked. Ran P17-T08,
+                    the clean-clone test, for real. Rebuilt the chat UI with the
+                    ui-ux-pro-max + frontend-design skills (custom SVG compass
+                    mark, live /readyz index stats, copy-answer, retry-on-error,
+                    theme toggle, score bars) with no new dependency and no
+                    change to the API contract or the innerHTML-free rendering,
+                    verified it in a real browser across light/dark/mobile and
+                    every answer state, and rolled the rebuilt image out to the
+                    cluster. Both remaining evidence files (ui_answer.png,
+                    clean_clone_apply.txt) are now real captures. Checker:
+                    0 failures. 38 non-merge commits.
+NEXT SESSION DOES:  Only human-gated work is left. (1) Partner B's name/email to
+                    clear G-HUMAN-01. (2) Push the `main` branch - it exists
+                    locally at the starter commit 779e6c7 and is fully contained
+                    in dev, but `git push -u origin main` is refused by the
+                    agent's own safety classifier, so a human must run it; the
+                    final PR has no base until they do. (3) The GitHub-UI steps:
+                    branch protection on main, the DOCKERHUB_USERNAME/
+                    DOCKERHUB_TOKEN secrets, the deliberate gate-failure PR with
+                    its two screenshots, then the real dev->main PR, CI green,
+                    one approval, merge. (4) Google Classroom submission.
+BLOCKED ON:         Partner B's name/email (G-HUMAN-01, 2 <<FILL markers left).
+                    The `main` branch not existing on the remote, which blocks
+                    P17-T11 and P14-T04/T05 - see NEXT SESSION item (2).
+FIRST COMMAND:      git push -u origin main    # creates the PR base; the agent
+                    is not permitted to push to main, so this one is yours
 ```
