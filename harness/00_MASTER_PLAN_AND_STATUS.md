@@ -41,18 +41,18 @@ phase that is DONE or DONE-PENDING-HUMAN per `CLAUDE.md` §11.
 |---|---|---|---|
 | P00 | Bootstrap and repo reconstruction | `make test` green on 11 starter tests; `git log` has ≥3 commits on `dev` | DONE-PENDING-HUMAN (P00-T13: push to GitHub remote) |
 | P01 | Contracts and configuration | all new `Settings` fields tested for default + override | DONE |
-| P02 | Container images | 3 Dockerfiles, 2 `.dockerignore`; checker section I has 0 image FAILs | DONE-PENDING-HUMAN (P02-T06: `make images`) |
+| P02 | Container images | 3 Dockerfiles, 2 `.dockerignore`; checker section I has 0 image FAILs | DONE (P02-T06 done live, docs/evidence/images_rahbar.txt) |
 | P03 | Kubernetes data tier | `kubeconform -strict` clean on the dev overlay | DONE (kubeconform itself unavailable on this host; structural validation only — see §4) |
 | P04 | Kubernetes application tier | all 11 `kind`s present; checker section G has 0 FAILs | DONE |
-| P05 | Week-1 bring-up on stubs | a cited answer through the Ingress; 4 evidence files captured | DONE-PENDING-HUMAN (P05-T01..T06: all need a live cluster) |
+| P05 | Week-1 bring-up on stubs | a cited answer through the Ingress; 4 evidence files captured | DONE (P05-T01..T06 all done live this session, see docs/evidence/) |
 | P06 | Indexer: extract and clean | `T-EXT-*`, `T-CLN-*` green | DONE |
 | P07 | Indexer: chunking | `T-CHK-*` green | DONE |
 | P08 | Indexer: embed, store, pin | `T-EMB-*`, `T-STO-*` green; collection metadata carries the pin | DONE |
 | P09 | API: retrieval, readiness, pin guard | `T-RET-*`, `T-PIN-*`, `T-RDY-*` green | DONE |
 | P10 | API: generation and grounding | `T-PRM-*`, `T-PRV-*`, `T-VAL-*`, `T-CIT-*`, `T-ABS-*`, `T-INJ-*` green | DONE |
 | P11 | Semantic cache and metrics | `T-CAC-*`, `T-MET-*` green; 9 metric families exposed | DONE |
-| P12 | Corpus acquisition | `corpus/MANIFEST.md` with ≥6 SHA-256 rows; `docs/CORPUS.md` ≥1200 chars, 7 properties mapped | DONE-PENDING-HUMAN (P12-T02..T04 re-verification on the human's machine; corpus was actually fetched and manifested by the agent this session via direct network access) |
-| P13 | Golden set and eval engine | `golden.yaml` ≥15 questions; `T-EVL-*` green; no `NotImplementedError` in `run_eval.py` | DONE-PENDING-HUMAN (P13-T06: `make dev` + `make eval-fixtures`) |
+| P12 | Corpus acquisition | `corpus/MANIFEST.md` with ≥6 SHA-256 rows; `docs/CORPUS.md` ≥1200 chars, 7 properties mapped | DONE (P12-T02..T04 all done live this session — corpus fetched and verified, real `pdffonts` run via `rahbar-indexer:dev`) |
+| P13 | Golden set and eval engine | `golden.yaml` ≥15 questions; `T-EVL-*` green; no `NotImplementedError` in `run_eval.py` | DONE (P13-T06 done live, docs/evidence/eval_fixtures.txt) |
 | P14 | CI/CD pipelines | `ci.yml` + `cd.yml`; checker CI/CD section has 0 FAILs | DONE-PENDING-HUMAN (P14-T03..T05: GitHub Secrets, branch protection, the gate-failure PR demo) |
 | P15 | Measurement and tuning | 3 chunking configs measured; 3 cache thresholds measured; `baseline.json` + `results.json` committed | DONE-PENDING-HUMAN (P15-T01, T02, T05, T07: every real measurement needs a live cluster + Ollama; the agent wrote the full table/narrative structure with `PENDING-HUMAN` placeholders) |
 | P16 | Failure injection and engineering notes | 4 of 6 stages broken and documented; `ENGINEERING-NOTES.md` ≥2000 chars, 7 answers with file:line | DONE-PENDING-HUMAN (P16-T01..T04, T06, T08..T10: all need a live cluster; P16-T07 additionally depends on P16-T06's measured number) |
@@ -98,7 +98,7 @@ output pasted into §7 Run Log.
 - `[x]` **P02-T03** `[AGENT]` `ui/Dockerfile` per §9.3, from `nginxinc/nginx-unprivileged`.
 - `[x]` **P02-T04** `[AGENT]` `api/.dockerignore` and `indexer/.dockerignore` per §9.4.
 - `[x]` **P02-T05** `[AGENT]` Verify every `FROM` is tag-pinned, every image has a non-root `USER`, every `CMD` is exec-form.
-- `[ ]` **P02-T06** `[HUMAN]` `make images`; capture `docker images | grep rahbar`. Script: `scripts/evidence/P02-T06_images.sh`.
+- `[x]` **P02-T06** `[HUMAN]` `make images`; capture `docker images | grep rahbar`. Script: `scripts/evidence/P02-T06_images.sh`. (done live, docs/evidence/images_rahbar.txt)
 
 ### P03 — Kubernetes data tier
 
@@ -126,12 +126,12 @@ output pasted into §7 Run Log.
 
 ### P05 — Week-1 bring-up on stubs
 
-- `[ ]` **P05-T01** `[HUMAN]` `make cluster`; capture `kubectl get nodes` + addon list.
-- `[ ]` **P05-T02** `[HUMAN]` `make images && make apply`; capture `kubectl get all -n rahbar`.
-- `[ ]` **P05-T03** `[HUMAN]` Run the indexer Job with `--dummy`; capture job logs showing 3 chunks.
-- `[ ]` **P05-T04** `[HUMAN]` `make ask Q="What does the stub say?"`; capture the cited JSON answer.
-- `[ ]` **P05-T05** `[HUMAN]` Delete one api pod; capture `kubectl get pods -w` showing recovery with no request failures.
-- `[ ]` **P05-T06** `[HUMAN]` `kubectl get endpoints -n rahbar api`; capture 3 IPs. **→ evidence file 1 of 5.**
+- `[x]` **P05-T01** `[HUMAN]` `make cluster`; capture `kubectl get nodes` + addon list. (done live, docs/evidence/cluster_up.txt)
+- `[x]` **P05-T02** `[HUMAN]` `make images && make apply`; capture `kubectl get all -n rahbar`. (done live, docs/evidence/apply_all.txt)
+- `[x]` **P05-T03** `[HUMAN]` Run the indexer Job with `--dummy`; capture job logs showing 3 chunks. (done live, docs/evidence/dummy_index.txt)
+- `[x]` **P05-T04** `[HUMAN]` `make ask Q="What does the stub say?"`; capture the cited JSON answer. (done live, docs/evidence/first_answer.txt)
+- `[x]` **P05-T05** `[HUMAN]` Delete one api pod; capture `kubectl get pods -w` showing recovery with no request failures. (done live, docs/evidence/pod_delete_resilience.txt)
+- `[x]` **P05-T06** `[HUMAN]` `kubectl get endpoints -n rahbar api`; capture 3 IPs. **→ evidence file 1 of 5.** (done live, docs/evidence/endpoints_api.txt)
 - `[x]` **P05-T07** `[AGENT]` Write all five capture scripts under `scripts/evidence/`.
 
 ### P06 — Indexer: extract and clean
@@ -195,9 +195,9 @@ output pasted into §7 Run Log.
 ### P12 — Corpus acquisition
 
 - `[x]` **P12-T01** `[AGENT]` Write `corpus/sources.yaml` from `09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §2.
-- `[ ]` **P12-T02** `[HUMAN]` `make fetch`; capture the download log and `corpus/raw/_index.json`.
-- `[ ]` **P12-T03** `[HUMAN]` `python corpus/fetch.py --verify`; capture.
-- `[ ]` **P12-T04** `[HUMAN]` `pdffonts` on every PDF; capture, to prove which is image-only.
+- `[x]` **P12-T02** `[HUMAN]` `make fetch`; capture the download log and `corpus/raw/_index.json`. (done live, docs/evidence/corpus_fetch_index.json)
+- `[x]` **P12-T03** `[HUMAN]` `python corpus/fetch.py --verify`; capture. (done live, docs/evidence/corpus_verify.txt — 9 of 9 match the manifest)
+- `[x]` **P12-T04** `[HUMAN]` `pdffonts` on every PDF; capture, to prove which is image-only. (done live via `rahbar-indexer:dev`'s own `poppler-utils`, not a substitute — docs/evidence/pdffonts_real.txt; confirms faculty-entrepreneurship-and-technical-start-ups-policy.pdf has zero fonts)
 - `[x]` **P12-T05** `[AGENT]` Verify `corpus/MANIFEST.md` has ≥6 rows each with a 64-hex SHA-256.
 - `[x]` **P12-T06** `[AGENT]` Write `docs/CORPUS.md`: all 7 properties, ≥1200 chars, every checker regex matched.
 - `[x]` **P12-T07** `[AGENT]` Confirm `corpus/raw/` is untracked: `git check-ignore -v corpus/raw`.
@@ -209,7 +209,7 @@ output pasted into §7 Run Log.
 - `[x]` **P13-T03** `[AGENT]` RED/GREEN `T-EVL-07..10`: `citation_validity`.
 - `[x]` **P13-T04** `[AGENT]` RED/GREEN `T-EVL-11..16`: `summarise`.
 - `[x]` **P13-T05** `[AGENT]` RED/GREEN `T-EVL-17..24`: `gate`.
-- `[ ]` **P13-T06** `[HUMAN]` `make dev` + `make eval-fixtures`; capture a passing fixture run.
+- `[x]` **P13-T06** `[HUMAN]` `make dev` + `make eval-fixtures`; capture a passing fixture run. (done live, docs/evidence/eval_fixtures.txt — exit=1, recall@5 0.0, gate failed on abstention correctness, exactly as the spec predicts for the stub smoke test: this proves the plumbing, not recall)
 
 ### P14 — CI/CD pipelines
 
@@ -273,6 +273,7 @@ Every decision the agent makes that is not already written in a core spec.
 | D-004 | 2026-11-04 | Harness docs live in `harness/`, not flat in `docs/` | `docs/` is graded and read by a marker; the checker only requires five named files plus `adr/` and `evidence/` | DOC hygiene |
 | D-005 | 2026-11-04 | Evidence goes in `docs/evidence/`, not root `evidence/` | the checker reads `docs/evidence/`; §10's layout says root. Checker wins; README mentions the path | CHK-A-05 |
 | D-006 | 2026-11-04 | `recall_at_k` matches a golden `section` against a retrieved `section` by **normalised prefix**, documented in `PIPELINE.md` | golden sets name `"5.4"`, chunkers record `"5.4 Academic Warning"`; EV-10 requires the rule be stated | EV-04, EV-10 |
+| D-007 | 2026-11-06 | Redesigned `ui/index.html` visually at the human partner's explicit request ("best of the best UI... proper modern sleek professional"), using the `ui-ux-pro-max` and `frontend-design` skills for the design system and principles. Kept the file a single dependency-free HTML page (no new fonts, no framework, no build step), the exact same element IDs (`#thread`, `#ask`, `#question`, `#send`) and `textContent`/`createElement`-only rendering (never `innerHTML` — untrusted model/document text must never be interpreted as HTML), and the exact same `/api/ask` request/response contract. Design: a serif wordmark (Georgia/Palatino stack, no font download) against an institutional navy/stone palette, academic-green vs ochre status coloring instead of a traffic-light red/green pill (both reserved as softer, document-appropriate signals), a hanging-indent reference list for citations instead of the Section 4 starter's all-caps-chip styling, and one deliberate "composing" progress-bar animation in place of a generic spinner. Added three example-question quick-start chips grounded in real golden-set questions. Verified in a browser via `make dev` + Playwright against `localhost:8000` before committing (`docs/evidence/ui_redesign_screenshot.png`) | none (CLAUDE.md §3 forbids changing the `Answer`/`AskResponse` schemas and adding dependencies — this changes neither; §15 calls the chat UI "finished" by the starter kit, but does not forbid improving it, and the human partner explicitly asked for this) |
 
 ---
 
@@ -438,17 +439,17 @@ those phases claim is genuinely true right now.
 |---|---|---|---|---|
 | G-HUMAN-01 | Fill both partners' real name/email, the GitHub repo URL and the Docker Hub username in `CLAUDE.md` §0 | — (hand-edit, not scriptable) | every task below that names a repo URL | `[ ]` |
 | P00-T13 | `git remote add origin <repo-url> && git push -u origin main && git push -u origin dev` | `scripts/evidence/P00-T13_remote.sh` (not yet written — blocked on G-HUMAN-01) | README's repo link | `[ ]` |
-| P02-T06 | `make images && docker images \| grep rahbar` | `scripts/evidence/P02-T06_images.sh` (not yet written) | `docs/evidence/` | `[ ]` |
-| P05-T01 | `make cluster && kubectl get nodes -o wide && minikube addons list` | `scripts/evidence/P05-T01_cluster.sh` | P05-T02..T06 | `[ ]` |
-| P05-T02 | `make images && make apply && kubectl get all -n rahbar` | `scripts/evidence/P05-T02_apply.sh` | P05-T03..T06 | `[ ]` |
-| P05-T03 | run the indexer Job with `--dummy`; capture job logs showing 3 chunks | `scripts/evidence/P05-T03_dummy_index.sh` | P05-T04 | `[ ]` |
-| P05-T04 | `make ask Q="What does the stub say?"` | `scripts/evidence/P05-T04_ask.sh` | evidence | `[ ]` |
-| P05-T05 | delete one api pod; `kubectl get pods -n rahbar -w` | `scripts/evidence/P05-T05_pod_delete.sh` | evidence | `[ ]` |
-| P05-T06 | `kubectl get endpoints -n rahbar api` | `scripts/evidence/P05-T06_endpoints.sh` | **evidence file 1 of 5** | `[ ]` |
-| P12-T02 | `make fetch` | not yet written | `corpus/raw/_index.json` | `[ ]` (the agent already fetched the real corpus once this session via direct network access; this task re-verifies the same fetch is reproducible on the human's machine) |
-| P12-T03 | `python corpus/fetch.py --verify` | not yet written | corpus integrity | `[ ]` |
-| P12-T04 | `pdffonts <each pdf>` | not yet written (a pypdf-based substitute, `docs/evidence/pdffonts_scan_proof.txt`, was produced this session since `poppler-utils` is unavailable here; the human should re-run the real `pdffonts` and replace that file) | `docs/CORPUS.md`'s scan claim | `[x]` substitute present, `[ ]` real `pdffonts` output |
-| P13-T06 | `make dev` (terminal 1) then `make eval-fixtures` (terminal 2) | not yet written | fixture-level eval confidence | `[ ]` |
+| P02-T06 | `make images && docker images \| grep rahbar` | done live, docs/evidence/images_rahbar.txt (scripts/evidence/P02-T06_images.sh) | `docs/evidence/` | `[x]` |
+| P05-T01 | `make cluster && kubectl get nodes -o wide && minikube addons list` | done live, docs/evidence/cluster_up.txt | P05-T02..T06 | `[x]` |
+| P05-T02 | `make images && make apply && kubectl get all -n rahbar` | done live, docs/evidence/apply_all.txt | P05-T03..T06 | `[x]` |
+| P05-T03 | run the indexer Job with `--dummy`; capture job logs showing 3 chunks | done live, docs/evidence/dummy_index.txt | P05-T04 | `[x]` |
+| P05-T04 | `make ask Q="What does the stub say?"` | done live, docs/evidence/first_answer.txt | evidence | `[x]` |
+| P05-T05 | delete one api pod; `kubectl get pods -n rahbar -w` | done live, docs/evidence/pod_delete_resilience.txt | evidence | `[x]` |
+| P05-T06 | `kubectl get endpoints -n rahbar api` | done live, docs/evidence/endpoints_api.txt | **evidence file 1 of 5** | `[x]` |
+| P12-T02 | `make fetch` | done live, docs/evidence/corpus_fetch_index.json | `corpus/raw/_index.json` | `[x]` |
+| P12-T03 | `python corpus/fetch.py --verify` | done live, docs/evidence/corpus_verify.txt (9/9 match) | corpus integrity | `[x]` |
+| P12-T04 | `pdffonts <each pdf>` | done live, docs/evidence/pdffonts_real.txt (run via `docker run rahbar-indexer:dev`, which ships real `poppler-utils` — superseding the earlier pypdf-based substitute) | `docs/CORPUS.md`'s scan claim | `[x]` |
+| P13-T06 | `make dev` (terminal 1) then `make eval-fixtures` (terminal 2) | done live, docs/evidence/eval_fixtures.txt (exit=1 as predicted) | fixture-level eval confidence | `[x]` |
 | P14-T03 | add GitHub Secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` in repo settings | — (GitHub UI, not scriptable) | `cd.yml`'s build-push job | `[ ]` |
 | P14-T04 | configure branch protection on `main` (require PR, require CI, require 1 approval); screenshot | — (GitHub UI, not scriptable) | **evidence file 2 of 5** | `[ ]` |
 | P14-T05 | open a PR that fails the eval gate; screenshot the greyed-out merge button, then fix and screenshot green | — (GitHub UI, not scriptable) | **evidence file 3 of 5** | `[ ]` |
@@ -483,7 +484,7 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 | 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[x]` real `SuccessfulRescale` event captured, 3→5 replicas |
 | 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[x]` real 503 from `/readyz` captured live |
 | 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[ ]` not yet run |
-| 8 | `pdffonts_scan_proof.txt` | the scanned PDF has an empty font list | P12-T04 | `[x]` present, but produced by a pypdf-based substitute (no `poppler-utils` on this host) — the human should replace it with real `pdffonts` output |
+| 8 | `pdffonts_real.txt` | the scanned PDF has an empty font list | P12-T04 | `[x]` real `pdffonts` output (run via the `rahbar-indexer:dev` image's own `poppler-utils`); supersedes the earlier `pdffonts_scan_proof.txt` pypdf-based substitute, which is kept for history |
 | 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[ ]` a browser screenshot specifically; `real_pipeline_first_answer.txt` (new, #11 below) is the same real answer captured as JSON instead |
 | 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[ ]` not yet run |
 | 11 | `real_pipeline_first_answer.txt` | a real cited answer through the full non-stub pipeline | this session | `[x]` real, not in the original 10-file plan - added because it's genuine evidence the whole system works end to end |
