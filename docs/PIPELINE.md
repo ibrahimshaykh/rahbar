@@ -262,10 +262,40 @@ than being flagged on the entry.
 call in `cache.py` is wrapped, and a failure on `get` is treated as a miss,
 a failure on `put` returns `False` — the request still succeeds.
 
-Thresholds tried, and the false hit that ruled one out: `PENDING-HUMAN(P15-T07)`,
-per the nine-pair probe protocol in
-`harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6. The ConfigMap default is
-`CACHE_THRESHOLD=0.95` pending that measurement.
+**Thresholds tried: 0.80, 0.90, 0.95**, measured for real against the live
+deployment (`docs/evidence/cache_threshold_runs.txt`), per the nine-pair
+probe protocol in `harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6. The
+genuine (true-paraphrase) pairs P1-P3 hit correctly at all three
+thresholds. The near-miss pairs told a less tidy story than predicted:
+
+| Threshold | False hits (of 6 near-miss pairs) | Which pairs |
+| --- | --- | --- |
+| 0.80 | 3 | P4, P7, P9 |
+| 0.90 | 4 | P4, P5, P6, P7 |
+| 0.95 | 3 | P4, P6, P7 |
+
+**No threshold up to 0.95 fully eliminates the false hit on pair P4**
+("What is the current attendance requirement?" vs "What was the
+**previous** attendance requirement?") — it recurs at every threshold
+tested. This matters more than the other false hits: P4 is exactly
+failure mode E (a superseded answer served as current) arriving through
+the cache instead of through the retriever, and no threshold in the
+0.80-0.95 range closes it. The real cause is that `nomic-embed-text`
+encodes "current" and "previous" as near-identical in this sentence
+frame - the words differ, but the surrounding topic (attendance
+requirement) dominates the embedding, the same blur that makes `exact`-
+and `version`-type retrieval weak (`docs/ENGINEERING-NOTES.md` question
+5). **The honest fix is not a better threshold; it is routing
+version-intent questions around the cache entirely**, the same way
+`VERSION_INTENT_PATTERN` already routes them around the superseded-chunk
+filter in retrieval (`api/app/retrieval/chroma.py::_where_clause`) - a
+fifth never-cache rule, `is_version_question(question)`, that
+`services/cache.py::is_cacheable` does not currently check. We did not
+implement this (an architectural gap found by measurement, named here
+rather than quietly patched past the harness's locked `SemanticCache`
+interface); the shipped `CACHE_THRESHOLD=0.95` is the empirical pick
+anyway, tied for fewest false hits (3) at the most conservative setting
+tested, with this one specific, documented exception.
 
 ## Evaluation method
 

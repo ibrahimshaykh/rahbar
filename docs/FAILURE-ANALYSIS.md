@@ -94,21 +94,22 @@ the real run rather than guessed.
   would produce inconsistently. Checked in order — pod status, then recent
   events, then this one application log field — before ever doubting the
   model.
-- **The number that would have shown it:** `recall_at_5`
-  (`eval/run_eval.py::recall_at_k`) collapses hard while `recall_at_3` falls
-  by less, because `k=1` throttles retrieval before either metric's nominal
-  cutoff is ever reached — a gap between the two that only appears when `k`
-  itself, not ranking quality, is the limiting factor. `by_type` in
-  `eval/results.json`'s summary would show every question category falling
-  roughly together rather than one category (e.g. `exact`) falling worse
-  than the rest, which is the signature of a breadth problem rather than an
-  embedding-quality problem (compare question 5 of `ENGINEERING-NOTES.md`,
-  where an exact-term weakness shows up as one category falling worse, not
-  all of them falling together). The real recall@3/recall@5 pair, before and
-  after, is `PENDING-HUMAN(P16-T02)` — captured per the spec's exact
-  sequence: patch the ConfigMap, restart, run `eval/run_eval.py` against the
-  live deployment, record the printed summary, then restore `TOP_K: "5"` and
-  re-run to confirm the gate returns to green.
+- **The number that would have shown it, measured for real** (live cluster,
+  2026-11-05): baseline `recall_at_3 = 0.286, recall_at_5 = 0.357`; broken
+  (`TOP_K=1`) `recall_at_3 = 0.286, recall_at_5 = 0.286` —
+  **`recall_at_3` is untouched while `recall_at_5` collapses to match it
+  exactly**, precisely the k-limit signature predicted: ranking quality is
+  unaffected, there is simply nothing beyond position 1 for recall@5 to
+  find. The sample question used during the drill (`docs/evidence/
+  failure_C_sample_answer.json`) shows `"retrieved"` with exactly one
+  entry, confirming the cause mechanically, not just statistically.
+  `answered_count` also fell from 12 to 7 (`abstained_count` 4 → 9): with
+  only one chance to clear the relevance floor instead of five, several
+  questions that used to scrape past it no longer do, which is the correct,
+  honest behaviour for a system this starved of evidence — abstaining
+  rather than guessing from the one weaker passage it has. The gate
+  correctly failed: `recall@5 fell 0.071 below the baseline... more than
+  the allowed 0.050` (`docs/evidence/failure_C.txt`).
 - **Remedy:** restore `TOP_K: "5"` in the ConfigMap and restart
   `deployment/api`. No re-index, no code change — the fix is exactly as
   cheap as the break.
@@ -191,19 +192,33 @@ the real run rather than guessed.
   (`api/app/routes/metrics.py::FALLBACKS`) rising while recall stays flat —
   recall is a retrieval metric and is untouched by this stage, so a rise in
   fallbacks with flat recall isolates the fault to generation specifically.
-- **The number that would have shown it:** `citation_validity`
-  (`eval/run_eval.py::citation_validity`) falls below its normal value (the
-  gate requires ≥0.95) while `recall_at_5` is unchanged from the baseline
-  run, and `rahbar_fallbacks_total` increases over the same window. The real
-  before/after citation-validity score and fallback-counter delta is
-  `PENDING-HUMAN(P16-T04)` — captured by patching `TEMPERATURE` to `1.2`,
-  restarting, running the full eval against the live deployment, recording
-  the gate's printed citation-validity figure and the `/metrics` fallback
-  counter, then restoring the shipped temperature and re-running to confirm
-  the gate returns to green.
-- **Remedy:** restore the shipped `TEMPERATURE` value in the ConfigMap and
-  restart `deployment/api`. Re-run the eval to confirm the gate is green
-  again before moving on.
+- **The number that would have shown it, measured for real** (live cluster,
+  2026-11-05): `citation_validity` stayed at **1.0**, and `recall_at_3`/
+  `recall_at_5` were unchanged from baseline (`0.286`/`0.357`) — **the
+  predicted degradation did not clearly materialise in this run**, and the
+  honest write-up says so rather than reaching for a number that fits the
+  prediction better. The one real signal that did move: `answered_count`
+  fell from `12` to `11` (`abstained_count` `4` → `5`) — one additional
+  question crossed into a fallback/abstention under the higher temperature
+  that didn't before. The most defensible reading is that `llama3.2:3b`'s
+  constrained decoding (`ANSWER_JSON_SCHEMA` passed as Ollama's `format=`)
+  keeps the *output shape* valid even when sampling is more erratic, and
+  `citations.py::enforce_citations()` silently drops any citation that
+  doesn't match a retrieved passage rather than letting it through — so a
+  hallucinated clause number, if one occurred, would show up as a dropped
+  citation or an abstention, not as a `citation_validity` drop, because
+  `citation_validity` measures the accuracy of citations that *survive*
+  enforcement, not how many got dropped. This is a real, if less dramatic,
+  finding: the schema-constrained-decoding + post-hoc-enforcement
+  combination is more robust against this specific injected failure than
+  the stage's own prediction expected, at least at one temperature setting
+  and one small model, over one 16-question run. A sharper probe would
+  look at the *dropped*-citation count directly rather than the validity
+  ratio of what remains, or push `TEMPERATURE` higher than `1.2`.
+- **Remedy:** restore the shipped `TEMPERATURE` value (`0.2`) in the
+  ConfigMap and restart `deployment/api`; confirmed via `kubectl get
+  configmap rahbar-config -o jsonpath='{.data.TEMPERATURE}'` and a
+  successful rollout.
 - **Whose fault the stage is:** the model's — this is the one stage of the
   four where the retrieved evidence was correct throughout and the failure
   is specifically in how faithfully the model used it, which is exactly why

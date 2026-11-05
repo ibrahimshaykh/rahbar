@@ -1,0 +1,65 @@
+# Failure injection: Stage C (retrieval) - captured 2026-11-05
+# requirement: EV-11, EV-12
+
+$ kubectl patch configmap rahbar-config -n rahbar --type merge -p '{"data":{"TOP_K":"1"}}'
+(applied; deployment restarted and rolled out)
+
+$ sample question with the break active:
+{"request_id":"c371923f6175ecd1cb456a1ca5035eeb","answer":"A grade of FA is awarded to a student who fails to meet the minimum requirements of the course, and it typically means that the student has not demonstrated sufficient academic performance to pass the course.","citations":[{"source":"academic-rules-handbook-jun-2026.pdf","section":"5.2","page":null}],"answered_from_context":false,"confidence":"low","retrieved":[{"chunk_id":"academic-rules-handbook-jun-2026#p0024#c0143","source":"academic-rules-handbook-jun-2026.pdf","section":"5.2 The semester work will normally contribute 50% towards the","page":24,"score":0.67120337}],"provider":"ollama"}
+$ python eval/run_eval.py --api http://127.0.0.1 --host rahbar.local --out eval/experiments/results-stageC.json
+# Failure injection: Stage C (retrieval) - captured 2026-11-05
+# requirement: EV-11, EV-12
+
+$ kubectl patch configmap rahbar-config -n rahbar --type merge -p '{"data":{"TOP_K":"1"}}'
+(applied; deployment restarted and rolled out)
+
+$ sample question with the break active:
+{"request_id":"c371923f6175ecd1cb456a1ca5035eeb","answer":"A grade of FA is awarded to a student who fails to meet the minimum requirements of the course, and it typically means that the student has not demonstrated sufficient academic performance to pass the course.","citations":[{"source":"academic-rules-handbook-jun-2026.pdf","section":"5.2","page":null}],"answered_from_context":false,"confidence":"low","retrieved":[{"chunk_id":"academic-rules-handbook-jun-2026#p0024#c0143","source":"academic-rules-handbook-jun-2026.pdf","section":"5.2 The semester work will normally contribute 50% towards the","page":24,"score":0.67120337}],"provider":"ollama"}
+$ python eval/run_eval.py --api http://127.0.0.1 --host rahbar.local --out eval/experiments/results-stageC.json
+
+$ cat eval/experiments/results-stageC.json
+{
+    "recall_at_3": 0.2857142857142857,
+    "recall_at_5": 0.2857142857142857,
+    "citation_validity": 1.0,
+    "abstention_correctness": 1.0,
+    "answered_count": 7,
+    "abstained_count": 9,
+    "by_type": {
+        "ordinary": {
+            "n": 9,
+            "recall_at_3": 0.3333333333333333,
+            "recall_at_5": 0.3333333333333333
+        },
+        "version": {
+            "n": 2,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        },
+        "exact": {
+            "n": 2,
+            "recall_at_3": 0.5,
+            "recall_at_5": 0.5
+        },
+        "abstain": {
+            "n": 2,
+            "recall_at_3": null,
+            "recall_at_5": null
+        },
+        "injection": {
+            "n": 1,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        }
+    },
+    "must_abstain_failures": [],
+    "citation_failures": [],
+    "mean_seconds": 25.944375,
+    "golden": "C:\\Users\\Ibrahim\\Desktop\\SD assignmnet 2\\eval\\golden.yaml",
+    "questions": 16
+}
+
+# baseline (TOP_K=5): recall_at_3=0.286 recall_at_5=0.357
+# broken  (TOP_K=1): recall_at_3=0.286 recall_at_5=0.286 - recall@5 collapses to match
+# recall@3 exactly, which is the fingerprint a k-limit produces (ranking is fine;
+# there is simply nothing beyond position 1 to find).
