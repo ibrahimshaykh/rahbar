@@ -1,0 +1,20 @@
+# P16-T06 captured 2026-11-05 (live readings during the real ~20-minute index run)
+# requirement: K8-21, DED-08, EN-4 - real indexer memory usage behind the Job's limit
+# The indexer pod (reindex-real2-1793866623-w8wth) completed and was garbage-collected
+# before a final kubectl top snapshot could be taken at its true peak, so these are the
+# real kubectl top pod readings captured live during the run, in order, rather than a
+# single post-hoc snapshot:
+
+08:18 (~2min in, extraction phase):   CPU 1296m   MEM 291Mi
+08:19 (~3min in, extraction phase):   CPU 1488m   MEM 409Mi
+08:2x (mid extraction, scanned doc):  CPU 1309m   MEM 687Mi
+08:2x (deep in scanned doc OCR):      CPU 1238m   MEM 443Mi (post-GC dip)
+08:2x (continuing extraction):        CPU 1285m   MEM 788Mi
+
+Configured limit (k8s/base/indexer-job.yaml): requests 512Mi/500m, limits 2Gi/2000m
+Observed peak during this run: 788Mi against a 2048Mi limit - a real margin of
+approximately 61% headroom (788/2048 ~= 38% utilised at observed peak).
+The true peak (likely during embedding, when ~1117 vectors + chunk text were held
+in memory before the final Chroma write) was not captured by a live kubectl top call
+and is PENDING-HUMAN(P16-T06) for a tighter measurement via a dedicated monitoring
+loop run alongside the next re-index.

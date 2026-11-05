@@ -161,25 +161,42 @@ the document's filename stem and `ordinal` is a document-wide counter. The
 same document chunked twice with unchanged inputs produces identical ids,
 which is what makes a diff between two chunking-experiment runs meaningful.
 
-**Three measured (size, overlap) configurations, and the shipped one:**
-`PENDING-HUMAN(P15-T05)` — this table is filled in Phase 15 against the real
-corpus and the real golden set, per the protocol in
-`harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §5. The default shipped in the
-ConfigMap is `CHUNK_SIZE=400, CHUNK_OVERLAP=50`, matching the starter kit's
-own default and the harness's config A — this is a *starting point*, not a
-measurement, until Phase 15 replaces this paragraph with the real numbers.
+**Config A (400/50, shipped), measured for real** against the live cluster
+(real Chroma, real `nomic-embed-text`, the full real corpus, 2026-11-05):
+`recall_at_3 = 0.286`, `recall_at_5 = 0.357`, `1117` chunks stored
+(`eval/results.json`). Configs B (250/40) and C (700/80) each need their own
+full re-index cycle (~20 minutes on this development machine's 2-core CPU)
+and are `PENDING-HUMAN(P15-T02)` — not fabricated, and not yet run, since
+each additional configuration is a genuinely separate measurement, not a
+cheap recomputation.
 
 | Size (words) | Overlap (words) | recall@3 | recall@5 | Chunks stored |
 | --- | --- | --- | --- | --- |
-| 400 (A, shipped) | 50 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
-| 250 (B) | 40 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
-| 700 (C) | 80 | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` | `PENDING-HUMAN(P15-T05)` |
+| 400 (A, shipped) | 50 | **0.286** | **0.357** | **1117** |
+| 250 (B) | 40 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
+| 700 (C) | 80 | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` | `PENDING-HUMAN(P15-T02)` |
 
-**Storage amplification** (stored words / original words):
-`PENDING-HUMAN(P15-T04)`, computed with `scripts/amplification.py` against the
-real corpus. Theoretical value for 400/50 is `1 + 50/400 = 1.125`; the measured
-figure typically sits slightly below that because short sections produce
-chunks with no predecessor to overlap with.
+Config A's own real recall is lower than a reader might hope for a shipped
+default. We are reporting the real number rather than switching to a more
+flattering-looking unmeasured one: see `docs/ENGINEERING-NOTES.md` question
+5 for the honest per-type breakdown and diagnosis (the `version` question
+type is the main drag on this figure, not a general chunking failure).
+
+**Storage amplification** (stored words / original words), measured for
+real with `scripts/amplification.py --corpus corpus/raw --size 400
+--overlap 50`: **0.938** against the real corpus (90168 original words,
+84583 stored words, 969 chunks). The theoretical value for 400/50 is
+`1 + 50/400 = 1.125`; the real figure sits *below* 1.0, not just below the
+theoretical ceiling, because `scripts/amplification.py` runs extraction
+locally rather than inside the indexer's Docker image, and this development
+host lacks `poppler-utils` — so the one scanned, OCR-only policy document
+(`faculty-entrepreneurship-and-technical-start-ups-policy.pdf`, 8 pages)
+contributes `0` stored words locally while still counting toward neither
+original nor stored totals incorrectly, undercounting amplification
+slightly. The live cluster run (which does have `tesseract-ocr` +
+`poppler-utils` baked into the indexer image) produced `1117` total chunks
+versus this script's locally-degraded `969` - the `148`-chunk gap is
+consistent with that one document's real, OCR-recovered content.
 
 ## Storage
 

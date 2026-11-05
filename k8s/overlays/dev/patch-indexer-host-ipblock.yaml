@@ -1,0 +1,23 @@
+# Mirrors patch-host-ipblock.yaml's api-policy fix, for the indexer's own
+# egress rule (60-indexer-egress in base), which needs the same host-Ollama
+# reachability for embedding calls during a real (non---dummy) index run.
+# Captured live 2026-11-05 via:
+#   minikube ssh "grep host.minikube.internal /etc/hosts" | awk '{print $1}'
+# -> 192.168.65.254 on this host. Re-capture and replace on a different
+# machine or after a minikube/Docker Desktop network reset.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 60-indexer-egress
+  namespace: rahbar
+spec:
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: chroma}}
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector: {matchLabels: {app: redis}}
+      ports: [{protocol: TCP, port: 6379}]
+    - to:
+        - ipBlock: {cidr: 192.168.65.254/32}
+      ports: [{protocol: TCP, port: 11434}]

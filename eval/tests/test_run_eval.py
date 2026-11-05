@@ -7,7 +7,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from run_eval import citation_validity, gate, recall_at_k, summarise  # noqa: E402
+import httpx
+
+from run_eval import ask, citation_validity, gate, recall_at_k, summarise  # noqa: E402
 
 
 # ============================================================ recall_at_k
@@ -206,3 +208,53 @@ def test_multiple_failures_are_all_reported() -> None:                  # T-EVL-
                         citation_validity=0.5, recall_at_5=0.1),
                {"recall_at_5": 0.8})
     assert len(msgs) == 3
+
+
+# ============================================================ ask (transient-5xx retry)
+def test_ask_retries_once_on_a_transient_500_then_succeeds() -> None:   # T-EVL-26
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(500, json={"detail": "transient"})
+        return httpx.Response(200, json={"answer": "ok"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    result = ask(client, "http://api", "a question", retry_delay=0)
+    assert result == {"answer": "ok"}
+    assert calls["n"] == 2
+
+
+def test_ask_gives_up_after_max_retries_on_a_persistent_500() -> None:  # T-EVL-27
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(500, json={"detail": "still broken"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    try:
+        ask(client, "http://api", "a question", retry_delay=0)
+    except httpx.HTTPStatusError:
+        pass
+    else:
+        raise AssertionError("expected ask() to raise after exhausting retries")
+    assert calls["n"] == 3  # 1 original attempt + 2 retries
+
+
+def test_ask_does_not_retry_a_4xx() -> None:                            # T-EVL-28
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(422, json={"detail": "bad question"})
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    try:
+        ask(client, "http://api", "a question", retry_delay=0)
+    except httpx.HTTPStatusError:
+        pass
+    else:
+        raise AssertionError("expected ask() to raise on a 4xx")
+    assert calls["n"] == 1  # a client error is never transient - no point retrying it

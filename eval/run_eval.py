@@ -41,11 +41,27 @@ def load_golden(path: Path) -> list[dict]:
     return questions
 
 
-def ask(client: httpx.Client, api: str, question: str) -> dict:
-    """POST one question and return the AskResponse as a dict (see api/app/schemas.py)."""
-    response = client.post(f"{api.rstrip('/')}/api/ask", json={"question": question})
-    response.raise_for_status()
-    return response.json()
+def ask(client: httpx.Client, api: str, question: str,
+        max_retries: int = 2, retry_delay: float = 2.0) -> dict:
+    """POST one question and return the AskResponse as a dict (see api/app/schemas.py).
+
+    Retries a transient 5xx up to max_retries times (not 4xx - a client error on
+    one question will not fix itself by asking again). On a single development
+    laptop, host-level Ollama inference and the minikube VM share the same two
+    physical cores; a slow generation call can starve the api pod of real CPU
+    time long enough to fail a liveness probe mid-request, producing a genuine
+    but transient 500. Retrying the HTTP call is the correct response to that -
+    it does not change what recall_at_k, citation_validity or gate measure."""
+    attempt = 0
+    while True:
+        response = client.post(f"{api.rstrip('/')}/api/ask", json={"question": question})
+        if response.status_code >= 500 and attempt < max_retries:
+            attempt += 1
+            if retry_delay:
+                time.sleep(retry_delay)
+            continue
+        response.raise_for_status()
+        return response.json()
 
 
 def _norm_source(s: str) -> str:

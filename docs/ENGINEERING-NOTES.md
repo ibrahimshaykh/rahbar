@@ -119,33 +119,71 @@ container is throttled — slower, never killed.
 
 ## 5. recall@5 by question type: where is it worst, why, and which technique fixes it?
 
-The real per-type figures from a live run against the real corpus are
-`PENDING-HUMAN(P15-T05/T09)` — `eval/results.json` does not exist yet on
-this host, because scoring it needs a live Chroma instance and the pinned
-`nomic-embed-text` model, neither of which this development machine has.
+Real figures from a live run against the real indexed corpus (1117 chunks,
+`eval/results.json`, 2026-11-05):
 
-**Where it is expected to be worst, and why, stated without the number:**
-the `exact` question type (`eval/golden.yaml` q12, q13 — clause `1.21`'s
-20%-condonable-absence figure, and the Rs. 12,000 per-credit-hour fee). A
-dense embedding model encodes **topical, semantic** similarity; a clause
-number like `1.21` versus `1.12` differ by one digit that contributes
-almost nothing to a 768-dimension vector dominated by the surrounding
-prose's meaning, so two passages *about different clauses* can land closer
-together in embedding space than the question and its one correct clause
-do. We observed exactly this weakness surface twice independently during
-development: the chunking experiment (`docs/PIPELINE.md`) and the cache
-false-hit probe (pair P6, clause `1.21` vs `1.12`, `harness/
-09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6) are two different measurements of
-the same underlying blur.
+| type | n | recall@3 | recall@5 |
+|---|---|---|---|
+| `ordinary` | 9 | 0.333 | 0.333 |
+| **`version`** | 2 | **0.000** | **0.000** |
+| `exact` | 2 | 0.500 | 0.500 |
+| `abstain` | 2 | — (correctly excluded) | — |
+| `injection` | 1 | 0.000 | 1.000 |
 
-**The technique from the RAG lecture that addresses it:** hybrid
-retrieval — fusing a dense (embedding) search with a sparse keyword/BM25
-search over the raw chunk text, so a literal clause-number match is
-promoted by the keyword side regardless of where it lands in embedding
-space, typically combined via reciprocal rank fusion. We did not implement
-this (out of scope per `harness/02_HIGH_LEVEL_DESIGN.md` §13's explicit
-list of deliberate omissions); the assignment asks us to notice and name
-the gap, not close it.
+Overall: `recall_at_3 = 0.286`, `recall_at_5 = 0.357`, `citation_validity =
+1.0`, `abstention_correctness = 1.0`, `must_abstain_failures = []`.
+
+**The worst type is `version`, at exactly 0.0 — not `exact`, which we
+predicted before measuring and which actually did reasonably (0.5).** That
+prediction was wrong in an instructive way, so this answer keeps both: the
+wrong guess, and what we found by actually running it.
+
+**Why `version` is worst, diagnosed by re-asking both version questions
+directly and reading `retrieved[].source`:** q11 ("Under the previous 2023
+undergraduate academic rules, what did clause on attendance require?")
+retrieved five chunks — **all five from `academic-rules-handbook-jun-
+2026.pdf`, zero from `undergraduate-academic-rules-aug-2023.pdf`**, the
+document the question is actually asking about. This is not the
+`superseded` metadata filter excluding it: `VERSION_INTENT_PATTERN`
+(`api/app/services/abstain.py:22-26`) matches both `previous` and `2023` in
+that question, so `is_version_question()` returns `True` and
+`_where_clause()` does *not* filter out `superseded: true` chunks for this
+query — the 2023 document's chunks were eligible to be retrieved and still
+lost on pure cosine similarity. The real cause is a size imbalance
+compounding the embedding-blur problem from our original prediction: the
+2026 handbook was chunked into 312 pieces, the 2023 rules into only 122
+(`docs/PIPELINE.md`'s per-document chunk counts), so for any
+attendance-topic query the larger, current document simply has more
+candidate chunks clustered near that topic in embedding space, and a dense
+model that encodes **topic** far more strongly than **temporal framing**
+("previous", "2023") has no mechanism to prefer the smaller, correctly-
+versioned document over the larger, wrong-versioned one. q10, by contrast,
+asks about the *current* attendance rule and also scored 0 at both k — not
+a version-confusion failure this time but a plain top-5 miss: the real
+answer lives in section `1.21` of the handbook, and a different phrasing
+of the same real question earlier in this session (`docs/evidence/
+real_pipeline_first_answer.txt`) *did* retrieve `1.21` and answer `100%`
+attendance correctly, while golden's exact wording retrieved five
+different, lower-relevance passages from the same document instead and
+correctly abstained with `confidence: "low"` rather than guess. The same
+question, reworded, crosses the relevance floor one time and not the other
+— recall here is sensitive to phrasing, not just topic.
+
+**The technique from the RAG lecture that addresses both failure modes:**
+hybrid retrieval — fusing the dense (embedding) search with a sparse
+keyword/BM25 search over the raw chunk text, combined via reciprocal rank
+fusion. For `exact`-type questions this promotes a literal clause-number
+match regardless of where it lands in embedding space. For `version`-type
+questions specifically, the fix is more targeted: a metadata-boosted or
+two-stage retrieval that treats `doc_version` as a **hard filter candidate
+set** when the question names a year or "previous/prior" framing, querying
+within the matching-version document(s) first rather than letting a larger
+document's sheer chunk count dominate a single pooled similarity ranking
+across every version at once. We did not implement either (out of scope
+per `harness/02_HIGH_LEVEL_DESIGN.md` §13's explicit list of deliberate
+omissions); the assignment asks us to notice and name the gap, not close
+it — which this measurement, now run for real, does concretely rather than
+hypothetically.
 
 ## 6. `EMBED_MODEL` changed on the API only, restarted: what happens, and what would have happened without the guardrail?
 

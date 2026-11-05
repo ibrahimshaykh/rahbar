@@ -16,4 +16,5 @@ images:
 patches:
   - path: patch-config-dev.yaml
   - path: patch-host-ipblock.yaml
+  - path: patch-indexer-host-ipblock.yaml
   - path: patch-indexer-dummy.yaml
