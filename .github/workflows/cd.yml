@@ -137,9 +137,15 @@ jobs:
 
       - name: apply
         run: |
+          # `kustomize build` emits ConfigMap scalars UNQUOTED (LLM_PROVIDER:
+          # ollama-host, not LLM_PROVIDER: "ollama-host") - see the matching
+          # fix and explanation in .github/workflows/ci.yml's e2e-eval job.
+          # This ephemeral CD smoke-test cluster has no real Ollama reachable
+          # either, so LLM_PROVIDER and EMBED_MODEL need the same CI-safe,
+          # network-free swap: stub provider, deterministic ci-hash embedding.
           kustomize build k8s/overlays/prod \
-            | sed -e 's/LLM_PROVIDER: "ollama-host"/LLM_PROVIDER: "stub"/' \
-                  -e 's|EMBED_MODEL: "nomic-embed-text"|EMBED_MODEL: "ci-hash-256"|' \
+            | sed -e 's/LLM_PROVIDER: ollama-host/LLM_PROVIDER: stub/' \
+                  -e 's/EMBED_MODEL: nomic-embed-text/EMBED_MODEL: ci-hash-256/' \
             | kubectl apply -f -
 
       - name: wait for the data tier
