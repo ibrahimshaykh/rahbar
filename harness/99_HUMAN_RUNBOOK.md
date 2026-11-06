@@ -123,7 +123,7 @@ bash scripts/evidence/P00-T13_remote.sh
 in section 8. A private repository cannot be scanned by anyone who finds a
 leaked key.
 
-### 1.6 `[ ]` Docker Hub access token — **P14-T05**
+### 1.6 `[x]` Docker Hub access token — **P14-T05** — done live 2026-11-06, both secrets confirmed present in repo settings
 
 1. hub.docker.com → Account Settings → Security → **New Access Token**
 2. Description `rahbar-ci`, permissions **Read & Write**

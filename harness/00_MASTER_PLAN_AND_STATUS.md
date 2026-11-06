@@ -53,7 +53,7 @@ phase that is DONE or DONE-PENDING-HUMAN per `CLAUDE.md` §11.
 | P11 | Semantic cache and metrics | `T-CAC-*`, `T-MET-*` green; 9 metric families exposed | DONE |
 | P12 | Corpus acquisition | `corpus/MANIFEST.md` with ≥6 SHA-256 rows; `docs/CORPUS.md` ≥1200 chars, 7 properties mapped | DONE (P12-T02..T04 all done live this session — corpus fetched and verified, real `pdffonts` run via `rahbar-indexer:dev`) |
 | P13 | Golden set and eval engine | `golden.yaml` ≥15 questions; `T-EVL-*` green; no `NotImplementedError` in `run_eval.py` | DONE (P13-T06 done live, docs/evidence/eval_fixtures.txt) |
-| P14 | CI/CD pipelines | `ci.yml` + `cd.yml`; checker CI/CD section has 0 FAILs | DONE-PENDING-HUMAN (P14-T03..T05: GitHub Secrets, branch protection, the gate-failure PR demo) |
+| P14 | CI/CD pipelines | `ci.yml` + `cd.yml`; checker CI/CD section has 0 FAILs | DONE-PENDING-HUMAN (GitHub Secrets ✅ and branch protection ✅ both done 2026-11-06; only the gate-failure PR demo, `blocked_merge.png`, remains) |
 | P15 | Measurement and tuning | 3 chunking configs measured; 3 cache thresholds measured; `baseline.json` + `results.json` committed | DONE-PENDING-HUMAN (P15-T01, T02, T05, T07: every real measurement needs a live cluster + Ollama; the agent wrote the full table/narrative structure with `PENDING-HUMAN` placeholders) |
 | P16 | Failure injection and engineering notes | 4 of 6 stages broken and documented; `ENGINEERING-NOTES.md` ≥2000 chars, 7 answers with file:line | DONE-PENDING-HUMAN (P16-T01..T04, T06, T08..T10: all need a live cluster; P16-T07 additionally depends on P16-T06's measured number) |
 | P17 | ADRs, README, submission | 4 ADRs; README ≥2000 chars passing all 6 regexes; `make check` → 0 failures | IN PROGRESS (ADRs, ARCHITECTURE.md, AI-USAGE.md done; README rewrite, rubric audit pass and the final `make check` tally remain — current FAIL count 10, see §5) |
@@ -215,7 +215,7 @@ output pasted into §7 Run Log.
 
 - `[x]` **P14-T01** `[AGENT]` `.github/workflows/ci.yml` — 6 jobs per `08_CICD_WORKFLOW_SPEC.md`.
 - `[x]` **P14-T02** `[AGENT]` `.github/workflows/cd.yml` — 3 jobs, SHA tags, `needs:` chain.
-- `[ ]` **P14-T03** `[HUMAN]` Add GitHub Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`.
+- `[x]` **P14-T03** `[HUMAN]` Add GitHub Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`. Done live 2026-11-06 by the human partner: created a Docker Hub Read & Write access token (never the account password), added both as repository secrets under Settings → Secrets and variables → Actions. Confirmed present in the repo secrets list (values hidden, as expected).
 - `[x]` **P14-T04** `[HUMAN]` Configure branch protection on `main`; screenshot → **evidence file 2 of 5**. Done live 2026-11-06 by the human partner: all 8 settings ticked (PR required, 1 approval, dismiss stale approvals, all 6 named status checks, up-to-date-before-merge, conversation resolution, no bypass for admins, force-push/deletion both off). GitHub confirmed "Branch protection rule created." Screenshot of the saved rule page captured as `docs/evidence/branch_protection.png`; the 7 intermediate screenshots of the settings form kept as `docs/evidence/branch_protection_0{1..7}_*.png`. Rule currently shows "applies to 0 branches" because `main` has not been pushed to the remote yet (pending G-HUMAN-01 / P00-T13) — this is expected and will resolve the moment `main` exists on GitHub.
 - `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green.
 - `[x]` **P14-T06** `[AGENT]` Verify every publishing job has `needs:` at 4-space indent; verify no `:latest`.
@@ -450,7 +450,7 @@ those phases claim is genuinely true right now.
 | P12-T03 | `python corpus/fetch.py --verify` | done live, docs/evidence/corpus_verify.txt (9/9 match) | corpus integrity | `[x]` |
 | P12-T04 | `pdffonts <each pdf>` | done live, docs/evidence/pdffonts_real.txt (run via `docker run rahbar-indexer:dev`, which ships real `poppler-utils` — superseding the earlier pypdf-based substitute) | `docs/CORPUS.md`'s scan claim | `[x]` |
 | P13-T06 | `make dev` (terminal 1) then `make eval-fixtures` (terminal 2) | done live, docs/evidence/eval_fixtures.txt (exit=1 as predicted) | fixture-level eval confidence | `[x]` |
-| P14-T03 | add GitHub Secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` in repo settings | — (GitHub UI, not scriptable) | `cd.yml`'s build-push job | `[ ]` |
+| P14-T03 | add GitHub Secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` in repo settings | done live 2026-11-06 by human, confirmed present in repo secrets list | `cd.yml`'s build-push job | `[x]` |
 | P14-T04 | configure branch protection on `main` (require PR, require CI, require 1 approval); screenshot | done live 2026-11-06 by human, docs/evidence/branch_protection.png (+6 supporting screenshots) | **evidence file 2 of 5** | `[x]` |
 | P14-T05 | open a PR that fails the eval gate; screenshot the greyed-out merge button, then fix and screenshot green | — (GitHub UI, not scriptable) | **evidence file 3 of 5** | `[ ]` |
 | P15-T01 | `make index`; capture chunk count and duration | not yet written | `docs/PIPELINE.md`'s amplification figure | `[ ]` |
