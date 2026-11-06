@@ -227,14 +227,15 @@ install command from `99_HUMAN_RUNBOOK.md` §1, handed to the human.
 
 You may install **nothing** outside this table. Every version is pinned.
 
-**`api/requirements.txt`** — as shipped by the starter, unchanged:
-`fastapi==0.115.12`, `uvicorn==0.34.2`, `pydantic==2.11.4`, `httpx==0.28.1`,
-`prometheus-client==0.21.1`, `chromadb-client==1.0.12`, `posthog==5.4.0`,
-`redis==5.2.1`.
+**`api/requirements.txt`** — as shipped by the starter, except the security
+bump in Decision Log D-008:
+`fastapi==0.162.0`, `starlette==1.10.0`, `uvicorn==0.34.2`, `pydantic==2.11.4`,
+`httpx==0.28.1`, `prometheus-client==0.21.1`, `chromadb-client==1.0.12`,
+`posthog==5.4.0`, `redis==5.2.1`.
 
-**`indexer/requirements.txt`** — as shipped, unchanged:
+**`indexer/requirements.txt`** — as shipped, except the security bump in D-008:
 `chromadb-client==1.0.12`, `posthog==5.4.0`, `httpx==0.28.1`, `pyyaml==6.0.2`,
-`pdfplumber==0.11.6`, `pypdf==5.4.0`, `pytesseract==0.3.13`,
+`pdfplumber==0.11.10`, `pypdf==6.21.4`, `pytesseract==0.3.13`,
 `pdf2image==1.17.0`.
 
 **`api/requirements-dev.txt` and `indexer/requirements-dev.txt`** — the starter
