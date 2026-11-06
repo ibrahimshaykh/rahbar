@@ -216,7 +216,7 @@ output pasted into §7 Run Log.
 - `[x]` **P14-T01** `[AGENT]` `.github/workflows/ci.yml` — 6 jobs per `08_CICD_WORKFLOW_SPEC.md`.
 - `[x]` **P14-T02** `[AGENT]` `.github/workflows/cd.yml` — 3 jobs, SHA tags, `needs:` chain.
 - `[ ]` **P14-T03** `[HUMAN]` Add GitHub Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`.
-- `[ ]` **P14-T04** `[HUMAN]` Configure branch protection on `main`; screenshot → **evidence file 2 of 5**.
+- `[x]` **P14-T04** `[HUMAN]` Configure branch protection on `main`; screenshot → **evidence file 2 of 5**. Done live 2026-11-06 by the human partner: all 8 settings ticked (PR required, 1 approval, dismiss stale approvals, all 6 named status checks, up-to-date-before-merge, conversation resolution, no bypass for admins, force-push/deletion both off). GitHub confirmed "Branch protection rule created." Screenshot of the saved rule page captured as `docs/evidence/branch_protection.png`; the 7 intermediate screenshots of the settings form kept as `docs/evidence/branch_protection_0{1..7}_*.png`. Rule currently shows "applies to 0 branches" because `main` has not been pushed to the remote yet (pending G-HUMAN-01 / P00-T13) — this is expected and will resolve the moment `main` exists on GitHub.
 - `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green.
 - `[x]` **P14-T06** `[AGENT]` Verify every publishing job has `needs:` at 4-space indent; verify no `:latest`.
 
@@ -451,7 +451,7 @@ those phases claim is genuinely true right now.
 | P12-T04 | `pdffonts <each pdf>` | done live, docs/evidence/pdffonts_real.txt (run via `docker run rahbar-indexer:dev`, which ships real `poppler-utils` — superseding the earlier pypdf-based substitute) | `docs/CORPUS.md`'s scan claim | `[x]` |
 | P13-T06 | `make dev` (terminal 1) then `make eval-fixtures` (terminal 2) | done live, docs/evidence/eval_fixtures.txt (exit=1 as predicted) | fixture-level eval confidence | `[x]` |
 | P14-T03 | add GitHub Secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` in repo settings | — (GitHub UI, not scriptable) | `cd.yml`'s build-push job | `[ ]` |
-| P14-T04 | configure branch protection on `main` (require PR, require CI, require 1 approval); screenshot | — (GitHub UI, not scriptable) | **evidence file 2 of 5** | `[ ]` |
+| P14-T04 | configure branch protection on `main` (require PR, require CI, require 1 approval); screenshot | done live 2026-11-06 by human, docs/evidence/branch_protection.png (+6 supporting screenshots) | **evidence file 2 of 5** | `[x]` |
 | P14-T05 | open a PR that fails the eval gate; screenshot the greyed-out merge button, then fix and screenshot green | — (GitHub UI, not scriptable) | **evidence file 3 of 5** | `[ ]` |
 | P15-T01 | `make index`; capture chunk count and duration | not yet written | `docs/PIPELINE.md`'s amplification figure | `[ ]` |
 | P15-T02 | run configs A/B/C (400/50, 250/40, 700/80); capture recall@5 each | not yet written | `docs/PIPELINE.md`'s chunking table, `docs/adr/0002-chunking-strategy.md` | `[ ]` |
@@ -478,7 +478,7 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 | # | Artefact | Proves | Source task | Present |
 |---|---|---|---|---|
 | 1 | `endpoints_api.txt` | `kubectl get endpoints` lists 3 IPs | P05-T06 | `[x]` real, captured live this session |
-| 2 | `branch_protection.png` | `main` protected, PR + 1 approval + CI required | P14-T04 | `[ ]` GitHub Settings UI, needs a human click |
+| 2 | `branch_protection.png` | `main` protected, PR + 1 approval + CI required | P14-T04 | `[x]` real, captured live 2026-11-06 by the human partner — saved rule page confirms "Branch protection rule created" |
 | 3 | `blocked_merge.png` | the eval gate greys out the merge button | P14-T05 | `[ ]` needs an actual PR opened against CI |
 | 4 | `kubectl_top_indexer.txt` | real peak memory behind the Job's limit | P16-T06 | `[x]` real readings captured live; true single-snapshot peak still a refinement opportunity, see the file |
 | 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[x]` real `SuccessfulRescale` event captured, 3→5 replicas |

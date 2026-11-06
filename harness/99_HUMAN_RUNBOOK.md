@@ -478,7 +478,7 @@ values; `kubectl get endpoints api` with **no addresses**; then the restore and
 
 ## 8. CI/CD and submission — Phases 14 and 17
 
-### 8.1 `[ ]` Branch protection — **P14-T06** · evidence 2 of 5
+### 8.1 `[x]` Branch protection — **P14-T06** · evidence 2 of 5 — done live 2026-11-06, `docs/evidence/branch_protection.png`
 
 GitHub → Settings → Branches → Add rule, pattern `main`:
 
@@ -646,7 +646,7 @@ container. Status first, then events, then application output.**
 | 7.3 Rollout and undo | P16 | `[ ]` |
 | 7.4 The HPA percentage | P16 | `[ ]` |
 | 7.5 The pin refusal | P16 | `[ ]` |
-| 8.1 Branch protection | P14 | `[ ]` |
+| 8.1 Branch protection | P14 | `[x]` |
 | 8.2 The blocked merge | P14 | `[ ]` |
 | 8.3 The clean-clone rehearsal | P17 | `[ ]` |
 | 8.4 Repository visibility | P17 | `[ ]` |
