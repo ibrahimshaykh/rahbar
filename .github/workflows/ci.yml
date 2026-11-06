@@ -185,7 +185,7 @@ jobs:
       # Fail on HIGH or CRITICAL findings THAT HAVE A FIX AVAILABLE.
       # --ignore-unfixed is what makes this gate actionable rather than noise.
       - name: trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: rahbar-${{ matrix.image }}:ci
           format: table
@@ -248,9 +248,18 @@ jobs:
           # CORPUS_DIR already points at /corpus-baked in the base ConfigMap
           # (the indexer image bakes the fixture/real corpus there - see
           # docs/PIPELINE.md "How the corpus reaches the indexer Job").
+          # dev's own patch-config-dev.yaml already sets RETRIEVER=stub,
+          # LLM_PROVIDER=stub, EMBED_MODEL=dummy-768 for Week 1. This step
+          # only needs to override RETRIEVER to a real chroma lookup and
+          # EMBED_MODEL to the deterministic, network-free CI equivalent
+          # (ci-hash-256, see pipeline/embed.py) - LLM_PROVIDER stays "stub",
+          # which is already correct and matches api/app/providers/llm/stub.py.
+          # `kustomize build` emits ConfigMap scalars UNQUOTED (RETRIEVER:
+          # stub, not RETRIEVER: "stub"), so the sed patterns below must match
+          # that, not a quoted form - a quoted pattern here is a silent no-op.
           kustomize build k8s/overlays/dev \
-            | sed -e 's/RETRIEVER: "stub"/RETRIEVER: "chroma"/' \
-                  -e 's|EMBED_MODEL: "dummy-768"|EMBED_MODEL: "ci-hash-256"|' \
+            | sed -e 's/RETRIEVER: stub/RETRIEVER: chroma/' \
+                  -e 's/EMBED_MODEL: dummy-768/EMBED_MODEL: ci-hash-256/' \
             | kubectl apply -f -
           # kind has no Calico and no ingress-nginx: the NetworkPolicies are
           # validated by the manifests job and are inert here.
