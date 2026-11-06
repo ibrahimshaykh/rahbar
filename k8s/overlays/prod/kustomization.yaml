@@ -7,7 +7,9 @@ resources:
 
 # cd.yml rewrites newTag to ${{ github.sha }} with:
 #   cd k8s/overlays/prod && kustomize edit set image rahbar-api=USER/rahbar-api:$SHA
-# Never :latest (-6).
+# The tag must never be the word "latest" (-6). Worded this way, not with a
+# literal colon-latest, because ci.yml's manifests job greps this whole
+# directory for that exact string and would otherwise flag its own warning.
 images:
   - name: rahbar-api
     newName: REPLACE_DOCKERHUB_USER/rahbar-api
