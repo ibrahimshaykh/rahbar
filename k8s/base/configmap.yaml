@@ -20,7 +20,7 @@ data:
   CHROMA_COLLECTION: "rahbar"
 
   # --- retrieval
-  TOP_K: "5"
+  TOP_K: "1"
   # Below this cosine similarity nothing retrieved is relevant, so the service
   # abstains without calling the model. Measured in P15; see docs/PIPELINE.md.
   RELEVANCE_FLOOR: "0.35"
