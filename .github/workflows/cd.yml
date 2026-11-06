@@ -147,6 +147,12 @@ jobs:
             | sed -e 's/LLM_PROVIDER: ollama-host/LLM_PROVIDER: stub/' \
                   -e 's/EMBED_MODEL: nomic-embed-text/EMBED_MODEL: ci-hash-256/' \
             | kubectl apply -f -
+          # The overlay also applies a one-shot Job named `indexer`. The cd-index
+          # Job below writes the same Chroma collection, and two indexers running
+          # at once delete and recreate it under each other. This job waits on
+          # cd-index only, so remove the other one first (same class of race that
+          # broke ci.yml's e2e-eval intermittently).
+          kubectl delete job/indexer -n rahbar --ignore-not-found --wait=true
 
       - name: wait for the data tier
         run: |

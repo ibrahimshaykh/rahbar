@@ -273,6 +273,14 @@ jobs:
             | sed -e 's/RETRIEVER: stub/RETRIEVER: chroma/' \
                   -e 's/EMBED_MODEL: dummy-768/EMBED_MODEL: ci-hash-256/' \
             | kubectl apply -f -
+          # The dev overlay also applies a one-shot Job named `indexer` whose
+          # args are `--dummy`. It would write a 3-chunk collection stamped
+          # embed_model=dummy-768 into the SAME Chroma collection the real
+          # ci-index Job below writes. Whichever finishes last wins, and when the
+          # dummy one wins the api pins mismatch and never becomes Ready
+          # (run 42285248425: "collection indexed with 'dummy-768' but
+          # EMBED_MODEL is 'ci-hash-256'"). Remove it before Chroma is even up.
+          kubectl delete job/indexer -n rahbar --ignore-not-found --wait=true
           # kind has no Calico and no ingress-nginx: the NetworkPolicies are
           # validated by the manifests job and are inert here.
 
