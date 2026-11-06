@@ -13,6 +13,14 @@ from app.services.prompt import SYSTEM_PROMPT  # noqa: F401  (import sanity)
 def _clean(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("RETRIEVER", "stub")
     monkeypatch.setenv("LLM_PROVIDER", "stub")
+    # This file's cache assertions pass a FakeCache double directly into
+    # answer_question(), so caching here never touches real Redis - but
+    # answer_question() still gates all cache use on settings.cache_enabled.
+    # Force it true regardless of the ambient environment (CI's `test` job
+    # sets CACHE_ENABLED=false at the job level to keep the TestClient-based
+    # route tests from reaching a real Redis), so this file's own cache
+    # behaviour is never at the mercy of an unrelated job-level setting.
+    monkeypatch.setenv("CACHE_ENABLED", "true")
     reset_settings_cache()
     yield
     reset_settings_cache()
