@@ -189,10 +189,22 @@ jobs:
         with:
           image-ref: rahbar-${{ matrix.image }}:ci
           format: table
+          output: trivy-${{ matrix.image }}.txt
           exit-code: "1"
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           vuln-type: os,library
+      # The gate above still fails the job on any finding. This only copies the
+      # report to the run summary, because job logs need a GitHub sign-in to read.
+      - name: show the findings in the run summary
+        if: always()
+        run: |
+          {
+            echo "### trivy: ${{ matrix.image }}"
+            echo '```'
+            head -c 60000 trivy-${{ matrix.image }}.txt 2>/dev/null || echo "no report was written"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ----------------------------------------------------------- 6. e2e-eval
   e2e-eval:
