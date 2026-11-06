@@ -1,5 +1,8 @@
 # Pinned: an unpinned dependency is the drift problem from Lecture 04.
-fastapi==0.115.12
+fastapi==0.162.0
+# Pinned explicitly: fastapi no longer caps starlette, and 0.46.x carries three
+# HIGH CVEs (CVE-2025-62727, CVE-2026-48818, CVE-2026-54283) the CI trivy gate rejects.
+starlette==1.10.0
 uvicorn==0.34.2
 pydantic==2.11.4
 httpx==0.28.1
