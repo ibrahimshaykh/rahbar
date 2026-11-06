@@ -8,7 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # OCR needs system packages, not only pip packages:
 #   tesseract-ocr   - the OCR engine pytesseract drives
 #   poppler-utils   - pdftoppm, which pdf2image shells out to
+# `upgrade` first: the base image lags Debian's security updates, and the CI
+# trivy gate fails on any fixable HIGH/CRITICAL OS package.
 RUN apt-get update \
+ && apt-get upgrade -y \
  && apt-get install --no-install-recommends -y \
       tesseract-ocr \
       poppler-utils \

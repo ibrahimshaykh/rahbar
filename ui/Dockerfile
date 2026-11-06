@@ -1,5 +1,5 @@
 # nginx-unprivileged already runs as uid 101 and listens above 1024.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.30-alpine
 
 # ui/nginx.conf listens on 8080, writes only under /tmp, and logs to stdout.
 COPY nginx.conf /etc/nginx/nginx.conf
