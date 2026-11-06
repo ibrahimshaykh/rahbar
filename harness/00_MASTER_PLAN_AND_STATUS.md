@@ -217,7 +217,7 @@ output pasted into §7 Run Log.
 - `[x]` **P14-T02** `[AGENT]` `.github/workflows/cd.yml` — 3 jobs, SHA tags, `needs:` chain.
 - `[x]` **P14-T03** `[HUMAN]` Add GitHub Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`. Done live 2026-11-06 by the human partner: created a Docker Hub Read & Write access token (never the account password), added both as repository secrets under Settings → Secrets and variables → Actions. Confirmed present in the repo secrets list (values hidden, as expected).
 - `[x]` **P14-T04** `[HUMAN]` Configure branch protection on `main`; screenshot → **evidence file 2 of 5**. Done live 2026-11-06 by the human partner: all 8 settings ticked (PR required, 1 approval, dismiss stale approvals, all 6 named status checks, up-to-date-before-merge, conversation resolution, no bypass for admins, force-push/deletion both off). GitHub confirmed "Branch protection rule created." Screenshot of the saved rule page captured as `docs/evidence/branch_protection.png`; the 7 intermediate screenshots of the settings form kept as `docs/evidence/branch_protection_0{1..7}_*.png`. Rule currently shows "applies to 0 branches" because `main` has not been pushed to the remote yet (pending G-HUMAN-01 / P00-T13) — this is expected and will resolve the moment `main` exists on GitHub.
-- `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green.
+- `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green. Agent half done 2026-11-06: PR #2 (`demo/recall-gate`, current `dev` + `TOP_K: "1"`) ran CI run 42275830164: lint, test, manifests, build, scan x3 green; `e2e-eval` failed at the step "run the eval gate on the fixture golden set" (not an infrastructure step); `mergeable_state` is `blocked`. Remaining, human: browser screenshot of that PR page as `docs/evidence/blocked_merge.png`. Then the agent reverts `TOP_K`, the human screenshots green as `merge_allowed.png`, and PR #2 is closed unmerged.
 - `[x]` **P14-T06** `[AGENT]` Verify every publishing job has `needs:` at 4-space indent; verify no `:latest`.
 
 ### P15 — Measurement and tuning
@@ -432,6 +432,49 @@ L2, they are not reconstructed from memory; the sweep above is the real,
 current, independently-reproducible evidence that the cumulative state
 those phases claim is genuinely true right now.
 
+### 2026-11-06 · CI repair: the pipeline had never passed (P14 re-opened, then closed)
+
+**Finding.** P14-T01/T02 were ticked `[x]` on the strength of "YAML is valid,
+the checker passes, it works locally". Nobody opened the GitHub Actions
+results. Every `ci` run from #1 to #32 failed, each in under ~80 seconds, so
+`build`, `scan` and `e2e-eval` had never executed in earnest. Rule going
+forward: **a CI/CD task is done only when the run is green on GitHub**, with
+the run id recorded here.
+
+**Root causes, each reproduced locally before the fix (RED), then verified
+(GREEN):**
+
+| # | Where | Cause | Fix commit |
+|---|---|---|---|
+| 1 | `api/tests/test_answer.py` | three cache tests read `CACHE_ENABLED` from the ambient env; CI's `test` job sets it `false`, locally it defaults `true`. Local: 3 failed, 153 passed under the CI env | `d1c38fc` |
+| 2 | `k8s/overlays/prod/kustomization.yaml` | a comment containing the literal text of the forbidden image tag was matched by `ci.yml`'s own `! grep -rn` check | `787cb9f` |
+| 3 | `ci.yml` scan | `trivy-action@0.28.0` is not a tag (`v0.28.0` is); then `v0.28.0` pulled the deleted `setup-trivy@v0.2.1`; `v0.36.0` pins it by commit hash | `2250436`, `137f259` |
+| 4 | `ci.yml` e2e-eval, `cd.yml` deploy | `sed` patterns searched for quoted ConfigMap scalars; `kustomize build` emits them unquoted, so the CI-safe swap (`ci-hash-256`, stub LLM) never happened and the indexer Job tried to reach Ollama | `6b42279`, `9d898cd` |
+| 5 | image CVEs, trivy gate | ui: 63 fixable HIGH/CRITICAL on `nginx-unprivileged:1.27-alpine` (now `1.30-alpine` + `apk upgrade`, 0 left); indexer: apt (`apt-get upgrade`); pinned Python packages: 25 (3 starlette, 2 pdfminer.six, 20 pypdf), fixed by D-008 | `d1ebbbe`, `c2eaa22`, `f041e55` |
+| 6 | `eval/baseline.fixture.json` missing | `run_eval.py` skips the recall-drop check when no baseline exists, so the gate could not fail on a recall regression (`TOP_K=1` passed). Baseline measured under CI conditions: recall@5 0.8, recall@3 0.6, citation validity 1.0, abstention 1.0, identical in two runs; `TOP_K=1` then gives `GATE FAILED ... 0.800 -> 0.200`, exit 1 (`docs/evidence/fixture_baseline.txt`) | `88293f4` |
+
+**Verification.** Run 33 (`0fe9441`) and run 34 (`3721fb5`) on `dev`: all of
+lint, test, manifests, build, scan (api), scan (indexer), scan (ui), e2e-eval
+green. Local, after D-008: `pip check` clean; ruff clean; mypy `app` and
+`pipeline` clean; 156 api + 58 indexer + 27 eval tests pass; trivy 0.70.0
+(`--severity HIGH,CRITICAL --ignore-unfixed --pkg-types os,library`) reports 0
+on all three rebuilt images; `check_submission.py`: 165 passed, 2 warnings, 0
+failures.
+
+**Known intermittent failure, cause not yet found.** `e2e-eval` failed at
+step "wait for the api rollout" in runs 31 and 32 and passed in 29, 30, 33,
+34. `0fe9441` makes that job publish pod status, events and api/ui logs as
+`::error` annotations on failure, so the next occurrence is diagnosable
+without a GitHub sign-in.
+
+**Branch protection.** The required check `scan` never reports now that the
+job is a matrix; the human replaced it with `scan (api)`, `scan (indexer)`,
+`scan (ui)` on 2026-11-06.
+
+**Demo PR.** PR #1 (`demo/eval-gate-fails`) was cut before these fixes and was
+closed unmerged; PR #2 (`demo/recall-gate`) is current `dev` plus the single
+`TOP_K: "1"` line.
+
 ---
 
 ## 8. Pending-Human register
@@ -480,7 +523,7 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 |---|---|---|---|---|
 | 1 | `endpoints_api.txt` | `kubectl get endpoints` lists 3 IPs | P05-T06 | `[x]` real, captured live this session |
 | 2 | `branch_protection.png` | `main` protected, PR + 1 approval + CI required | P14-T04 | `[x]` real, captured live 2026-11-06 by the human partner — saved rule page confirms "Branch protection rule created" |
-| 3 | `blocked_merge.png` | the eval gate greys out the merge button | P14-T05 | `[ ]` needs an actual PR opened against CI |
+| 3 | `blocked_merge.png` | the eval gate greys out the merge button | P14-T05 | `[ ]` PR #2 is open and blocked (e2e-eval red at the recall gate); needs the browser screenshot from the human |
 | 4 | `kubectl_top_indexer.txt` | real peak memory behind the Job's limit | P16-T06 | `[x]` real readings captured live; true single-snapshot peak still a refinement opportunity, see the file |
 | 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[x]` real `SuccessfulRescale` event captured, 3→5 replicas |
 | 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[x]` real 503 from `/readyz` captured live |
