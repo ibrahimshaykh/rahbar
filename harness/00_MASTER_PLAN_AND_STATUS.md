@@ -79,7 +79,7 @@ output pasted into §7 Run Log.
 - `[x]` **P00-T10** `[AGENT]` `make check`; paste the full output; record the baseline failure count in §5.
 - `[x]` **P00-T11** `[AGENT]` `git init`; configure `user.name` / `user.email` from the HUMAN-INPUT block; `git add -A`; first commit `chore(repo): reconstruct starter kit tree`.
 - `[x]` **P00-T12** `[AGENT]` `git branch -M main && git checkout -b dev`. Verify `git branch` shows both.
-- `[ ]` **P00-T13** `[HUMAN]` Create the GitHub repo, add the remote, push `main` then `dev`. Capture: `scripts/evidence/P00-T13_remote.sh`.
+- `[x]` **P00-T13** `[HUMAN]` Create the GitHub repo, add the remote, push `main` then `dev`. Done: `origin` is https://github.com/ibrahimshaykh/rahbar.git, `dev` pushed throughout, `main` pushed 2026-11-06 (starter commit `779e6c7`, the PR base). Evidence: `docs/evidence/remote_push.txt`.
 - `[x]` **P00-T14** `[AGENT]` Commit `CLAUDE.md` and all 30 harness files under `harness/`.
 
 ### P01 — Contracts and configuration
@@ -482,7 +482,7 @@ closed unmerged; PR #2 (`demo/recall-gate`) is current `dev` plus the single
 | Task | One-liner for the human | Capture script | Consumed by | Done |
 |---|---|---|---|---|
 | G-HUMAN-01 | Fill both partners' real name/email, the GitHub repo URL and the Docker Hub username in `CLAUDE.md` §0 | — (hand-edit, not scriptable) | every task below that names a repo URL | `[x]` |
-| P00-T13 | `git remote add origin <repo-url> && git push -u origin main && git push -u origin dev` | `scripts/evidence/P00-T13_remote.sh` (not yet written — blocked on G-HUMAN-01) | README's repo link | `[ ]` |
+| P00-T13 | `git remote add origin <repo-url> && git push -u origin main && git push -u origin dev` | `scripts/evidence/P00-T13_remote.sh` (not yet written — blocked on G-HUMAN-01) | README's repo link | `[x]` done live, docs/evidence/remote_push.txt (origin exists; main and dev pushed) |
 | P02-T06 | `make images && docker images \| grep rahbar` | done live, docs/evidence/images_rahbar.txt (scripts/evidence/P02-T06_images.sh) | `docs/evidence/` | `[x]` |
 | P05-T01 | `make cluster && kubectl get nodes -o wide && minikube addons list` | done live, docs/evidence/cluster_up.txt | P05-T02..T06 | `[x]` |
 | P05-T02 | `make images && make apply && kubectl get all -n rahbar` | done live, docs/evidence/apply_all.txt | P05-T03..T06 | `[x]` |
@@ -497,18 +497,18 @@ closed unmerged; PR #2 (`demo/recall-gate`) is current `dev` plus the single
 | P14-T03 | add GitHub Secrets `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` in repo settings | done live 2026-11-06 by human, confirmed present in repo secrets list | `cd.yml`'s build-push job | `[x]` |
 | P14-T04 | configure branch protection on `main` (require PR, require CI, require 1 approval); screenshot | done live 2026-11-06 by human, docs/evidence/branch_protection.png (+6 supporting screenshots) | **evidence file 2 of 5** | `[x]` |
 | P14-T05 | open a PR that fails the eval gate; screenshot the greyed-out merge button, then fix and screenshot green | — (GitHub UI, not scriptable) | **evidence file 3 of 5** | `[ ]` |
-| P15-T01 | `make index`; capture chunk count and duration | not yet written | `docs/PIPELINE.md`'s amplification figure | `[ ]` |
-| P15-T02 | run configs A/B/C (400/50, 250/40, 700/80); capture recall@5 each | not yet written | `docs/PIPELINE.md`'s chunking table, `docs/adr/0002-chunking-strategy.md` | `[ ]` |
-| P15-T05 | sweep `CACHE_THRESHOLD` 0.80/0.90/0.95 against the nine-pair probe set | `scripts/evidence/P15-T05_cache_threshold.sh` (not yet written — spec text exists in `harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6) | `docs/PIPELINE.md`'s cache section | `[ ]` |
-| P15-T07 | `make eval` then `python eval/run_eval.py --update-baseline`; commit `baseline.json` + `results.json` | not yet written | the CI gate's own baseline | `[ ]` |
-| P16-T01 | `OCR_ENABLED=false`, re-index, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage A numbers | `[ ]` |
-| P16-T02 | `TOP_K=1`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage C numbers | `[ ]` |
+| P15-T01 | `make index`; capture chunk count and duration | not yet written | `docs/PIPELINE.md`'s amplification figure | `[x]` done live, docs/evidence/real_pipeline_first_answer.txt and the real index run (1,117 chunks) |
+| P15-T02 | run configs A/B/C (400/50, 250/40, 700/80); capture recall@5 each | not yet written | `docs/PIPELINE.md`'s chunking table, `docs/adr/0002-chunking-strategy.md` | `[x]` done live, eval/experiments/results-B.json, results-C.json (configs B, C; A is eval/baseline.json) |
+| P15-T05 | sweep `CACHE_THRESHOLD` 0.80/0.90/0.95 against the nine-pair probe set | `scripts/evidence/P15-T05_cache_threshold.sh` (not yet written — spec text exists in `harness/09_CORPUS_EVAL_AND_EVIDENCE_SPEC.md` §6) | `docs/PIPELINE.md`'s cache section | `[x]` done live, docs/evidence/cache_threshold_runs.txt |
+| P15-T07 | `make eval` then `python eval/run_eval.py --update-baseline`; commit `baseline.json` + `results.json` | not yet written | the CI gate's own baseline | `[x]` done live, eval/baseline.json, eval/results.json (real run, no placeholder tokens) |
+| P16-T01 | `OCR_ENABLED=false`, re-index, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage A numbers | `[x]` done live, eval/experiments/results-stageA.json, docs/evidence/failure_A_sample_answer.json |
+| P16-T02 | `TOP_K=1`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage C numbers | `[x]` done live, docs/evidence/failure_C.txt, eval/experiments/results-stageC.json |
 | P16-T03 | remove the superseded filter for one probe question, capture, revert | done live 2026-11-06, docs/evidence/stageE_*.json | `docs/FAILURE-ANALYSIS.md` stage E numbers | `[x]` |
-| P16-T04 | `TEMPERATURE=1.2`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage F numbers | `[ ]` |
-| P16-T06 | `kubectl top pods -n rahbar` during an index run | not yet written | **evidence file 4 of 5**; P16-T07's margin recompute | `[ ]` |
-| P16-T08 | `kubectl set image` → `rollout status` → `rollout undo` | not yet written | evidence | `[ ]` |
-| P16-T09 | `kubectl get hpa -n rahbar` showing a real percentage | not yet written | **evidence file 5 of 5** | `[ ]` |
-| P16-T10 | change `EMBED_MODEL`, restart, capture `0/1 READY` + conflict log | not yet written | `docs/ENGINEERING-NOTES.md` Q6's live demonstration | `[ ]` |
+| P16-T04 | `TEMPERATURE=1.2`, capture, restore | not yet written | `docs/FAILURE-ANALYSIS.md` stage F numbers | `[x]` done live, eval/experiments/results-stageF.json |
+| P16-T06 | `kubectl top pods -n rahbar` during an index run | not yet written | **evidence file 4 of 5**; P16-T07's margin recompute | `[x]` done live, docs/evidence/kubectl_top_indexer.txt |
+| P16-T08 | `kubectl set image` → `rollout status` → `rollout undo` | not yet written | evidence | `[x]` done live, docs/evidence/rollout_undo.txt |
+| P16-T09 | `kubectl get hpa -n rahbar` showing a real percentage | not yet written | **evidence file 5 of 5** | `[x]` done live, docs/evidence/hpa_status.txt |
+| P16-T10 | change `EMBED_MODEL`, restart, capture `0/1 READY` + conflict log | not yet written | `docs/ENGINEERING-NOTES.md` Q6's live demonstration | `[x]` done live, docs/evidence/pin_mismatch_not_ready.txt |
 | P17-T08 | `git clone` to `/tmp`, follow the rewritten README's apply order verbatim | done live 2026-11-06, docs/evidence/clean_clone_apply.txt | **evidence file 10 of 10** | `[x]` |
 | P17-T11 | PR `dev` → `main`, CI green, 1 approval, merge | — (GitHub UI, not scriptable) | submission | `[ ]` |
 | P17-T12 | submit on Google Classroom: repo URL, `cd.yml` run link, Docker Hub SHA-tag link | — (Google Classroom UI, not scriptable) | grading | `[ ]` |
@@ -527,7 +527,7 @@ The checker requires **≥5 files in `docs/evidence/`**. We ship ten.
 | 4 | `kubectl_top_indexer.txt` | real peak memory behind the Job's limit | P16-T06 | `[x]` real readings captured live; true single-snapshot peak still a refinement opportunity, see the file |
 | 5 | `hpa_status.txt` | HPA shows a real percentage, not `<unknown>` | P16-T09 | `[x]` real `SuccessfulRescale` event captured, 3→5 replicas |
 | 6 | `pin_mismatch_not_ready.txt` | api at `0/1 READY` + the conflict log line | P16-T10 | `[x]` real 503 from `/readyz` captured live |
-| 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[ ]` not yet run |
+| 7 | `rollout_undo.txt` | `set image` → `rollout status` → `rollout undo` | P16-T08 | `[x]` real, captured 2026-11-05 |
 | 8 | `pdffonts_real.txt` | the scanned PDF has an empty font list | P12-T04 | `[x]` real `pdffonts` output (run via the `rahbar-indexer:dev` image's own `poppler-utils`); supersedes the earlier `pdffonts_scan_proof.txt` pypdf-based substitute, which is kept for history |
 | 9 | `ui_answer.png` | a cited, grounded answer in the chat UI | P15-T07 | `[x]` real browser screenshot, captured 2026-11-06 against the live cluster's own Chroma index (1,117 passages) and host Ollama: the question "What CGPA puts a student on academic warning?" answered `less than 2.00`, citing `grading-page.html` / Warning/Probation p.1, with all five real retrieved passages and their real similarity scores (0.805 … 0.722) visible. The header's "passages indexed 1,117" badge in the same shot is read live from `/readyz`, not typed in |
 | 10 | `clean_clone_apply.txt` | the README order works from a fresh clone | P17-T08 | `[x]` run 2026-11-06 from a genuine `git clone` of the pushed `dev` branch into a scratch directory: dependencies install, all 241 tests pass (156 api + 58 indexer + 27 eval), `ruff` and both `mypy` runs are clean, and `kubectl apply -k k8s/overlays/dev` from that fresh tree applies cleanly. Two real findings recorded in the file itself - see the note below the table |
@@ -628,53 +628,39 @@ DONE-PENDING-HUMAN on that basis, not fully GREEN.
 ## 11. Handover
 
 ```
-LAST SESSION DID:   Closed every remaining [AGENT]-reachable task. Ran the last
-                    failure-injection drill, Stage E (P16-T03): the prediction
-                    was wrong in an instructive way - the superseded chunk did
-                    enter the top-5, but was never quoted; crowding a correct
-                    chunk out of the window instead made the model cite a real
-                    retrieved-but-unrelated chunk while stating a number present
-                    in no passage, which passes citation enforcement because
-                    enforcement only checks that a citation points at a retrieved
-                    chunk, not that the chunk supports the claim. Closed five
-                    [HUMAN] evidence tasks that this machine could actually run
-                    (P02-T06 images, P12-T02/T03 corpus fetch + verify, P12-T04
-                    with the REAL pdffonts via the indexer image's own
-                    poppler-utils, P13-T06 fixture run) and ticked P05-T01..T06,
-                    whose evidence was already real but unticked. Ran P17-T08,
-                    the clean-clone test, for real. Rebuilt the chat UI with the
-                    ui-ux-pro-max + frontend-design skills (custom SVG compass
-                    mark, live /readyz index stats, copy-answer, retry-on-error,
-                    theme toggle, score bars) with no new dependency and no
-                    change to the API contract or the innerHTML-free rendering,
-                    verified it in a real browser across light/dark/mobile and
-                    every answer state, and rolled the rebuilt image out to the
-                    cluster. Both remaining evidence files (ui_answer.png,
-                    clean_clone_apply.txt) are now real captures. Checker:
-                    0 failures. 38 non-merge commits.
-NEXT SESSION DOES:  Only human-gated work is left. G-HUMAN-01 is now CLEAR
-                    (partner B = Talha Sami, tlhaasami@gmail.com, filled
-                    2026-11-06; `grep -c '<<FILL' CLAUDE.md` -> 0). Branch
-                    protection on main (P14-T06) and both DOCKERHUB_USERNAME/
-                    DOCKERHUB_TOKEN secrets (P14-T03/T05) are both done, real,
-                    captured 2026-11-06 - docs/evidence/branch_protection.png
-                    +7 supporting shots. Remaining: (1) push the `main` branch
-                    - it exists locally at the starter commit 779e6c7 and is
-                    fully contained in dev, but `git push -u origin main` is
-                    refused by the agent's own safety classifier, so a human
-                    must run it; the final PR has no base until they do.
-                    (2) Add Talha as a GitHub collaborator on the repo - the
-                    agent's GitHub MCP toolset has no add-collaborator write
-                    call, confirmed by listing collaborators (currently just
-                    ibrahimshaykh); this needs Settings -> Collaborators and
-                    teams -> Add people, done by the human, from the GitHub UI.
-                    (3) The deliberate gate-failure PR with its two
-                    screenshots (P14-T05/T07, blocked_merge.png). (4) The real
-                    dev->main PR, CI green, one approval, merge. (5) Google
-                    Classroom submission.
-BLOCKED ON:         The `main` branch not existing on the remote (blocks
-                    P17-T11); Talha not yet added as a collaborator (no write
-                    tool available to the agent for this).
-FIRST COMMAND:      git push -u origin main    # creates the PR base; the agent
-                    is not permitted to push to main, so this one is yours
+LAST SESSION DID:   Found that CI had never passed (runs 1-32 all red) and
+                    repaired it for real: six root causes, each reproduced
+                    locally first (see section 7, "CI repair"). Upgraded four
+                    pinned packages for the trivy gate (D-008), fixed the ui and
+                    indexer images, measured eval/baseline.fixture.json
+                    (recall@5 0.8) so the recall gate can actually fail, and
+                    opened PR #2 (demo/recall-gate = dev + TOP_K=1): its
+                    e2e-eval fails at the eval-gate step and the PR is
+                    "blocked". Branch protection now requires scan (api),
+                    scan (indexer), scan (ui). Reconciled stale register rows
+                    against the evidence files. dev runs 33 and 34 fully green.
+NEXT SESSION DOES:  (1) Confirm the newest dev run (4c2fdd8 or later) is green:
+                    that run is the proof CI reproduces recall@5 0.8 with the
+                    committed baseline. If it fails at "run the eval gate", CI
+                    differs from the local measurement: read the results from
+                    the run, do not edit the baseline to fit. (2) PR #2: after
+                    the human saves docs/evidence/blocked_merge.png, revert
+                    TOP_K to "5" on demo/recall-gate, human screenshots green
+                    as merge_allowed.png, then close PR #2 UNMERGED. (3) Open
+                    the real dev -> main PR once Talha is a collaborator, wait
+                    for all checks green, he approves, the human merges,
+                    capture the cd.yml run URL and Docker Hub SHA tag.
+                    (4) Human submits on Google Classroom.
+                    If e2e-eval flakes at "wait for the api rollout" (it did in
+                    runs 31 and 32), the failure step now emits pods, events and
+                    api/ui logs as ::error annotations: read them.
+BLOCKED ON:         Talha Sami has not responded, so he is not a collaborator
+                    and cannot approve. Branch protection requires 1 approval
+                    and "do not allow bypassing" is on, so the final PR cannot
+                    merge without him. If he stays silent, the human must decide
+                    (a) wait, (b) add another collaborator who can approve, or
+                    (c) lower the required approvals for the merge and say so in
+                    the Decision Log. The agent has no tool to add collaborators.
+                    The deadline is 2026-11-08 23:59 PKT.
+FIRST COMMAND:      git fetch origin && git log --oneline -3 origin/dev
 ```

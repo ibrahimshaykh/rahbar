@@ -1,0 +1,16 @@
+# P00-T13 captured 2026-11-06T19:09:25Z
+# requirement: GN-02 - the repo exists on GitHub, main and dev are both pushed
+
+$ git remote -v
+origin	https://github.com/ibrahimshaykh/rahbar.git (fetch)
+origin	https://github.com/ibrahimshaykh/rahbar.git (push)
+
+$ git ls-remote --heads origin
+b6a1d0162c16eb40bbbb648ba5641f2a11a35bec	refs/heads/demo/eval-gate-fails
+a1006b58f5384cfb6cba1d270f00580f1ebd7273	refs/heads/demo/recall-gate
+4c2fdd87dbc7ca95c8ecfef5b4aaa54dfd160569	refs/heads/dev
+779e6c762e8326404a11bfc5bf7da1b7f9fb2355	refs/heads/main
+
+$ git rev-parse origin/main main
+779e6c762e8326404a11bfc5bf7da1b7f9fb2355
+779e6c762e8326404a11bfc5bf7da1b7f9fb2355
