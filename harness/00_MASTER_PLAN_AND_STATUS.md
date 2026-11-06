@@ -281,7 +281,7 @@ Every decision the agent makes that is not already written in a core spec.
 
 | ID | Blocked task | Gate | What unblocks it | Raised | Cleared |
 |---|---|---|---|---|---|
-| BLOCKED: G-HUMAN-01 | P00-T09 / P00-T13, and every `[HUMAN]` task below that needs a repo URL | `CLAUDE.md` §0 HUMAN-INPUT block | `grep -c '<<FILL' CLAUDE.md` currently returns `7`, not `0`. Both partners' real name/email, the GitHub repo URL and the Docker Hub username must be hand-filled per `CLAUDE.md` §0 before `P00-T13` (push) or `P17-T11/T12` (PR + submission) can run. This is explicitly the one hand-filled value in the entire harness and must never be guessed or invented. | 2026-11-05 | open |
+| BLOCKED: G-HUMAN-01 | P00-T09 / P00-T13, and every `[HUMAN]` task below that needs a repo URL | `CLAUDE.md` §0 HUMAN-INPUT block | `grep -c '<<FILL' CLAUDE.md` → `0`. Both partners' real name/email now hand-filled: partner B is Talha Sami (`tlhaasami@gmail.com`), confirmed by the human. Repo URL and Docker Hub username were already filled. Gate verified clear via the exact `grep -c '<<''FILL' CLAUDE.md` command from CLAUDE.md §0. | 2026-11-05 | **2026-11-06** |
 | BLOCKED: no infrastructure | every `[HUMAN]` task in §2 above | a cluster (minikube), Docker daemon, Ollama, a browser, or the real GitHub remote | none of Docker Desktop, minikube, a GPU/Ollama runtime, or an authenticated GitHub remote is reachable from this development host. Every `[HUMAN]` task is registered in §8 with its one-liner and, where one exists, its capture script under `scripts/evidence/`; they execute unmodified once the human runs them on a machine with that infrastructure. | 2026-11-04 | open |
 
 ---
@@ -437,7 +437,7 @@ those phases claim is genuinely true right now.
 
 | Task | One-liner for the human | Capture script | Consumed by | Done |
 |---|---|---|---|---|
-| G-HUMAN-01 | Fill both partners' real name/email, the GitHub repo URL and the Docker Hub username in `CLAUDE.md` §0 | — (hand-edit, not scriptable) | every task below that names a repo URL | `[ ]` |
+| G-HUMAN-01 | Fill both partners' real name/email, the GitHub repo URL and the Docker Hub username in `CLAUDE.md` §0 | — (hand-edit, not scriptable) | every task below that names a repo URL | `[x]` |
 | P00-T13 | `git remote add origin <repo-url> && git push -u origin main && git push -u origin dev` | `scripts/evidence/P00-T13_remote.sh` (not yet written — blocked on G-HUMAN-01) | README's repo link | `[ ]` |
 | P02-T06 | `make images && docker images \| grep rahbar` | done live, docs/evidence/images_rahbar.txt (scripts/evidence/P02-T06_images.sh) | `docs/evidence/` | `[x]` |
 | P05-T01 | `make cluster && kubectl get nodes -o wide && minikube addons list` | done live, docs/evidence/cluster_up.txt | P05-T02..T06 | `[x]` |
@@ -608,19 +608,29 @@ LAST SESSION DID:   Closed every remaining [AGENT]-reachable task. Ran the last
                     cluster. Both remaining evidence files (ui_answer.png,
                     clean_clone_apply.txt) are now real captures. Checker:
                     0 failures. 38 non-merge commits.
-NEXT SESSION DOES:  Only human-gated work is left. (1) Partner B's name/email to
-                    clear G-HUMAN-01. (2) Push the `main` branch - it exists
-                    locally at the starter commit 779e6c7 and is fully contained
-                    in dev, but `git push -u origin main` is refused by the
-                    agent's own safety classifier, so a human must run it; the
-                    final PR has no base until they do. (3) The GitHub-UI steps:
-                    branch protection on main, the DOCKERHUB_USERNAME/
-                    DOCKERHUB_TOKEN secrets, the deliberate gate-failure PR with
-                    its two screenshots, then the real dev->main PR, CI green,
-                    one approval, merge. (4) Google Classroom submission.
-BLOCKED ON:         Partner B's name/email (G-HUMAN-01, 2 <<FILL markers left).
-                    The `main` branch not existing on the remote, which blocks
-                    P17-T11 and P14-T04/T05 - see NEXT SESSION item (2).
+NEXT SESSION DOES:  Only human-gated work is left. G-HUMAN-01 is now CLEAR
+                    (partner B = Talha Sami, tlhaasami@gmail.com, filled
+                    2026-11-06; `grep -c '<<FILL' CLAUDE.md` -> 0). Branch
+                    protection on main (P14-T06) and both DOCKERHUB_USERNAME/
+                    DOCKERHUB_TOKEN secrets (P14-T03/T05) are both done, real,
+                    captured 2026-11-06 - docs/evidence/branch_protection.png
+                    +7 supporting shots. Remaining: (1) push the `main` branch
+                    - it exists locally at the starter commit 779e6c7 and is
+                    fully contained in dev, but `git push -u origin main` is
+                    refused by the agent's own safety classifier, so a human
+                    must run it; the final PR has no base until they do.
+                    (2) Add Talha as a GitHub collaborator on the repo - the
+                    agent's GitHub MCP toolset has no add-collaborator write
+                    call, confirmed by listing collaborators (currently just
+                    ibrahimshaykh); this needs Settings -> Collaborators and
+                    teams -> Add people, done by the human, from the GitHub UI.
+                    (3) The deliberate gate-failure PR with its two
+                    screenshots (P14-T05/T07, blocked_merge.png). (4) The real
+                    dev->main PR, CI green, one approval, merge. (5) Google
+                    Classroom submission.
+BLOCKED ON:         The `main` branch not existing on the remote (blocks
+                    P17-T11); Talha not yet added as a collaborator (no write
+                    tool available to the agent for this).
 FIRST COMMAND:      git push -u origin main    # creates the PR base; the agent
                     is not permitted to push to main, so this one is yours
 ```

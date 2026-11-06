@@ -18,8 +18,8 @@ partner_a:
   name:  "Ibrahim Ahmed"
   email: "ibrahimshaykh05@gmail.com"
 partner_b:
-  name:  "<<FILL: Partner B full name>>"
-  email: "<<FILL: Partner B GitHub account email>>"
+  name:  "Talha Sami"
+  email: "tlhaasami@gmail.com"
 github_repo_url: "https://github.com/ibrahimshaykh/rahbar"
 dockerhub_user:  "ibrahimshk"
 ```
