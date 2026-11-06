@@ -326,3 +326,10 @@ jobs:
           kubectl get pods -n rahbar -o wide
           kubectl describe pods -n rahbar | tail -120
           kubectl logs -n rahbar -l app=api --tail=200 --all-containers || true
+          # Job logs need a GitHub sign-in to read; annotations do not. Repeat the
+          # essentials as annotations so a failure can be diagnosed from the run page.
+          enc() { python3 -c 'import sys; t=sys.stdin.read()[-3500:]; print(t.replace("%","%25").replace("\r","").replace("\n","%0A"))'; }
+          echo "::error title=pods::$(kubectl get pods -n rahbar -o wide 2>&1 | enc)"
+          echo "::error title=events::$(kubectl get events -n rahbar --sort-by=.lastTimestamp 2>&1 | tail -30 | enc)"
+          echo "::error title=api logs::$(kubectl logs -n rahbar -l app=api --tail=25 --all-containers 2>&1 | enc)"
+          echo "::error title=ui logs::$(kubectl logs -n rahbar -l app=ui --tail=15 --all-containers 2>&1 | enc)"
