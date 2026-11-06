@@ -53,7 +53,7 @@ phase that is DONE or DONE-PENDING-HUMAN per `CLAUDE.md` §11.
 | P11 | Semantic cache and metrics | `T-CAC-*`, `T-MET-*` green; 9 metric families exposed | DONE |
 | P12 | Corpus acquisition | `corpus/MANIFEST.md` with ≥6 SHA-256 rows; `docs/CORPUS.md` ≥1200 chars, 7 properties mapped | DONE (P12-T02..T04 all done live this session — corpus fetched and verified, real `pdffonts` run via `rahbar-indexer:dev`) |
 | P13 | Golden set and eval engine | `golden.yaml` ≥15 questions; `T-EVL-*` green; no `NotImplementedError` in `run_eval.py` | DONE (P13-T06 done live, docs/evidence/eval_fixtures.txt) |
-| P14 | CI/CD pipelines | `ci.yml` + `cd.yml`; checker CI/CD section has 0 FAILs | DONE-PENDING-HUMAN (GitHub Secrets ✅ and branch protection ✅ both done 2026-11-06; only the gate-failure PR demo, `blocked_merge.png`, remains) |
+| P14 | CI/CD pipelines | `ci.yml` + `cd.yml`; checker CI/CD section has 0 FAILs | DONE-PENDING-HUMAN (secrets, branch protection and `blocked_merge.png` done; CI green on dev and PR #3; only the `merge_allowed.png` screenshot of PR #3 remains) |
 | P15 | Measurement and tuning | 3 chunking configs measured; 3 cache thresholds measured; `baseline.json` + `results.json` committed | DONE-PENDING-HUMAN (P15-T01, T02, T05, T07: every real measurement needs a live cluster + Ollama; the agent wrote the full table/narrative structure with `PENDING-HUMAN` placeholders) |
 | P16 | Failure injection and engineering notes | 4 of 6 stages broken and documented; `ENGINEERING-NOTES.md` ≥2000 chars, 7 answers with file:line | DONE-PENDING-HUMAN (P16-T01..T04, T06, T08..T10: all need a live cluster; P16-T07 additionally depends on P16-T06's measured number) |
 | P17 | ADRs, README, submission | 4 ADRs; README ≥2000 chars passing all 6 regexes; `make check` → 0 failures | IN PROGRESS (ADRs, ARCHITECTURE.md, AI-USAGE.md done; README rewrite, rubric audit pass and the final `make check` tally remain — current FAIL count 10, see §5) |
@@ -217,7 +217,7 @@ output pasted into §7 Run Log.
 - `[x]` **P14-T02** `[AGENT]` `.github/workflows/cd.yml` — 3 jobs, SHA tags, `needs:` chain.
 - `[x]` **P14-T03** `[HUMAN]` Add GitHub Secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`. Done live 2026-11-06 by the human partner: created a Docker Hub Read & Write access token (never the account password), added both as repository secrets under Settings → Secrets and variables → Actions. Confirmed present in the repo secrets list (values hidden, as expected).
 - `[x]` **P14-T04** `[HUMAN]` Configure branch protection on `main`; screenshot → **evidence file 2 of 5**. Done live 2026-11-06 by the human partner: all 8 settings ticked (PR required, 1 approval, dismiss stale approvals, all 6 named status checks, up-to-date-before-merge, conversation resolution, no bypass for admins, force-push/deletion both off). GitHub confirmed "Branch protection rule created." Screenshot of the saved rule page captured as `docs/evidence/branch_protection.png`; the 7 intermediate screenshots of the settings form kept as `docs/evidence/branch_protection_0{1..7}_*.png`. Rule currently shows "applies to 0 branches" because `main` has not been pushed to the remote yet (pending G-HUMAN-01 / P00-T13) — this is expected and will resolve the moment `main` exists on GitHub.
-- `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green. Agent half done 2026-11-06: PR #2 (`demo/recall-gate`, current `dev` + `TOP_K: "1"`) ran CI run 42275830164: lint, test, manifests, build, scan x3 green; `e2e-eval` failed at the step "run the eval gate on the fixture golden set" (not an infrastructure step); `mergeable_state` is `blocked`. `docs/evidence/blocked_merge.png` captured 2026-11-07. `TOP_K` reverted on `demo/recall-gate` (commit f4f0fde, file hash back to the original). Remaining: human screenshot of the green checks as `merge_allowed.png` (the merge button will still be disabled by the 1-approval rule; the point is every required check green), then close PR #2 unmerged.
+- `[ ]` **P14-T05** `[HUMAN]` Open a PR that fails the eval gate; screenshot the blocked merge → **evidence file 3 of 5**; then fix and screenshot green. Agent half done 2026-11-06: PR #2 (`demo/recall-gate`, current `dev` + `TOP_K: "1"`) ran CI run 42275830164: lint, test, manifests, build, scan x3 green; `e2e-eval` failed at the step "run the eval gate on the fixture golden set" (not an infrastructure step); `mergeable_state` is `blocked`. `docs/evidence/blocked_merge.png` captured 2026-11-07. `TOP_K` reverted on `demo/recall-gate` (commit f4f0fde, file hash back to the original). PR #2 was closed unmerged 2026-11-07 (its re-run hit cause 7, unrelated to recall). The green capture now comes from the real PR #3 (`dev` -> `main`), whose checks are all green and `mergeable_state` is `blocked` only by the 1-approval rule. Remaining, human: screenshot of PR #3's checks box as `docs/evidence/merge_allowed.png`.
 - `[x]` **P14-T06** `[AGENT]` Verify every publishing job has `needs:` at 4-space indent; verify no `:latest`.
 
 ### P15 — Measurement and tuning
@@ -452,6 +452,7 @@ the run id recorded here.
 | 4 | `ci.yml` e2e-eval, `cd.yml` deploy | `sed` patterns searched for quoted ConfigMap scalars; `kustomize build` emits them unquoted, so the CI-safe swap (`ci-hash-256`, stub LLM) never happened and the indexer Job tried to reach Ollama | `6b42279`, `9d898cd` |
 | 5 | image CVEs, trivy gate | ui: 63 fixable HIGH/CRITICAL on `nginx-unprivileged:1.27-alpine` (now `1.30-alpine` + `apk upgrade`, 0 left); indexer: apt (`apt-get upgrade`); pinned Python packages: 25 (3 starlette, 2 pdfminer.six, 20 pypdf), fixed by D-008 | `d1ebbbe`, `c2eaa22`, `f041e55` |
 | 6 | `eval/baseline.fixture.json` missing | `run_eval.py` skips the recall-drop check when no baseline exists, so the gate could not fail on a recall regression (`TOP_K=1` passed). Baseline measured under CI conditions: recall@5 0.8, recall@3 0.6, citation validity 1.0, abstention 1.0, identical in two runs; `TOP_K=1` then gives `GATE FAILED ... 0.800 -> 0.200`, exit 1 (`docs/evidence/fixture_baseline.txt`) | `88293f4` |
+| 7 | `ci.yml` e2e-eval (and `cd.yml` deploy) | the dev overlay applies a one-shot Job named `indexer` with `--dummy` next to the CronJob `reindex`; CI also runs `ci-index` from the CronJob (real pipeline, `ci-hash-256`). Both write the same Chroma collection and `pipeline/dummy.py` hardcodes `embed_model=dummy-768`, so the later writer wins; when the dummy one won, the api pin check failed and the rollout timed out. This was the "intermittent" failure of runs 31, 32 and PR 2 run 42285248425. Evidence: the api-logs `::error` annotation read `collection indexed with 'dummy-768' but EMBED_MODEL is 'ci-hash-256'; re-index or revert the ConfigMap` and the pod showed `0/1 Running 3 restarts`. Fix: `kubectl delete job/indexer -n rahbar --ignore-not-found --wait=true` right after the apply, in both workflows | `a9007db` |
 
 **Verification.** Run 33 (`0fe9441`) and run 34 (`3721fb5`) on `dev`: all of
 lint, test, manifests, build, scan (api), scan (indexer), scan (ui), e2e-eval
@@ -463,11 +464,7 @@ failures.
 
 **CI reproduces the baseline.** Run 39 (`53a0b8e`, id 42277217698) on `dev` succeeded in 6m 41s, every job green, with `eval/baseline.fixture.json` (recall@5 0.8, measured locally) committed: `e2e-eval` passed the recall gate on GitHub's runner. The inverse is shown by PR #2 (run 42275830164): same code with `TOP_K: "1"`, `e2e-eval` failed at the step "run the eval gate on the fixture golden set", PR `mergeable_state` `blocked`. Runs 35 and 38 were cancelled by later pushes (the workflow cancels older runs on the same ref), not failures.
 
-**Known intermittent failure, cause not yet found.** `e2e-eval` failed at
-step "wait for the api rollout" in runs 31 and 32 and passed in 29, 30, 33,
-34. `0fe9441` makes that job publish pod status, events and api/ui logs as
-`::error` annotations on failure, so the next occurrence is diagnosable
-without a GitHub sign-in.
+**The intermittent failure is explained and fixed (cause 7 above).** `e2e-eval` failed at "wait for the api rollout" in runs 31, 32 and PR 2's re-run and passed in 29, 30, 33, 34, 39; `0fe9441` made the job publish pod status, events and api/ui logs as `::error` annotations, which is how the cause was read. After `a9007db`: dev run 43 (id 42287496992, 6m 27s) and both CI runs on PR #3 (ids 42287496992 and 42287559473) are green in all eight jobs.
 
 **Branch protection.** The required check `scan` never reports now that the
 job is a matrix; the human replaced it with `scan (api)`, `scan (indexer)`,
@@ -637,8 +634,11 @@ LAST SESSION DID:   Found that CI had never passed (runs 1-32 all red) and
                     indexer images, measured eval/baseline.fixture.json
                     (recall@5 0.8) so the recall gate can actually fail, and
                     opened PR #2 (demo/recall-gate = dev + TOP_K=1): its
-                    e2e-eval fails at the eval-gate step and the PR is
-                    "blocked". Branch protection now requires scan (api),
+                    e2e-eval failed at the eval-gate step and the PR was
+                    "blocked" (blocked_merge.png); PR #2 is now closed.
+                    Found and fixed the intermittent e2e-eval failure (two
+                    indexers racing, cause 7, a9007db). The real PR is #3
+                    (dev -> main): all checks green, blocked only by approval. Branch protection now requires scan (api),
                     scan (indexer), scan (ui). Reconciled stale register rows
                     against the evidence files. dev runs 33 and 34 fully green.
 NEXT SESSION DOES:  (1) Confirm the newest dev run (4c2fdd8 or later) is green:
