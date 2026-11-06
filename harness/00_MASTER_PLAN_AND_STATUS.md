@@ -461,6 +461,8 @@ green. Local, after D-008: `pip check` clean; ruff clean; mypy `app` and
 on all three rebuilt images; `check_submission.py`: 165 passed, 2 warnings, 0
 failures.
 
+**CI reproduces the baseline.** Run 39 (`53a0b8e`, id 42277217698) on `dev` succeeded in 6m 41s, every job green, with `eval/baseline.fixture.json` (recall@5 0.8, measured locally) committed: `e2e-eval` passed the recall gate on GitHub's runner. The inverse is shown by PR #2 (run 42275830164): same code with `TOP_K: "1"`, `e2e-eval` failed at the step "run the eval gate on the fixture golden set", PR `mergeable_state` `blocked`. Runs 35 and 38 were cancelled by later pushes (the workflow cancels older runs on the same ref), not failures.
+
 **Known intermittent failure, cause not yet found.** `e2e-eval` failed at
 step "wait for the api rollout" in runs 31 and 32 and passed in 29, 30, 33,
 34. `0fe9441` makes that job publish pod status, events and api/ui logs as
