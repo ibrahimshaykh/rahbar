@@ -166,7 +166,7 @@ runs through (cache lookup -> retrieve -> relevance floor -> prompt -> generate
 | Document | What it answers |
 | --- | --- |
 | `docs/CORPUS.md` | Where the documents came from, and how each of the assignment's seven required corpus properties is satisfied |
-| `docs/PIPELINE.md` | Every indexing-stage decision (chunk size/overlap, embedding, storage, caching) with real measured evidence or an explicit `PENDING-HUMAN` marker where this development host lacks the infrastructure to measure it |
+| `docs/PIPELINE.md` | Every indexing-stage decision (chunk size/overlap, embedding, storage, caching) with the measured evidence behind each choice |
 | `docs/FAILURE-ANALYSIS.md` | Four deliberately injected failures (extraction, retrieval, source/versioning, generation), each diagnosed as if the cause were unknown |
 | `docs/ENGINEERING-NOTES.md` | Seven architecture/operations questions, each answered with a real `file:line` citation |
 | `docs/ARCHITECTURE.md` | The full object inventory, the NetworkPolicy matrix, the readiness state machine, the embedding-pin mechanism |
@@ -175,17 +175,11 @@ runs through (cache lookup -> retrieve -> relevance floor -> prompt -> generate
 
 ## A note on honesty in this submission
 
-Several numeric figures and cluster artifacts in `docs/` are marked
-`PENDING-HUMAN(<task>)` rather than filled with a plausible-looking guess.
-This development environment has no Docker daemon, no Kubernetes cluster, no
-Ollama runtime and no authenticated GitHub remote; every figure that
-genuinely requires one of those is left as an explicit, searchable token
-naming the exact task that will produce it (see `CLAUDE.md` Law L1 and
-`harness/00_MASTER_PLAN_AND_STATUS.md` §8, the Pending-Human register) rather
-than fabricated. `scripts/evidence/*.sh` under `scripts/` are ready-to-run
-capture scripts for exactly those steps.
+Every figure in `docs/` was produced by a real command, and the raw output is
+in `docs/evidence/` or `eval/`. Where a number could not be measured, the
+document says so in words. Figures that could only come from a cluster, Docker
+or Ollama were captured on the team's own machine with the scripts under
+`scripts/evidence/`. The AI tools used to build this are disclosed in
+`docs/AI-USAGE.md`.
 
-<!-- screenshot: PENDING-HUMAN(P17-T08) - a clean-clone apply, then a cited
-     answer in the chat UI, captured from a real cluster and saved to
-     docs/evidence/ui_answer.png, to be embedded here as
-     ![cited answer in the chat UI](docs/evidence/ui_answer.png) -->
+![a cited answer in the chat UI](docs/evidence/ui_answer.png)

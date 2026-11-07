@@ -77,7 +77,7 @@ spec:
               command: ["redis-cli", "ping"]
             periodSeconds: 10
             failureThreshold: 3
-          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+          resources:                     # starting estimate, not separately measured
             requests:
               cpu: 50m
               memory: 64Mi

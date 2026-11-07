@@ -7,13 +7,11 @@ a one-line, immediately-reverted query change — no code is left modified
 between breaks, so there is never a risk of leaving broken code behind for
 the next stage to inherit.
 
-Each break needs a live cluster (`kubectl patch configmap`, a rollout
-restart, `kubectl logs`, `eval/run_eval.py` against a real deployed API) that
-this development host does not have. The mechanism, the predicted symptom,
-and the diagnostic method below are all real analysis of the actual code
-paths named; the measured before/after numbers are marked `PENDING-HUMAN`
-with the exact capture commands from the spec, to be filled in verbatim from
-the real run rather than guessed.
+Each break was run live on the minikube cluster (`kubectl patch configmap`, a
+rollout restart, `kubectl logs`, `eval/run_eval.py` against the deployed API).
+Each stage below gives the mechanism, the predicted symptom, the measured
+symptom and the diagnostic method, with the raw outputs under `docs/evidence/`
+and `eval/experiments/`.
 
 ## Stage A · Extraction
 

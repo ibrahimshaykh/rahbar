@@ -1,4 +1,4 @@
-# PENDING-HUMAN(P16-T07): values from docs/evidence/kubectl_top_indexer.txt
+# same values as the base manifest; the one measured figure is the indexer peak in docs/evidence/kubectl_top_indexer.txt
 apiVersion: apps/v1
 kind: Deployment
 metadata:
