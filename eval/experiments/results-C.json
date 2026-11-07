@@ -1,0 +1,40 @@
+{
+  "recall_at_3": 0.2857142857142857,
+  "recall_at_5": 0.35714285714285715,
+  "citation_validity": 1.0,
+  "abstention_correctness": 1.0,
+  "answered_count": 11,
+  "abstained_count": 5,
+  "by_type": {
+    "ordinary": {
+      "n": 9,
+      "recall_at_3": 0.3333333333333333,
+      "recall_at_5": 0.3333333333333333
+    },
+    "version": {
+      "n": 2,
+      "recall_at_3": 0.0,
+      "recall_at_5": 0.0
+    },
+    "exact": {
+      "n": 2,
+      "recall_at_3": 0.5,
+      "recall_at_5": 0.5
+    },
+    "abstain": {
+      "n": 2,
+      "recall_at_3": null,
+      "recall_at_5": null
+    },
+    "injection": {
+      "n": 1,
+      "recall_at_3": 0.0,
+      "recall_at_5": 1.0
+    }
+  },
+  "must_abstain_failures": [],
+  "citation_failures": [],
+  "mean_seconds": 38.128750000000004,
+  "golden": "C:\\Users\\Ibrahim\\Desktop\\SD assignmnet 2\\eval\\golden.yaml",
+  "questions": 16
+}

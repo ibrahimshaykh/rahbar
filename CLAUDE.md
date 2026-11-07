@@ -15,20 +15,25 @@ the entire harness. Do not guess it; do not invent names or emails.
 ```yaml
 # HUMAN-INPUT: fill both rows, then delete nothing else from this block.
 partner_a:
-  name:  "<<FILL: Partner A full name>>"
-  email: "<<FILL: Partner A GitHub account email>>"
+  name:  "Ibrahim Ahmed"
+  email: "ibrahimshaykh05@gmail.com"
 partner_b:
-  name:  "<<FILL: Partner B full name>>"
-  email: "<<FILL: Partner B GitHub account email>>"
-github_repo_url: "<<FILL: https://github.com/<owner>/<repo>>>"
-dockerhub_user:  "<<FILL: Docker Hub username>>"
+  name:  "Talha Sami"
+  email: "tlhaasami@gmail.com"
+github_repo_url: "https://github.com/ibrahimshaykh/rahbar"
+dockerhub_user:  "ibrahimshk"
 ```
 
 **Gate G-HUMAN-01.** Before any commit in Phase 00 task `P00-T09`, run:
 
 ```bash
-grep -c '<<FILL' CLAUDE.md
+grep -c '<<''FILL' CLAUDE.md
 ```
+
+(Written as two concatenated quoted strings so this instruction does not
+itself contain the literal placeholder marker and self-match; bash
+concatenates adjacent quoted strings with no space between them, so this
+runs identically to the unescaped single-string form of this same command.)
 
 If the result is anything other than `0`, stop Phase 00, write
 `BLOCKED: G-HUMAN-01` into the Blocked register in
@@ -222,14 +227,15 @@ install command from `99_HUMAN_RUNBOOK.md` §1, handed to the human.
 
 You may install **nothing** outside this table. Every version is pinned.
 
-**`api/requirements.txt`** — as shipped by the starter, unchanged:
-`fastapi==0.115.12`, `uvicorn==0.34.2`, `pydantic==2.11.4`, `httpx==0.28.1`,
-`prometheus-client==0.21.1`, `chromadb-client==1.0.12`, `posthog==5.4.0`,
-`redis==5.2.1`.
+**`api/requirements.txt`** — as shipped by the starter, except the security
+bump in Decision Log D-008:
+`fastapi==0.162.0`, `starlette==1.10.0`, `uvicorn==0.34.2`, `pydantic==2.11.4`,
+`httpx==0.28.1`, `prometheus-client==0.21.1`, `chromadb-client==1.0.12`,
+`posthog==5.4.0`, `redis==5.2.1`.
 
-**`indexer/requirements.txt`** — as shipped, unchanged:
+**`indexer/requirements.txt`** — as shipped, except the security bump in D-008:
 `chromadb-client==1.0.12`, `posthog==5.4.0`, `httpx==0.28.1`, `pyyaml==6.0.2`,
-`pdfplumber==0.11.6`, `pypdf==5.4.0`, `pytesseract==0.3.13`,
+`pdfplumber==0.11.10`, `pypdf==6.21.4`, `pytesseract==0.3.13`,
 `pdf2image==1.17.0`.
 
 **`api/requirements-dev.txt` and `indexer/requirements-dev.txt`** — the starter
@@ -278,7 +284,7 @@ Run every command from the **repository root** unless the table says otherwise.
 | Manifest validation (dev) | `kustomize build k8s/overlays/dev \| kubeconform -strict -summary -ignore-missing-schemas` | `0 invalid` |
 | Submission checker | `make check` | failure count must never increase |
 | Checker, failures only | `python3 scripts/check_submission.py \| grep FAIL` | |
-| Find starter leftovers | `grep -rn STARTER-TODO --exclude-dir=.venv --exclude-dir=.git .` | must end empty (excluding `STARTER.md`) |
+| Find starter leftovers | `grep -rn 'STARTER''-TODO' --exclude-dir=.venv --exclude-dir=.git .` | must end empty (excluding `STARTER.md`) |
 | Find stubs | `grep -rn 'raise NotImplementedError' --include='*.py' --exclude-dir=.venv .` | must end empty |
 | Build images | `make images` | `[HUMAN]` — needs Docker |
 | Apply dev overlay | `make apply` | `[HUMAN]` — needs a cluster |

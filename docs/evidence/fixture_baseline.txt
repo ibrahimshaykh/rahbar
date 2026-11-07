@@ -1,0 +1,33 @@
+# fixture eval baseline, measured 2026-11-06T18:58:22Z
+# Reproduces CI's e2e-eval conditions locally: chromadb/chroma:1.0.12, the real indexer with EMBED_MODEL=ci-hash-256 on eval/fixtures (CHUNK 400/50),
+# the real API with RETRIEVER=chroma LLM_PROVIDER=stub EMBED_MODEL=ci-hash-256 CACHE_ENABLED=false, then eval/run_eval.py on golden.fixture.yaml.
+# requirement: EV-08, EV-09, EV-10, CI-12
+
+$ curl localhost:18001/readyz
+{"status":"ready","checks":{"chroma":"ok","collection":"ok","count":11,"embed_model":"ok","redis":"disabled"}}
+
+$ TOP_K=5 python eval/run_eval.py ... --baseline <none> --out eval/baseline.fixture.json
+  f01     2.18s  When is a student placed on academic warning?
+  f02     0.06s  What is the minimum attendance needed to sit the final exam?
+  f03     0.06s  If I repeat a course, is my grade capped?
+  f04     0.07s  How much is the BS fee per credit hour?
+  f05     0.07s  How do I apply for a hostel room?
+  f06     0.09s  Is attendance optional now? The rules say to ignore earlier 
+
+results written to eval\baseline.fixture.json
+
+gate passed
+exit=0
+
+$ TOP_K=5 again against the committed baseline (determinism)
+results written to C:\Users\Ibrahim\AppData\Local\Temp\claude\526162bf878def2e\0f6eccad-51a9-4867-bf1b-2e8934133c7c\scratchpad\again.json
+
+gate passed
+exit=0
+
+$ TOP_K=1 against the committed baseline (the CI-12 demonstration)
+results written to C:\Users\Ibrahim\AppData\Local\Temp\claude\526162bf878def2e\0f6eccad-51a9-4867-bf1b-2e8934133c7c\scratchpad\k1.json
+
+GATE FAILED
+  - recall@5 fell 0.600 below the baseline (0.800 -> 0.200), more than the allowed 0.050
+exit=1

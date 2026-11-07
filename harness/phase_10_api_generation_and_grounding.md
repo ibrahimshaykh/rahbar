@@ -2,7 +2,7 @@
 
 **Goal.** The augmented prompt, both real providers with constrained decoding,
 validate-retry-fallback, mechanical citation enforcement, honest abstention, and
-the prompt-injection defence. After this phase every `STARTER-TODO` in `api/` is
+the prompt-injection defence. After this phase every `SPEC-REF` in `api/` is
 gone and three −10 deductions are structurally unreachable.
 
 **Requirements closed.** QP-05, QP-06, QP-07, GN-01…GN-09, PR-01, PR-02.
@@ -343,7 +343,7 @@ and declaring them twice would raise a duplicate-registration error.
 | `api/app/services/validate.py` | created |
 | `api/app/services/citations.py` | created |
 | `api/app/services/abstain.py` | completed |
-| `api/app/services/answer.py` | rewritten; `STARTER-TODO(3.2-3.4)` removed |
+| `api/app/services/answer.py` | rewritten; `SPEC-REF(3.2-3.4)` removed |
 | `api/app/providers/llm/base.py` | `ANSWER_JSON_SCHEMA`, `ProviderError`, `BaseHTTPProvider` added |
 | `api/app/providers/llm/ollama.py` | implemented |
 | `api/app/providers/llm/hosted.py` | implemented |
@@ -358,8 +358,8 @@ and declaring them twice would raise a duplicate-registration error.
 # 1. every new test passes
 cd api && ../.venv/bin/pytest -q
 
-# 2. NO STARTER-TODO and NO NotImplementedError anywhere in api/
-grep -rn 'STARTER-TODO\|raise NotImplementedError' api/app/      # empty
+# 2. NO SPEC-REF and NO NotImplementedError anywhere in api/
+grep -rn 'SPEC-REF\|raise NotImplementedError' api/app/      # empty
 
 # 3. the checker's E section is fully green
 python3 scripts/check_submission.py 2>&1 | sed -n '/E · generation/,/^$/p' | grep -c ' FAIL '   # 0

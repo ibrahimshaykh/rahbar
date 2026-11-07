@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: rahbar
+  labels: {app: redis, app.kubernetes.io/part-of: rahbar}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: rahbar
+  labels:
+    app: redis
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/part-of: rahbar
+    app.kubernetes.io/component: cache
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # one PVC, ReadWriteOnce: never two pods at once
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+        app.kubernetes.io/name: redis
+        app.kubernetes.io/part-of: rahbar
+        app.kubernetes.io/component: cache
+    spec:
+      serviceAccountName: rahbar-redis
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: redis
+          image: redis:7.2.5-alpine
+          imagePullPolicy: IfNotPresent
+          # Persistence: section 4.1 requires it. AOF survives a pod restart,
+          # so a warm cache is not lost to a rolling update.
+          args:
+            - redis-server
+            - --appendonly
+            - "yes"
+            - --appendfsync
+            - everysec
+            - --dir
+            - /data
+            - --save
+            - ""
+          ports:
+            - name: redis
+              containerPort: 6379
+          startupProbe:
+            tcpSocket: {port: 6379}
+            failureThreshold: 30
+            periodSeconds: 2
+          livenessProbe:
+            tcpSocket: {port: 6379}
+            periodSeconds: 20
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-data

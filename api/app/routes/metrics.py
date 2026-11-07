@@ -7,7 +7,7 @@ retrieval latency, generation latency, cache hits, abstentions, fallbacks, token
 from __future__ import annotations
 
 from fastapi import APIRouter, Response
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 router = APIRouter()
 
@@ -19,7 +19,40 @@ LATENCY = Histogram(
     buckets=(0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, 30, 60),
 )
 
+# section 4.3/4.4: 1 when /readyz last returned 200, else 0
+READY_GAUGE = Gauge("rahbar_ready", "1 when /readyz last returned 200")
+
+# section 4.8: retrieval and generation latency, cache, abstentions, fallbacks,
+# tokens in/out. CACHE_HIT_RATIO is computed from CACHE_LOOKUPS inside the
+# /metrics handler (added in the semantic-cache phase) rather than accumulated,
+# because a ratio cannot be expressed as a counter.
+RETRIEVAL_SECONDS = Histogram(
+    "rahbar_retrieval_seconds", "Retrieval latency",
+    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1, 2, 5))
+GENERATION_SECONDS = Histogram(
+    "rahbar_generation_seconds", "Generation latency",
+    buckets=(0.5, 1, 2, 5, 10, 20, 30, 60, 120))
+CACHE_LOOKUPS = Counter("rahbar_cache_lookups_total", "Semantic cache lookups", ["result"])
+CACHE_HIT_RATIO = Gauge("rahbar_cache_hit_ratio", "Hits divided by hits plus misses")
+ABSTENTIONS = Counter("rahbar_abstentions_total", "Honest refusals", ["reason"])
+FALLBACKS = Counter("rahbar_fallbacks_total", "Safe canned responses", ["reason"])
+LLM_TOKENS = Counter("rahbar_llm_tokens_total", "Provider tokens", ["direction"])
+
+
+def _counter_value(counter: Counter, **labels: str) -> float:
+    """Reach into prometheus_client internals to read one label combination's
+    current value. Isolated here in one small helper, with T-MET-05 as the
+    test that proves it still works if the library changes."""
+    try:
+        return float(counter.labels(**labels)._value.get())  # noqa: SLF001
+    except Exception:  # noqa: BLE001
+        return 0.0
+
 
 @router.get("/metrics")
 def metrics() -> Response:
+    hits = _counter_value(CACHE_LOOKUPS, result="hit")
+    misses = _counter_value(CACHE_LOOKUPS, result="miss")
+    total = hits + misses
+    CACHE_HIT_RATIO.set(hits / total if total else 0.0)
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

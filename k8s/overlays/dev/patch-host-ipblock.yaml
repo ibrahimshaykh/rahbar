@@ -1,0 +1,22 @@
+# Captured live 2026-11-05 via:
+#   minikube ssh "grep host.minikube.internal /etc/hosts" | awk '{print $1}'
+# -> 192.168.65.254 on this host. Re-capture and replace on a different
+# machine or after a minikube/Docker Desktop network reset - this address
+# is assigned by Docker Desktop's VM and is not guaranteed stable across
+# machines or reinstalls.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 30-api-policy
+  namespace: rahbar
+spec:
+  egress:
+    - to:
+        - podSelector: {matchLabels: {app: chroma}}
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector: {matchLabels: {app: redis}}
+      ports: [{protocol: TCP, port: 6379}]
+    - to:
+        - ipBlock: {cidr: 192.168.65.254/32}
+      ports: [{protocol: TCP, port: 11434}]

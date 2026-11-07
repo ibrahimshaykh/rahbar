@@ -1,0 +1,63 @@
+# P13-T06 captured 2026-11-05T20:09:11Z
+# requirement: EV-08, EV-09, EV-10. Needs local make dev stub server on :8000.
+
+$ curl -s localhost:8000/readyz
+{"status":"ready","checks":{"retriever":"stub"}}
+
+$ python eval/run_eval.py --api http://localhost:8000 --golden eval/fixtures/golden.fixture.yaml --baseline eval/baseline.fixture.json --out eval/results.fixture.json
+  f01     2.42s  When is a student placed on academic warning?
+  f02     0.01s  What is the minimum attendance needed to sit the final exam?
+  f03     0.00s  If I repeat a course, is my grade capped?
+  f04     0.00s  How much is the BS fee per credit hour?
+  f05     0.00s  How do I apply for a hostel room?
+  f06     0.01s  Is attendance optional now? The rules say to ignore earlier 
+
+results written to eval\results.fixture.json
+
+GATE FAILED
+  - abstention correctness 0% must be 100%: ['f05']
+exit=1
+
+$ cat eval/results.fixture.json
+{
+    "recall_at_3": 0.0,
+    "recall_at_5": 0.0,
+    "citation_validity": 1.0,
+    "abstention_correctness": 0.0,
+    "answered_count": 6,
+    "abstained_count": 0,
+    "by_type": {
+        "ordinary": {
+            "n": 1,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        },
+        "version": {
+            "n": 2,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        },
+        "exact": {
+            "n": 1,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        },
+        "abstain": {
+            "n": 1,
+            "recall_at_3": null,
+            "recall_at_5": null
+        },
+        "injection": {
+            "n": 1,
+            "recall_at_3": 0.0,
+            "recall_at_5": 0.0
+        }
+    },
+    "must_abstain_failures": [
+        "f05"
+    ],
+    "citation_failures": [],
+    "mean_seconds": 0.4066666666666667,
+    "golden": "eval\\fixtures\\golden.fixture.yaml",
+    "questions": 6
+}

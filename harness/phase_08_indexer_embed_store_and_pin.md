@@ -381,7 +381,7 @@ cd indexer && ../.venv/bin/pytest -q
 cd api && ../.venv/bin/pytest -q tests/test_architecture.py
 
 # 3. no pipeline stub remains anywhere in the indexer
-grep -rn 'NotImplementedError\|STARTER-TODO' indexer/pipeline/      # empty
+grep -rn 'NotImplementedError\|SPEC-REF' indexer/pipeline/      # empty
 
 # 4. the pin is written, and only the indexer writes
 grep -n 'embed_model' indexer/pipeline/store.py
@@ -392,8 +392,8 @@ grep -nE '\.(add|delete_collection)\(' indexer/pipeline/store.py            # pr
 python3 scripts/check_submission.py 2>&1 | sed -n '/C · indexer/,/^$/p' | grep -c ' FAIL '   # 0
 python3 scripts/check_submission.py 2>&1 | sed -n '/G · indexer-as-Job/,/^$/p'
 
-# 6. the STARTER-TODO count has fallen
-grep -rn STARTER-TODO --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.' | wc -l
+# 6. the SPEC-REF count has fallen
+grep -rn SPEC-REF --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.' | wc -l
 
 # 7. everything else green
 make test 2>&1 | tail -3

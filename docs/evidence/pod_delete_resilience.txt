@@ -1,0 +1,24 @@
+# P05-T05 captured 2026-11-05T07:42:00Z
+
+$ kubectl get pods -n rahbar -l app=api
+NAME                   READY   STATUS    RESTARTS   AGE
+api-59cd95d4f8-2cg5r   1/1     Running   0          9m23s
+api-59cd95d4f8-9swlw   1/1     Running   0          9m23s
+api-59cd95d4f8-p9dhc   1/1     Running   0          9m23s
+
+# hammering /api/ask for 60 seconds while deleting pod api-59cd95d4f8-2cg5r
+$ kubectl delete pod api-59cd95d4f8-2cg5r -n rahbar
+pod "api-59cd95d4f8-2cg5r" deleted from rahbar namespace
+Waiting for deployment "api" rollout to finish: 2 of 3 updated replicas are available...
+deployment "api" successfully rolled out
+
+# HTTP status codes seen during the deletion:
+    120 200
+# EXPECT only 200s. Three replicas behind one Service, readiness gating,
+# and the preStop sleep mean a deleted pod leaves the Service first.
+
+$ kubectl get pods -n rahbar -l app=api
+NAME                   READY   STATUS    RESTARTS   AGE
+api-59cd95d4f8-9swlw   1/1     Running   0          10m
+api-59cd95d4f8-p9dhc   1/1     Running   0          10m
+api-59cd95d4f8-prmdz   1/1     Running   0          78s

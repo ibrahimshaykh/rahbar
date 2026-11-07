@@ -152,13 +152,13 @@ Run:
 cd indexer && ../.venv/bin/pytest -q tests/test_extract.py 2>&1 | tail -20
 ```
 
-**Expect:** `NotImplementedError: extract: see STARTER-TODO(3.1)` on every test.
+**Expect:** `NotImplementedError: extract: see SPEC-REF(3.1)` on every test.
 That is the correct RED. Paste it.
 
 ### P06-T02 `[AGENT]` · GREEN — PDF text extraction
 
 Write `extract()`, `_extract_pdf()` and `_flatten_table()` per
-`03_LOW_LEVEL_DESIGN.md` §5.1. Remove the `STARTER-TODO(3.1)` comment and the
+`03_LOW_LEVEL_DESIGN.md` §5.1. Remove the `SPEC-REF(3.1)` comment and the
 `raise NotImplementedError`.
 
 The dispatch is five lines; the PDF branch is the substance. Points to honour:
@@ -333,7 +333,7 @@ specific, document-grounded answer that separates a 90 from a 60.
 | `indexer/tests/doubles.py` | created — `write_text_pdf`, `write_imageless_pdf` |
 | `indexer/tests/test_extract.py` | created — 10 tests |
 | `indexer/tests/test_clean.py` | created — 8 tests |
-| `indexer/pipeline/extract.py` | implemented — `STARTER-TODO` and `NotImplementedError` removed |
+| `indexer/pipeline/extract.py` | implemented — `SPEC-REF` and `NotImplementedError` removed |
 | `indexer/pipeline/clean.py` | implemented — same |
 | `scripts/table_example.py` | created |
 | `docs/PIPELINE.md` | Extraction and Cleaning sections written |
@@ -347,7 +347,7 @@ specific, document-grounded answer that separates a 90 from a 60.
 cd indexer && ../.venv/bin/pytest -q tests/test_extract.py tests/test_clean.py
 
 # 2. the stubs are gone from these two files
-grep -c 'NotImplementedError\|STARTER-TODO' indexer/pipeline/extract.py indexer/pipeline/clean.py   # 0 0
+grep -c 'NotImplementedError\|SPEC-REF' indexer/pipeline/extract.py indexer/pipeline/clean.py   # 0 0
 
 # 3. the checker sees a PDF library and an OCR library
 python3 scripts/check_submission.py 2>&1 | sed -n '/C · indexer/,/^$/p'

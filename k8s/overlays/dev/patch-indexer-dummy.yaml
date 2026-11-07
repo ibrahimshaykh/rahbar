@@ -1,0 +1,17 @@
+# Week 1 (P05): run the indexer Job with --dummy so the Job, the StatefulSet,
+# the PVC, the probes and the Ingress can all be proved before the real
+# pipeline exists. A Job's pod template is immutable once created, so this
+# must be baked in via the overlay rather than kubectl patch'd after creation.
+# Decision D-010: remove this file (and its entry in kustomization.yaml) in
+# Phase 15 when the real pipeline ships.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: indexer
+  namespace: rahbar
+spec:
+  template:
+    spec:
+      containers:
+        - name: indexer
+          args: ["python", "-m", "pipeline.run", "--dummy"]

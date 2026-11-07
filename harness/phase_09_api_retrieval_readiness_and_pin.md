@@ -18,7 +18,7 @@ Defences for DED-06, DED-07.
 git rev-parse --abbrev-ref HEAD    # dev
 cd indexer && ../.venv/bin/pytest -q    # green
 grep -c 'NotImplementedError' api/app/retrieval/chroma.py     # 1
-grep -c 'STARTER-TODO' api/app/routes/health.py api/app/main.py   # 1 1
+grep -c 'SPEC-REF' api/app/routes/health.py api/app/main.py   # 1 1
 ```
 
 ---
@@ -108,7 +108,7 @@ Run and paste the RED:
 
 ```bash
 cd api && ../.venv/bin/pytest -q tests/test_retrieval.py 2>&1 | tail -20
-# EXPECT: NotImplementedError: ChromaRetriever.retrieve: see STARTER-TODO(3.2)
+# EXPECT: NotImplementedError: ChromaRetriever.retrieve: see SPEC-REF(3.2)
 ```
 
 ### P09-T02 `[AGENT]` · GREEN — `retrieve()`
@@ -291,7 +291,7 @@ Also set the `READY_GAUGE` in the route, so `T-RDY-10` can assert
 
 ### P09-T06 `[AGENT]` · The startup pin check and the `lifespan` TODO
 
-`api/app/main.py` carries `STARTER-TODO(4.4)` inside `lifespan`:
+`api/app/main.py` carries `SPEC-REF(4.4)` inside `lifespan`:
 
 > *"compare the collection's embedding-model metadata with settings.embed_model
 > here, and make /readyz fail on a mismatch."*
@@ -351,7 +351,7 @@ cd api && ../.venv/bin/pytest -q tests/test_architecture.py
 | `api/app/services/abstain.py` | created — `VERSION_INTENT_PATTERN` only; the rest is P10 |
 | `api/app/routes/health.py` | `/readyz` implemented; `healthz` untouched |
 | `api/app/routes/metrics.py` | `READY_GAUGE` added |
-| `api/app/main.py` | Redis client in state; the pin log; `STARTER-TODO(4.4)` removed |
+| `api/app/main.py` | Redis client in state; the pin log; `SPEC-REF(4.4)` removed |
 
 ---
 
@@ -363,7 +363,7 @@ cd api && ../.venv/bin/pytest -q tests/test_retrieval.py tests/test_pin.py tests
 cd api && ../.venv/bin/pytest -q tests/test_starter.py
 
 # 2. the stubs are gone
-grep -c 'NotImplementedError\|STARTER-TODO' api/app/retrieval/chroma.py api/app/routes/health.py api/app/main.py   # 0 0 0
+grep -c 'NotImplementedError\|SPEC-REF' api/app/retrieval/chroma.py api/app/routes/health.py api/app/main.py   # 0 0 0
 
 # 3. the checker's D section is fully green
 python3 scripts/check_submission.py 2>&1 | sed -n '/D · api & pin/,/^$/p'

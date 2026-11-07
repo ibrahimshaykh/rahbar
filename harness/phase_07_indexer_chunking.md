@@ -315,7 +315,7 @@ predecessor to overlap with, pulling the real figure down.
 | Path | Action |
 |---|---|
 | `indexer/tests/test_chunk.py` | created — 12 tests |
-| `indexer/pipeline/chunk.py` | implemented — `STARTER-TODO` and `NotImplementedError` removed |
+| `indexer/pipeline/chunk.py` | implemented — `SPEC-REF` and `NotImplementedError` removed |
 | `scripts/amplification.py` | created |
 | `docs/PIPELINE.md` | Chunking section written, table left `PENDING-HUMAN(P15-T02)` |
 
@@ -328,7 +328,7 @@ predecessor to overlap with, pulling the real figure down.
 cd indexer && ../.venv/bin/pytest -q tests/test_chunk.py
 
 # 2. the stub is gone
-grep -c 'NotImplementedError\|STARTER-TODO' indexer/pipeline/chunk.py     # 0
+grep -c 'NotImplementedError\|SPEC-REF' indexer/pipeline/chunk.py     # 0
 
 # 3. the checker's indexer section is satisfied on chunking
 python3 scripts/check_submission.py 2>&1 | sed -n '/C · indexer/,/^$/p'

@@ -1,0 +1,133 @@
+# P05-T02 captured 2026-11-05T07:44:34Z
+
+$ make images
+#9 exporting manifest sha256:22b0f9a2d047867b8ae62ae8fe5907b76199f1f5f16e45d04a041a410c309c70 done
+#9 exporting config sha256:a62ded751375d07889b35e1c9ada4d7d3cd1a1313dca310d7163fd098523b7ce
+#9 exporting config sha256:a62ded751375d07889b35e1c9ada4d7d3cd1a1313dca310d7163fd098523b7ce done
+#9 exporting attestation manifest sha256:1bebb06a8dc640d887129e4de6aa18198ea56e33156b0bb8d415408c34eb9ccf 0.0s done
+#9 exporting manifest list sha256:2fa6554981965cc763bd7a22f7b6c5c80381fbafc2a4829e78f616d1b63c1364 0.0s done
+#9 naming to docker.io/library/rahbar-ui:dev done
+#9 unpacking to docker.io/library/rahbar-ui:dev
+#9 unpacking to docker.io/library/rahbar-ui:dev 0.0s done
+#9 DONE 0.2s
+minikube image load rahbar-api:dev
+minikube image load rahbar-indexer:dev
+minikube image load rahbar-ui:dev
+
+$ kubectl apply -k k8s/overlays/dev
+# Warning: 'commonLabels' is deprecated. Please use 'labels' instead. Run 'kustomize edit fix' to update your Kustomization automatically.
+namespace/rahbar unchanged
+serviceaccount/rahbar-api unchanged
+serviceaccount/rahbar-chroma unchanged
+serviceaccount/rahbar-indexer unchanged
+serviceaccount/rahbar-redis unchanged
+serviceaccount/rahbar-ui unchanged
+configmap/rahbar-config unchanged
+service/api unchanged
+service/chroma unchanged
+service/redis unchanged
+service/ui unchanged
+persistentvolumeclaim/redis-data unchanged
+deployment.apps/api unchanged
+deployment.apps/redis unchanged
+deployment.apps/ui unchanged
+statefulset.apps/chroma configured
+cronjob.batch/reindex configured
+horizontalpodautoscaler.autoscaling/api unchanged
+job.batch/indexer configured
+ingress.networking.k8s.io/rahbar unchanged
+networkpolicy.networking.k8s.io/00-default-deny unchanged
+networkpolicy.networking.k8s.io/10-allow-dns unchanged
+networkpolicy.networking.k8s.io/20-ui-policy unchanged
+networkpolicy.networking.k8s.io/30-api-policy unchanged
+networkpolicy.networking.k8s.io/40-chroma-policy unchanged
+networkpolicy.networking.k8s.io/50-redis-policy unchanged
+networkpolicy.networking.k8s.io/60-indexer-egress unchanged
+
+# waiting for the data tier
+partitioned roll out complete: 1 new pods have been updated...
+deployment "redis" successfully rolled out
+
+$ kubectl get all -n rahbar
+NAME                        READY   STATUS      RESTARTS   AGE
+pod/api-59cd95d4f8-9swlw    1/1     Running     0          14m
+pod/api-59cd95d4f8-p9dhc    1/1     Running     0          14m
+pod/api-59cd95d4f8-prmdz    1/1     Running     0          4m35s
+pod/chroma-0                1/1     Running     0          7m56s
+pod/indexer-8666m           0/1     Completed   0          7m6s
+pod/redis-f8c956b5f-jxwq4   1/1     Running     0          14m
+pod/ui-c45c4fd5d-h6945      1/1     Running     0          14m
+pod/ui-c45c4fd5d-hmpch      1/1     Running     0          14m
+
+NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/api      ClusterIP   10.103.35.224    <none>        8000/TCP   14m
+service/chroma   ClusterIP   None             <none>        8000/TCP   14m
+service/redis    ClusterIP   10.98.239.241    <none>        6379/TCP   14m
+service/ui       ClusterIP   10.111.144.211   <none>        8080/TCP   14m
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api     3/3     3            3           14m
+deployment.apps/redis   1/1     1            1           14m
+deployment.apps/ui      2/2     2            2           14m
+
+NAME                              DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-59cd95d4f8    3         3         3       14m
+replicaset.apps/redis-f8c956b5f   1         1         1       14m
+replicaset.apps/ui-c45c4fd5d      2         2         2       14m
+
+NAME                      READY   AGE
+statefulset.apps/chroma   1/1     14m
+
+NAME                                      REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/api   Deployment/api   cpu: 6%/70%   3         8         3          14m
+
+NAME                    SCHEDULE    TIMEZONE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+cronjob.batch/reindex   0 2 * * 0   Asia/Karachi   False     0        <none>          14m
+
+NAME                STATUS     COMPLETIONS   DURATION   AGE
+job.batch/indexer   Complete   1/1           10s        7m6s
+
+$ kubectl get pvc,cm,secret,ingress,networkpolicy,hpa,sa -n rahbar
+NAME                                  STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/data-chroma-0   Bound    pvc-e6b4cb96-0278-45bf-aa4a-d4cd382ef067   2Gi        RWO            standard       <unset>                 14m
+persistentvolumeclaim/redis-data      Bound    pvc-020fe131-b57e-43bd-a6ca-673a650081f0   1Gi        RWO            standard       <unset>                 14m
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      14m
+configmap/rahbar-config      22     14m
+
+NAME                               CLASS   HOSTS          ADDRESS        PORTS   AGE
+ingress.networking.k8s.io/rahbar   nginx   rahbar.local   192.168.49.2   80      14m
+
+NAME                                                POD-SELECTOR                                   AGE
+networkpolicy.networking.k8s.io/00-default-deny     <none>                                         14m
+networkpolicy.networking.k8s.io/10-allow-dns        <none>                                         14m
+networkpolicy.networking.k8s.io/20-ui-policy        app=ui,app.kubernetes.io/part-of=rahbar        14m
+networkpolicy.networking.k8s.io/30-api-policy       app=api,app.kubernetes.io/part-of=rahbar       14m
+networkpolicy.networking.k8s.io/40-chroma-policy    app=chroma,app.kubernetes.io/part-of=rahbar    14m
+networkpolicy.networking.k8s.io/50-redis-policy     app=redis,app.kubernetes.io/part-of=rahbar     14m
+networkpolicy.networking.k8s.io/60-indexer-egress   app=indexer,app.kubernetes.io/part-of=rahbar   14m
+
+NAME                                      REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/api   Deployment/api   cpu: 6%/70%   3         8         3          14m
+
+NAME                            AGE
+serviceaccount/default          14m
+serviceaccount/rahbar-api       14m
+serviceaccount/rahbar-chroma    14m
+serviceaccount/rahbar-indexer   14m
+serviceaccount/rahbar-redis     14m
+serviceaccount/rahbar-ui        14m
+
+$ kubectl get pods -n rahbar -o wide
+NAME                    READY   STATUS      RESTARTS   AGE     IP              NODE       NOMINATED NODE   READINESS GATES
+api-59cd95d4f8-9swlw    1/1     Running     0          14m     10.244.120.71   minikube   <none>           <none>
+api-59cd95d4f8-p9dhc    1/1     Running     0          14m     10.244.120.72   minikube   <none>           <none>
+api-59cd95d4f8-prmdz    1/1     Running     0          4m36s   10.244.120.82   minikube   <none>           <none>
+chroma-0                1/1     Running     0          7m57s   10.244.120.80   minikube   <none>           <none>
+indexer-8666m           0/1     Completed   0          7m7s    10.244.120.81   minikube   <none>           <none>
+redis-f8c956b5f-jxwq4   1/1     Running     0          14m     10.244.120.76   minikube   <none>           <none>
+ui-c45c4fd5d-h6945      1/1     Running     0          14m     10.244.120.75   minikube   <none>           <none>
+ui-c45c4fd5d-hmpch      1/1     Running     0          14m     10.244.120.74   minikube   <none>           <none>
+
+# the api should be 0/1 READY until the index exists - that is by design

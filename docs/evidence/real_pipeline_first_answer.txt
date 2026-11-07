@@ -1,0 +1,64 @@
+# captured 2026-11-05T08:45:05Z - first real cited answer through the full
+# non-stub pipeline: RETRIEVER=chroma, LLM_PROVIDER=ollama-host, EMBED_MODEL=nomic-embed-text
+# against the real indexed corpus (1117 chunks, 9 real documents).
+
+$ curl -X POST http://127.0.0.1/api/ask -H 'Host: rahbar.local' \
+    -d '{"question":"What CGPA puts a student on academic warning?"}'
+# real wall-clock time: 36.3s (llama3.2:3b, CPU-only inference)
+
+{
+    "request_id": "c8cb855926f65db7e8d96ca4b41121a1",
+    "answer": "less than the minimum required for their degree program",
+    "citations": [
+        {
+            "source": "grading-page.html",
+            "section": "Warning/Probation",
+            "page": 1
+        },
+        {
+            "source": "academic-rules-handbook-jun-2026.pdf",
+            "section": "5.12",
+            "page": 25
+        }
+    ],
+    "answered_from_context": true,
+    "confidence": "high",
+    "retrieved": [
+        {
+            "chunk_id": "grading-page#p0001#c0006",
+            "source": "grading-page.html",
+            "section": "Warning/Probation",
+            "page": 1,
+            "score": 0.80498952
+        },
+        {
+            "chunk_id": "academic-rules-handbook-jun-2026#p0025#c0153",
+            "source": "academic-rules-handbook-jun-2026.pdf",
+            "section": "5.12 A student is expected to take mid and final examination as per",
+            "page": 25,
+            "score": 0.7679438000000001
+        },
+        {
+            "chunk_id": "academic-rules-handbook-jun-2026#p0020#c0115",
+            "source": "academic-rules-handbook-jun-2026.pdf",
+            "section": "0 Preamble",
+            "page": 20,
+            "score": 0.7339579
+        },
+        {
+            "chunk_id": "grading-page#p0001#c0007",
+            "source": "grading-page.html",
+            "section": "Repeating a Course",
+            "page": 1,
+            "score": 0.7227085799999999
+        },
+        {
+            "chunk_id": "academic-rules-handbook-jun-2026#p0015#c0089",
+            "source": "academic-rules-handbook-jun-2026.pdf",
+            "section": "3.7 Exemption of courses studied at another University cannot be",
+            "page": 15,
+            "score": 0.7221449
+        }
+    ],
+    "provider": "ollama"
+}

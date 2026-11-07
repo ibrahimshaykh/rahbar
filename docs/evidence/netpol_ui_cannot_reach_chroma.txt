@@ -1,0 +1,17 @@
+# P05-T08 captured 2026-11-05T07:43:35Z
+# requirement: SE-04 - 'The ui pod must not be able to reach chroma.'
+
+# Calico must be the CNI or these policies are accepted and ignored.
+calico-kube-controllers-db57f7644-9xvxp   1/1     Running   0          36m
+calico-node-gk67v                         1/1     Running   0          36m
+
+$ from the UI pod, try chroma:8000  (EXPECT a non-zero exit)
+punt!
+exit=143
+Terminated
+
+$ from the API pod, try chroma:8000  (EXPECT exit=0 via python fallback)
+api->chroma OK
+
+$ DNS still resolves (the 10-allow-dns policy)
+chroma resolves to 10.244.120.80

@@ -1,0 +1,17 @@
+# P05-T03 captured 2026-11-05T07:40:51Z
+# requirement: K8-06 (indexer is a Job), K8-15 (re-index with no redeploy)
+# The dev overlay's patch-indexer-dummy.yaml already makes the base
+# 'indexer' Job run with --dummy; apply it and wait for completion.
+
+$ kubectl get job indexer -n rahbar -o jsonpath='{.spec.template.spec.containers[0].args}'
+["python","-m","pipeline.run","--dummy"]
+job.batch/indexer condition met
+
+$ kubectl logs job/indexer -n rahbar
+{"ts": "2026-11-05T07:39:39Z", "logger": "rahbar.indexer", "msg": "indexer starting", "dummy": true, "embed_model": "dummy-768", "collection": "rahbar", "chroma": "chroma:8000", "pod": "indexer-8666m"}
+{"ts": "2026-11-05T07:39:42Z", "logger": "rahbar.indexer", "msg": "indexer finished", "chunks": 3, "seconds": 3.4}
+# EXPECT a JSON line with "msg": "indexer finished", "chunks": 3
+
+$ kubectl get jobs -n rahbar
+NAME      STATUS     COMPLETIONS   DURATION   AGE
+indexer   Complete   1/1           10s        78s

@@ -1,0 +1,171 @@
+# 1 - deny everything, both directions, for every pod in the namespace.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 00-default-deny
+  namespace: rahbar
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+# 2 - DNS. Without this, default-deny egress breaks every service name in the
+# namespace and every symptom looks like a broken Service.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 10-allow-dns
+  namespace: rahbar
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# 3 - ui: reachable from the Ingress only; may talk to nothing but DNS.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 20-ui-policy
+  namespace: rahbar
+spec:
+  podSelector:
+    matchLabels:
+      app: ui
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+# 4 - api: reachable from the Ingress and from ui; may reach chroma, redis,
+#     DNS, and the laptop's Ollama.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 30-api-policy
+  namespace: rahbar
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: ui
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: chroma
+      ports:
+        - protocol: TCP
+          port: 8000
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Ollama on the host. The dev overlay patches this CIDR to the real address
+    # from: minikube ssh "grep host.minikube.internal /etc/hosts"
+    - to:
+        - ipBlock:
+            cidr: 192.168.49.1/32    # PENDING-HUMAN(P05-T02): patch in the dev overlay
+      ports:
+        - protocol: TCP
+          port: 11434
+---
+# 5 - chroma: reachable from api and indexer ONLY. ui cannot reach it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 40-chroma-policy
+  namespace: rahbar
+spec:
+  podSelector:
+    matchLabels:
+      app: chroma
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api
+        - podSelector:
+            matchLabels:
+              app: indexer
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+# 6 - redis: reachable from api and indexer ONLY (the indexer bumps the cache
+#     generation on a successful re-index).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 50-redis-policy
+  namespace: rahbar
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: api
+        - podSelector:
+            matchLabels:
+              app: indexer
+      ports:
+        - protocol: TCP
+          port: 6379
+---
+# 7 - indexer egress: chroma, redis, DNS and Ollama.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 60-indexer-egress
+  namespace: rahbar
+spec:
+  podSelector:
+    matchLabels:
+      app: indexer
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: chroma
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports: [{protocol: TCP, port: 6379}]
+    - to:
+        - ipBlock:
+            cidr: 192.168.49.1/32    # PENDING-HUMAN(P05-T02)
+      ports: [{protocol: TCP, port: 11434}]

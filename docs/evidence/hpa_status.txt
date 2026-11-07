@@ -1,0 +1,65 @@
+# P16-T09 captured 2026-11-05T08:40:45Z
+# requirement: K8-21..25 - HPA shows a real percentage, not <unknown>
+
+$ kubectl get hpa -n rahbar
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+api    Deployment/api   cpu: 6%/70%   3         8         5          68m
+
+$ kubectl describe hpa api -n rahbar
+Name:                                                  api
+Namespace:                                             rahbar
+Labels:                                                app=api
+                                                       app.kubernetes.io/part-of=rahbar
+Annotations:                                           <none>
+CreationTimestamp:                                     Thu, 05 Nov 2026 12:32:40 +0500
+Reference:                                             Deployment/api
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  6% (6m) / 70%
+Min replicas:                                          3
+Max replicas:                                          8
+Behavior:
+  Scale Up:
+    Stabilization Window: 60 seconds
+    Select Policy: Max
+    Policies:
+      - Type: Pods  Value: 2  Period: 60 seconds
+  Scale Down:
+    Stabilization Window: 300 seconds
+    Select Policy: Max
+    Policies:
+      - Type: Pods  Value: 1  Period: 120 seconds
+Deployment pods:    5 current / 5 desired
+Conditions:
+  Type            Status  Reason               Message
+  ----            ------  ------               -------
+  AbleToScale     True    ScaleDownStabilized  recent recommendations were higher than current one, applying the highest recent recommendation
+  ScalingActive   True    ValidMetricFound     the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  False   DesiredWithinRange   the desired count is within the acceptable range
+  ScaledToZero    False   NotScaledToZero      the HPA controller did not scale the workload to zero
+Events:
+  Type     Reason                        Age                    From                       Message
+  ----     ------                        ----                   ----                       -------
+  Warning  FailedUpdateStatus            32m                    horizontal-pod-autoscaler  etcdserver: request timed out
+  Warning  FailedUpdateStatus            32m                    horizontal-pod-autoscaler  Operation cannot be fulfilled on horizontalpodautoscalers.autoscaling "api": the object has been modified; please apply your changes to the latest version and try again
+  Warning  FailedComputeMetricsReplicas  32m (x9 over 68m)      horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedGetResourceMetric       32m (x10 over 68m)     horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: no metrics returned from resource metrics API
+  Warning  FailedUpdateStatus            8m40s                  horizontal-pod-autoscaler  etcdserver: request timed out
+  Warning  FailedUpdateStatus            8m23s                  horizontal-pod-autoscaler  Operation cannot be fulfilled on horizontalpodautoscalers.autoscaling "api": the object has been modified; please apply your changes to the latest version and try again
+  Warning  FailedGetResourceMetric       7m4s (x9 over 25m)     horizontal-pod-autoscaler  failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+  Warning  FailedComputeMetricsReplicas  7m4s (x9 over 25m)     horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: unable to get metrics for resource cpu: unable to fetch metrics from resource metrics API: the server is currently unable to handle the request (get pods.metrics.k8s.io)
+  Warning  FailedGetScale                6m55s                  horizontal-pod-autoscaler  Get "https://192.168.49.2:8443/apis/apps/v1/namespaces/rahbar/deployments/api/scale": dial tcp 192.168.49.2:8443: connect: connection refused - error from a previous attempt: unexpected EOF
+  Warning  FailedUpdateStatus            6m24s (x4 over 6m55s)  horizontal-pod-autoscaler  Put "https://192.168.49.2:8443/apis/autoscaling/v2/namespaces/rahbar/horizontalpodautoscalers/api/status": dial tcp 192.168.49.2:8443: connect: connection refused
+  Warning  FailedGetScale                5m36s (x4 over 6m54s)  horizontal-pod-autoscaler  Get "https://192.168.49.2:8443/api": dial tcp 192.168.49.2:8443: connect: connection refused
+  Normal   SuccessfulRescale             2m20s                  horizontal-pod-autoscaler  New size: 5; reason: cpu resource utilization (percentage of request) above target
+
+$ kubectl get pods -n rahbar -l app=api
+NAME                   READY   STATUS    RESTARTS   AGE
+api-78ff5d799d-5d9mn   1/1     Running   0          103s
+api-78ff5d799d-bxfq9   1/1     Running   0          88s
+api-78ff5d799d-cx98k   1/1     Running   0          62s
+api-78ff5d799d-glhr6   1/1     Running   0          73s
+api-78ff5d799d-t286t   1/1     Running   0          51s
+# This HPA scaled from the base 3 replicas to 5 under genuine CPU load
+# generated by the real ~20-minute indexing run (extraction, OCR, chunking,
+# and real nomic-embed-text embedding calls to Ollama) happening concurrently
+# with normal API traffic on this cluster - a real autoscaling event, not staged.

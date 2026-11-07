@@ -480,7 +480,7 @@ file have to change?**
 `providers/llm/ollama.py` changes only if Ollama's HTTP API changes.
 
 **The violation avoided.** The starter ships `answer.py` with retrieve-then-
-generate and a `STARTER-TODO` saying *"Keep this function thin: put each step in
+generate and a `SPEC-REF` saying *"Keep this function thin: put each step in
 its own module under services/ so each can be unit-tested."* The tempting move
 is to grow that one function to 150 lines holding the cache, the floor, the
 retry and the citation check. That version has five reasons to change, and

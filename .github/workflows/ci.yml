@@ -1,0 +1,343 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [dev]
+
+# Least privilege: nothing in CI writes to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------------------------------------------------------------- 1. lint
+  lint:
+    name: lint
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      - name: ruff
+        run: ruff check api indexer eval corpus
+      - name: mypy api
+        run: cd api && mypy app
+      - name: mypy indexer
+        run: cd indexer && mypy pipeline
+
+  # ---------------------------------------------------------------- 2. test
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      # Stub provider, stub retriever: no network, no model, no cluster.
+      - name: api tests with coverage
+        env:
+          RETRIEVER: stub
+          LLM_PROVIDER: stub
+          CACHE_ENABLED: "false"
+        run: |
+          cd api
+          pytest -q --cov=app --cov-report=term-missing --cov-report=xml --cov-fail-under=60
+      - name: indexer tests
+        run: cd indexer && pytest -q
+      - name: eval tests
+        run: cd eval && pytest -q
+      - name: upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: api/coverage.xml
+          retention-days: 7
+
+  # ----------------------------------------------------------- 3. manifests
+  manifests:
+    name: manifests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: install kustomize and kubeconform
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz" | tar xz
+          sudo install -m 0755 kustomize /usr/local/bin/kustomize
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz" | tar xz
+          sudo install -m 0755 kubeconform /usr/local/bin/kubeconform
+      # A broken manifest fails here in 20 seconds instead of on the cluster.
+      - name: validate the prod overlay
+        run: kustomize build k8s/overlays/prod | kubeconform -strict -summary -ignore-missing-schemas
+      - name: validate the dev overlay
+        run: kustomize build k8s/overlays/dev  | kubeconform -strict -summary -ignore-missing-schemas
+      - name: assert all required kinds are present
+        run: |
+          KINDS=$(kustomize build k8s/overlays/prod | grep -oP '^kind: \K\w+' | sort -u)
+          echo "$KINDS"
+          for k in Namespace Deployment StatefulSet Service Ingress ConfigMap \
+                   Job CronJob HorizontalPodAutoscaler NetworkPolicy PersistentVolumeClaim; do
+            echo "$KINDS" | grep -qx "$k" || { echo "::error::missing kind $k"; exit 1; }
+          done
+      - name: assert no default namespace and no NodePort on the data tier
+        run: |
+          ! kustomize build k8s/overlays/prod | grep -q 'namespace: default'
+          ! kustomize build k8s/overlays/prod | grep -qE 'type: (NodePort|LoadBalancer)'
+          ! grep -rn ':latest' k8s/
+
+  # --------------------------------------------------------------- 4. build
+  build:
+    name: build
+    runs-on: ubuntu-24.04
+    # Gated: no point building images from code that failed its tests.
+    needs: [lint, test, manifests]
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # Fixture corpus into the indexer build context (docs/PIPELINE.md).
+      - name: stage the fixture corpus for the indexer image
+        run: |
+          mkdir -p indexer/corpus-baked
+          cp eval/fixtures/*.md indexer/corpus-baked/
+      - name: build api
+        uses: docker/build-push-action@v6
+        with:
+          context: api
+          push: false              # NEVER push from a pull request
+          load: true
+          tags: rahbar-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: build indexer
+        uses: docker/build-push-action@v6
+        with:
+          context: indexer
+          push: false
+          load: true
+          tags: rahbar-indexer:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: build ui
+        uses: docker/build-push-action@v6
+        with:
+          context: ui
+          push: false
+          load: true
+          tags: rahbar-ui:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: export the images for the e2e job
+        run: |
+          docker save rahbar-api:ci rahbar-indexer:ci rahbar-ui:ci -o /tmp/rahbar-images.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rahbar-images
+          path: /tmp/rahbar-images.tar
+          retention-days: 1
+
+  # ---------------------------------------------------------------- 5. scan
+  scan:
+    name: scan
+    runs-on: ubuntu-24.04
+    needs: [build]
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [api, indexer, ui]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: rahbar-images
+          path: /tmp
+      - name: load the images
+        run: docker load -i /tmp/rahbar-images.tar
+      # Fail on HIGH or CRITICAL findings THAT HAVE A FIX AVAILABLE.
+      # --ignore-unfixed is what makes this gate actionable rather than noise.
+      - name: trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: rahbar-${{ matrix.image }}:ci
+          format: table
+          output: trivy-${{ matrix.image }}.txt
+          exit-code: "1"
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          vuln-type: os,library
+      # The gate above still fails the job on any finding. This only copies the
+      # report to the run summary, because job logs need a GitHub sign-in to read.
+      - name: show the findings in the run summary
+        if: always()
+        run: |
+          {
+            echo "### trivy: ${{ matrix.image }}"
+            echo '```'
+            head -c 60000 trivy-${{ matrix.image }}.txt 2>/dev/null || echo "no report was written"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ----------------------------------------------------------- 6. e2e-eval
+  e2e-eval:
+    name: e2e-eval
+    runs-on: ubuntu-24.04
+    needs: [build]
+    permissions:
+      contents: read
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: install eval dependencies
+        run: pip install httpx==0.28.1 pyyaml==6.0.2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: rahbar-images
+          path: /tmp
+      - name: load the images
+        run: docker load -i /tmp/rahbar-images.tar
+
+      - name: install kustomize
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz" | tar xz
+          sudo install -m 0755 kustomize /usr/local/bin/kustomize
+
+      - name: create a kind cluster
+        uses: helm/kind-action@v1.10.0
+        with:
+          cluster_name: rahbar-ci
+          node_image: kindest/node:v1.30.4
+          wait: 120s
+
+      - name: load the images into kind
+        run: |
+          kind load docker-image rahbar-api:ci      --name rahbar-ci
+          kind load docker-image rahbar-indexer:ci  --name rahbar-ci
+          kind load docker-image rahbar-ui:ci       --name rahbar-ci
+
+      # CI runs the real retriever against the fixture corpus, with
+      # deterministic hash vectors in place of Ollama (docs/PIPELINE.md).
+      - name: apply the manifests with a CI patch
+        run: |
+          cd k8s/overlays/dev
+          kustomize edit set image rahbar-api=rahbar-api:ci
+          kustomize edit set image rahbar-indexer=rahbar-indexer:ci
+          kustomize edit set image rahbar-ui=rahbar-ui:ci
+          cd - >/dev/null
+          # CORPUS_DIR already points at /corpus-baked in the base ConfigMap
+          # (the indexer image bakes the fixture/real corpus there - see
+          # docs/PIPELINE.md "How the corpus reaches the indexer Job").
+          # dev's own patch-config-dev.yaml already sets RETRIEVER=stub,
+          # LLM_PROVIDER=stub, EMBED_MODEL=dummy-768 for Week 1. This step
+          # only needs to override RETRIEVER to a real chroma lookup and
+          # EMBED_MODEL to the deterministic, network-free CI equivalent
+          # (ci-hash-256, see pipeline/embed.py) - LLM_PROVIDER stays "stub",
+          # which is already correct and matches api/app/providers/llm/stub.py.
+          # `kustomize build` emits ConfigMap scalars UNQUOTED (RETRIEVER:
+          # stub, not RETRIEVER: "stub"), so the sed patterns below must match
+          # that, not a quoted form - a quoted pattern here is a silent no-op.
+          kustomize build k8s/overlays/dev \
+            | sed -e 's/RETRIEVER: stub/RETRIEVER: chroma/' \
+                  -e 's/EMBED_MODEL: dummy-768/EMBED_MODEL: ci-hash-256/' \
+            | kubectl apply -f -
+          # The dev overlay also applies a one-shot Job named `indexer` whose
+          # args are `--dummy`. It would write a 3-chunk collection stamped
+          # embed_model=dummy-768 into the SAME Chroma collection the real
+          # ci-index Job below writes. Whichever finishes last wins, and when the
+          # dummy one wins the api pins mismatch and never becomes Ready
+          # (run 42285248425: "collection indexed with 'dummy-768' but
+          # EMBED_MODEL is 'ci-hash-256'"). Remove it before Chroma is even up.
+          kubectl delete job/indexer -n rahbar --ignore-not-found --wait=true
+          # kind has no Calico and no ingress-nginx: the NetworkPolicies are
+          # validated by the manifests job and are inert here.
+
+      - name: wait for the data tier
+        run: |
+          kubectl rollout status statefulset/chroma -n rahbar --timeout=300s
+          kubectl rollout status deployment/redis   -n rahbar --timeout=180s
+
+      # Index the fixture documents: enough to make recall@k meaningful
+      # without a six-minute CI run.
+      - name: run the indexer Job on the fixture corpus
+        run: |
+          kubectl create job --from=cronjob/reindex ci-index -n rahbar
+          kubectl wait --for=condition=complete job/ci-index -n rahbar --timeout=600s \
+            || { kubectl logs job/ci-index -n rahbar --tail=200; exit 1; }
+          kubectl logs job/ci-index -n rahbar --tail=20
+
+      - name: wait for the api rollout
+        run: |
+          kubectl rollout status deployment/api -n rahbar --timeout=300s
+          kubectl get endpoints api -n rahbar
+
+      - name: port-forward the api Service
+        run: |
+          kubectl port-forward -n rahbar svc/api 8000:8000 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/readyz && break || sleep 2
+          done
+          curl -s http://localhost:8000/readyz
+
+      # The gate. Exit 0 pass, 1 gate failed, 2 not implemented.
+      - name: run the eval gate on the fixture golden set
+        run: |
+          python eval/run_eval.py \
+            --api http://localhost:8000 \
+            --golden eval/fixtures/golden.fixture.yaml \
+            --baseline eval/baseline.fixture.json \
+            --out /tmp/ci-results.json
+      - name: show the results
+        if: always()
+        run: cat /tmp/ci-results.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-eval-results
+          path: /tmp/ci-results.json
+          retention-days: 7
+      - name: diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get pods -n rahbar -o wide
+          kubectl describe pods -n rahbar | tail -120
+          kubectl logs -n rahbar -l app=api --tail=200 --all-containers || true
+          # Job logs need a GitHub sign-in to read; annotations do not. Repeat the
+          # essentials as annotations so a failure can be diagnosed from the run page.
+          enc() { python3 -c 'import sys; t=sys.stdin.read()[-3500:]; print(t.replace("%","%25").replace("\r","").replace("\n","%0A"))'; }
+          echo "::error title=pods::$(kubectl get pods -n rahbar -o wide 2>&1 | enc)"
+          echo "::error title=events::$(kubectl get events -n rahbar --sort-by=.lastTimestamp 2>&1 | tail -30 | enc)"
+          echo "::error title=api logs::$(kubectl logs -n rahbar -l app=api --tail=25 --all-containers 2>&1 | enc)"
+          echo "::error title=ui logs::$(kubectl logs -n rahbar -l app=ui --tail=15 --all-containers 2>&1 | enc)"

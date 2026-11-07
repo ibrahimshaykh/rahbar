@@ -1,0 +1,204 @@
+name: cd
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.12"
+  REGISTRY: docker.io
+
+jobs:
+  # ----------------------------------------------------------------- test
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      - name: api tests with coverage
+        env:
+          RETRIEVER: stub
+          LLM_PROVIDER: stub
+          CACHE_ENABLED: "false"
+        run: cd api && pytest -q --cov=app --cov-fail-under=60
+      - run: cd indexer && pytest -q
+      - run: cd eval && pytest -q
+
+  # ----------------------------------------------------------- build-push
+  build-push:
+    name: build-push
+    runs-on: ubuntu-24.04
+    # WITHOUT THIS LINE YOU PUBLISH IMAGES BUILT FROM CODE YOU ALREADY KNOW IS
+    # BROKEN. That is -6 marks.
+    needs: [test]
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: stage the fixture corpus for the indexer image
+        run: |
+          mkdir -p indexer/corpus-baked
+          cp eval/fixtures/*.md indexer/corpus-baked/
+      # A Docker Hub ACCESS TOKEN from GitHub Secrets. Never a password.
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Tagged by commit SHA only. Never :latest (-6). "What is running?" must
+      # have a one-word answer you can paste into git show.
+      - name: push api
+        uses: docker/build-push-action@v6
+        with:
+          context: api
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: push indexer
+        uses: docker/build-push-action@v6
+        with:
+          context: indexer
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-indexer:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: push ui
+        uses: docker/build-push-action@v6
+        with:
+          context: ui
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-ui:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: record the published tags
+        run: |
+          echo "### Published images" >> $GITHUB_STEP_SUMMARY
+          for i in api indexer ui; do
+            echo "- \`${{ secrets.DOCKERHUB_USERNAME }}/rahbar-$i:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          done
+
+  # --------------------------------------------------------------- deploy
+  deploy:
+    name: deploy
+    runs-on: ubuntu-24.04
+    # Deploy only what was actually published.
+    needs: [build-push]
+    permissions:
+      contents: read
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: install kustomize
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz" | tar xz
+          sudo install -m 0755 kustomize /usr/local/bin/kustomize
+
+      - name: create an ephemeral cluster with an ingress controller
+        uses: helm/kind-action@v1.10.0
+        with:
+          cluster_name: rahbar-cd
+          node_image: kindest/node:v1.30.4
+          config: .github/kind-ingress.yaml
+          wait: 120s
+
+      - name: install ingress-nginx
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+          kubectl wait --namespace ingress-nginx --for=condition=ready pod \
+            --selector=app.kubernetes.io/component=controller --timeout=300s
+
+      # Pin the prod overlay to this exact commit. Never :latest.
+      - name: set the image tags to this commit SHA
+        run: |
+          cd k8s/overlays/prod
+          kustomize edit set image rahbar-api=${{ secrets.DOCKERHUB_USERNAME }}/rahbar-api:${{ github.sha }}
+          kustomize edit set image rahbar-indexer=${{ secrets.DOCKERHUB_USERNAME }}/rahbar-indexer:${{ github.sha }}
+          kustomize edit set image rahbar-ui=${{ secrets.DOCKERHUB_USERNAME }}/rahbar-ui:${{ github.sha }}
+
+      - name: apply
+        run: |
+          # `kustomize build` emits ConfigMap scalars UNQUOTED (LLM_PROVIDER:
+          # ollama-host, not LLM_PROVIDER: "ollama-host") - see the matching
+          # fix and explanation in .github/workflows/ci.yml's e2e-eval job.
+          # This ephemeral CD smoke-test cluster has no real Ollama reachable
+          # either, so LLM_PROVIDER and EMBED_MODEL need the same CI-safe,
+          # network-free swap: stub provider, deterministic ci-hash embedding.
+          kustomize build k8s/overlays/prod \
+            | sed -e 's/LLM_PROVIDER: ollama-host/LLM_PROVIDER: stub/' \
+                  -e 's/EMBED_MODEL: nomic-embed-text/EMBED_MODEL: ci-hash-256/' \
+            | kubectl apply -f -
+          # The overlay also applies a one-shot Job named `indexer`. The cd-index
+          # Job below writes the same Chroma collection, and two indexers running
+          # at once delete and recreate it under each other. This job waits on
+          # cd-index only, so remove the other one first (same class of race that
+          # broke ci.yml's e2e-eval intermittently).
+          kubectl delete job/indexer -n rahbar --ignore-not-found --wait=true
+
+      - name: wait for the data tier
+        run: |
+          kubectl rollout status statefulset/chroma -n rahbar --timeout=300s
+          kubectl rollout status deployment/redis   -n rahbar --timeout=180s
+
+      - name: index
+        run: |
+          kubectl create job --from=cronjob/reindex cd-index -n rahbar
+          kubectl wait --for=condition=complete job/cd-index -n rahbar --timeout=600s \
+            || { kubectl logs job/cd-index -n rahbar --tail=200; exit 1; }
+
+      # The deploy WAITS. Without rollout status it reports success before the
+      # pods are serving.
+      - name: rollout status
+        run: |
+          kubectl rollout status deployment/api -n rahbar --timeout=300s
+          kubectl rollout status deployment/ui  -n rahbar --timeout=300s
+          kubectl get endpoints api -n rahbar
+
+      # Smoke test THROUGH THE INGRESS, with the Host header the rule names.
+      - name: smoke test through the Ingress
+        run: |
+          kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80 &
+          sleep 5
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: rahbar.local' http://localhost:8080/)
+            [ "$code" = "200" ] && break || sleep 3
+          done
+          echo "ui: $code"; [ "$code" = "200" ]
+
+          body=$(curl -s -X POST -H 'Host: rahbar.local' -H 'Content-Type: application/json' \
+            -d '{"question":"When is a student placed on academic warning?"}' \
+            http://localhost:8080/api/ask)
+          echo "$body"
+          echo "$body" | python3 -c "import json,sys; r=json.load(sys.stdin); assert r['retrieved'], 'nothing retrieved'; assert 'request_id' in r; print('smoke ok, provider =', r['provider'])"
+
+      - name: deployment summary
+        run: |
+          echo "### Deployed" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          kubectl get deploy,sts,job -n rahbar >> $GITHUB_STEP_SUMMARY
+
+      - name: diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get pods -n rahbar -o wide
+          kubectl describe pods -n rahbar | tail -150
+          kubectl logs -n rahbar -l app=api --tail=200 --all-containers || true

@@ -11,6 +11,13 @@ from ...schemas import Answer, Citation, Passage
 
 class StubProvider:
     name = "stub"
+    last_tokens = (0, 0)
+
+    def generate_validated(self, question: str, passages: list[Passage]
+                           ) -> tuple[Answer, str]:
+        """No model, no network: deterministic, so no validate/retry machinery
+        runs in offline mode. Always 'ok' - there is nothing to fail."""
+        return self.generate(question, passages), "ok"
 
     def generate(self, question: str, passages: list[Passage]) -> Answer:
         if not passages:

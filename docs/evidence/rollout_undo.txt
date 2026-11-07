@@ -1,0 +1,37 @@
+# P16-T08 captured 2026-11-05T11:27:30Z
+# requirement: K8-23 - a bad rollout is caught and reversible
+
+$ kubectl set image deployment/api api=rahbar-api:broken-does-not-exist -n rahbar
+deployment.apps/api image updated
+
+$ kubectl rollout status deployment/api -n rahbar --timeout=40s
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+error: timed out waiting for the condition
+(timed out as expected - the bad image never becomes ready)
+
+$ kubectl get pods -n rahbar -l app=api
+NAME                   READY   STATUS         RESTARTS   AGE
+api-5558f6c8b4-w7d5r   0/1     ErrImagePull   0          40s
+api-d565cb56d-8hpxv    1/1     Running        0          4m14s
+api-d565cb56d-8v8gl    1/1     Running        0          3m48s
+api-d565cb56d-gcqbk    1/1     Running        0          4m27s
+api-d565cb56d-tt89p    1/1     Running        0          4m1s
+
+$ kubectl rollout undo deployment/api -n rahbar
+Warning: resource deployments/api was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/api rolled back
+
+$ kubectl rollout status deployment/api -n rahbar --timeout=120s
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+
+$ kubectl get pods -n rahbar -l app=api
+NAME                   READY   STATUS        RESTARTS   AGE
+api-5558f6c8b4-w7d5r   0/1     Terminating   0          53s
+api-d565cb56d-8hpxv    1/1     Running       0          4m27s
+api-d565cb56d-8v8gl    1/1     Running       0          4m1s
+api-d565cb56d-gcqbk    1/1     Running       0          4m40s
+api-d565cb56d-tt89p    1/1     Running       0          4m14s
+
+$ kubectl get deployment api -n rahbar -o jsonpath='{.spec.template.spec.containers[0].image}'
+rahbar-api:dev

@@ -1,0 +1,79 @@
+# The RAHBAR corpus. Re-fetch with:  python corpus/fetch.py
+# Verify with:                        python corpus/fetch.py --verify
+#
+# Every entry needs a name and a url. doc_version and superseded become chunk
+# metadata (section 3.1): they are how the retriever tells the current rule
+# from the repealed one.
+#
+# Fetched and verified 2026-11-04 (9 of 9 match corpus/MANIFEST.md). See
+# docs/CORPUS.md for the seven-property mapping and the real evidence behind
+# each one (clause text, table content, scan confirmation).
+
+documents:
+
+  # Property 2: two versions of one policy. ALSO property 3: confirmed a scan -
+  # 24 of its 26 pages have no text layer (see docs/evidence/pdffonts_scan_proof.txt).
+  - name: Undergraduate Academic Rules (Aug 2023)
+    url: http://nu.edu.pk/public/downloads/Academic-Rules-Undergrad-Aug-2023.pdf
+    doc_version: "2023-08"
+    superseded: true
+    notes: >
+      Downloaded and verified 2026-11-04. Pages 2-25 of 26 are a scanned
+      image with no text layer (confirmed by pypdf font/text introspection);
+      only the title page and the contact footer have real text. Needs OCR
+      (tesseract-ocr + poppler-utils, in the indexer image) to be fully
+      indexed - this host has neither, so this is a documented, not-yet-
+      recovered loss until the real indexer Job runs.
+
+  - name: Academic Rules Handbook (Jun 2026)
+    url: https://nu.edu.pk/public/downloads/Academic_Rules_Handbook_2026.pdf
+    doc_version: "2026-06"
+    superseded: false
+    notes: About 53 pages, numbered clauses (attendance 1.21, academic warning 5.4).
+
+  - name: Prospectus 2026 - Academic Rules and Regulations
+    url: https://nu.edu.pk/Admissions/ProspectusUpload/Academic Rules and Regulations.pdf
+    doc_version: "2026"
+    superseded: false
+    notes: The same rules in 5 pages with different clause numbers (attendance is clause 1 here).
+
+  # Property 5: long definitions
+  - name: Student Handbook (Jun 2026)
+    url: https://nu.edu.pk/public/downloads/Student_Handbook_2026.pdf
+    doc_version: "2026-06"
+    superseded: false
+
+  # Property 4: tables, and versions over time
+  - name: Annual Report 2019-20
+    url: https://nu.edu.pk/public/downloads/AnnualReportForm/Annual Report 2019-20.pdf
+    doc_version: "2019-20"
+    superseded: false
+
+  - name: Annual Report 2023-24
+    url: https://nu.edu.pk/public/downloads/AnnualReportForm/Annual Report 2023-24.pdf
+    doc_version: "2023-24"
+    superseded: false
+
+  # Property 4: tables in HTML pages (your extract stage must handle .html)
+  - name: Fee Structure page
+    url: https://www.nu.edu.pk/Admissions/FeeStructure
+    doc_version: "2026-27"
+    superseded: false
+
+  - name: Grading page
+    url: https://www.nu.edu.pk/Student/Grading
+    doc_version: "2026"
+    superseded: false
+
+  # Property 3: CONFIRMED scan. All 8 of 8 pages have zero fonts, zero
+  # extractable text, and an /XObject image - unambiguously image-only.
+  # See docs/evidence/pdffonts_scan_proof.txt.
+  - name: Faculty Entrepreneurship and Technical Start-ups Policy
+    url: https://nu.edu.pk/OricResources/ResearchPolicies/27.pdf?20220530
+    doc_version: "2022-05"
+    superseded: false
+
+  # Property 6: a deliberately absent topic. Leave the document that covers it OUT,
+  # and write must-abstain golden questions about it. Example: hostel rules.
+  # - name: Prospectus - Transport and Hostel Facilities
+  #   url: https://nu.edu.pk/Admissions/ProspectusUpload/Transport and Hostel Facilities.pdf

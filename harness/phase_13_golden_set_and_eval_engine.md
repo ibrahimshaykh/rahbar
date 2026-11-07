@@ -366,7 +366,7 @@ across two different corpora, which is meaningless.
 | Path | Action |
 |---|---|
 | `eval/golden.yaml` | created — 16 questions, committed first |
-| `eval/run_eval.py` | four functions implemented; `STARTER-TODO`s removed |
+| `eval/run_eval.py` | four functions implemented; `SPEC-REF`s removed |
 | `eval/pyproject.toml` | created |
 | `eval/tests/test_run_eval.py` | created — 26 tests |
 | `eval/baseline.fixture.json` | created |
@@ -393,11 +393,11 @@ cd eval && ../.venv/bin/pytest -q
 
 # 3. NO NotImplementedError left anywhere in the repository
 grep -rn 'raise NotImplementedError' --include='*.py' --exclude-dir=.venv --exclude-dir=tests .   # empty
-grep -rn 'STARTER-TODO' --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.'   # empty
+grep -rn 'SPEC-REF' --exclude-dir=.venv --exclude-dir=.git --exclude=STARTER.md . | grep -v '\.example\.'   # empty
 
 # 4. section 0 of the checker is finally clean
 python3 scripts/check_submission.py 2>&1 | sed -n '/0 · starter kit/,/^$/p'
-# EXPECT: "no STARTER-TODO markers left" and "no NotImplementedError stubs left"
+# EXPECT: "no SPEC-REF markers left" and "no NotImplementedError stubs left"
 
 # 5. the H section is green apart from the P15 artefacts
 python3 scripts/check_submission.py 2>&1 | sed -n '/H · evaluation/,/^$/p'

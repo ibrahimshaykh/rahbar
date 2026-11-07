@@ -1,22 +1,51 @@
-"""Hosted free-tier provider (Groq, Google AI Studio, OpenRouter). Yours to build.
+"""Hosted free-tier provider (Groq, Google AI Studio, OpenRouter).
 
 The key arrives as LLM_API_KEY from a Kubernetes Secret created on the command
-line. It never appears in a file you commit, and never in a log line.
+line. It never appears in a file you commit, and never in a log line - the
+error path below deliberately omits the response body, because a hosted
+provider may echo the Authorization header back in a 401 message.
 """
 
 from __future__ import annotations
 
+import httpx
+
 from ...config import Settings
-from ...schemas import Answer, Passage
+from .base import ANSWER_JSON_SCHEMA, BaseHTTPProvider, ProviderError
 
 
-class HostedProvider:
+class HostedProvider(BaseHTTPProvider):
     name = "hosted"
 
-    def __init__(self, settings: Settings) -> None:
-        self.settings = settings   # hosted_base_url, llm_model, llm_api_key, temperature
+    def __init__(self, settings: Settings,
+                transport: httpx.BaseTransport | None = None) -> None:
+        self.settings = settings
+        self._transport = transport
 
-    def generate(self, question: str, passages: list[Passage]) -> Answer:
-        # STARTER-TODO(3.4): same contract as the Ollama provider, over the hosted API.
-        # Many free tiers are OpenAI-compatible: POST {hosted_base_url}/chat/completions.
-        raise NotImplementedError("HostedProvider.generate: see STARTER-TODO(3.4)")
+    def _call(self, system: str, user: str) -> tuple[str, int, int]:
+        payload = {
+            "model": self.settings.llm_model,
+            "messages": [{"role": "system", "content": system},
+                        {"role": "user", "content": user}],
+            "temperature": self.settings.temperature,
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {"name": "Answer", "strict": True,
+                                "schema": ANSWER_JSON_SCHEMA},
+            },
+        }
+        headers = {"Authorization": f"Bearer {self.settings.llm_api_key}",
+                  "Content-Type": "application/json"}
+        with httpx.Client(transport=self._transport,
+                          timeout=self.settings.llm_timeout_seconds) as client:
+            r = client.post(f"{self.settings.hosted_base_url.rstrip('/')}/chat/completions",
+                            json=payload, headers=headers)
+        if r.status_code >= 400:
+            # Never include r.text here: some providers echo the Authorization
+            # header, or the key, back in an error body.
+            raise ProviderError(f"hosted HTTP {r.status_code}")
+        body = r.json()
+        usage = body.get("usage", {})
+        return (body["choices"][0]["message"]["content"],
+               int(usage.get("prompt_tokens", 0)),
+               int(usage.get("completion_tokens", 0)))

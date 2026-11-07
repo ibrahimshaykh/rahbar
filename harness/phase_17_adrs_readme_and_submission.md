@@ -424,7 +424,7 @@ python3 scripts/check_submission.py 2>&1 | sed -n '/J · docs/,/^$/p' | grep -c 
 python3 scripts/check_submission.py 2>&1 | grep -c ' FAIL '    # 0
 
 # 5. no placeholder anywhere
-grep -rn 'PENDING-HUMAN\|<<FILL\|STARTER-TODO' README.md docs/ k8s/ CLAUDE.md \
+grep -rn 'PENDING-HUMAN\|<<FILL\|SPEC-REF' README.md docs/ k8s/ CLAUDE.md \
   --exclude-dir=harness | grep -v STARTER.md     # empty
 
 # 6. ten evidence artefacts

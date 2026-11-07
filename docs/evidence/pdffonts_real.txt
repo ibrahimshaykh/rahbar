@@ -1,0 +1,397 @@
+=== /raw/academic-rules-handbook-jun-2026.pdf ===
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+DRORAN+MyriadPro-Bold                Type 1C           WinAnsi          yes yes no     708  0
+FLBGWI+Montserrat-Light              TrueType          WinAnsi          yes yes yes    669  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    670  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    679  0
+ESGYZF+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    681  0
+FLBGWI+Montserrat-Light              TrueType          WinAnsi          yes yes yes    691  0
+XHDKOY+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    693  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    336  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    327  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    334  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    326  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    331  0
+FLBGWI+Montserrat-Light              TrueType          WinAnsi          yes yes yes    329  0
+XHDKOY+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    328  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    350  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    348  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    351  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    347  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    345  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    354  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    353  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    360  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    359  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    362  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    363  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    366  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    365  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    368  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    369  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    371  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    372  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    374  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    376  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    377  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    378  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    380  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    382  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    383  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    384  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    386  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    387  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    390  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    389  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    393  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    391  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    396  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    395  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    398  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    400  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    402  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    401  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    403  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    406  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    408  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    407  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    411  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    412  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    413  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    414  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    415  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    416  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    419  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    420  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    422  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    421  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    425  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    426  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    428  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    430  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    432  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    431  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    433  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    436  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    437  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    438  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    439  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    440  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    443  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    444  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    445  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    451  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    449  0
+ZPFQHP+Cambria                       TrueType          WinAnsi          yes yes yes    448  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    458  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    456  0
+ZPFQHP+Cambria                       TrueType          WinAnsi          yes yes yes    457  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    455  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    461  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    459  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    465  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    464  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    463  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    466  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    471  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    469  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    473  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    472  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    474  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    477  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    478  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    475  0
+ESGYZF+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    482  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    483  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    485  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    484  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    487  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    488  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    486  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    493  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    495  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    494  0
+ESGYZF+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    492  0
+YRJVTR+SymbolMT                      CID TrueType      Identity-H       yes yes yes    498  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    507  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    499  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    502  0
+NYUHVN+SymbolMT                      CID TrueType      Identity-H       yes yes yes    510  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    512  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    511  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    513  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    516  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    517  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    514  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    522  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    521  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    520  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    525  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    524  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    527  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    529  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    530  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    532  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    531  0
+ILHWDX+ArialMT                       TrueType          WinAnsi          yes yes yes    536  0
+MJHUHP+TimesNewRomanPS-BoldMT        TrueType          WinAnsi          yes yes yes    534  0
+IDEWDX+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    537  0
+
+=== /raw/annual-report-2019-20.pdf ===
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+CIDFont+F1                           CID TrueType      Identity-H       yes no  yes     11  0
+CIDFont+F2                           CID TrueType      Identity-H       yes no  yes     19  0
+CIDFont+F3                           CID TrueType      Identity-H       yes no  yes     31  0
+CIDFont+F4                           CID TrueType      Identity-H       yes no  yes     45  0
+CIDFont+F5                           CID TrueType      Identity-H       yes no  yes     80  0
+CIDFont+F6                           CID TrueType      Identity-H       yes no  yes    116  0
+CIDFont+F7                           CID TrueType      Identity-H       yes no  yes    160  0
+
+=== /raw/annual-report-2023-24.pdf ===
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+TimesNewRomanPSMT                    TrueType          WinAnsi          no  no  no       5  0
+TimesNewRomanPS-BoldMT               TrueType          WinAnsi          no  no  no       9  0
+BCDEEE+Cambria-Bold                  TrueType          WinAnsi          yes yes no      18  0
+TimesNewRomanPS-BoldMT               CID TrueType      Identity-H       yes no  yes     42  0
+ArialMT                              TrueType          WinAnsi          no  no  no     126  0
+TimesNewRomanPSMT                    CID TrueType      Identity-H       yes no  yes    129  0
+Arial-BoldMT                         TrueType          WinAnsi          no  no  no     147  0
+BCDFEE+SegoeUIEmoji                  CID TrueType      Identity-H       yes yes yes    163  0
+SymbolMT                             CID TrueType      Identity-H       yes no  yes    197  0
+BCDGEE+Garamond                      TrueType          WinAnsi          yes yes no     261  0
+BCDHEE+Garamond-Bold                 TrueType          WinAnsi          yes yes no     357  0
+TimesNewRomanPS-ItalicMT             TrueType          WinAnsi          no  no  no     464  0
+TimesNewRomanPS-ItalicMT             CID TrueType      Identity-H       yes no  yes    466  0
+BCDIEE+Calibri                       TrueType          WinAnsi          yes yes no     462  0
+BCDJEE+CourierNewPSMT                TrueType          WinAnsi          yes yes no     481  0
+
+=== /raw/faculty-entrepreneurship-and-technical-start-ups-policy.pdf ===
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+
+=== /raw/prospectus-2026-academic-rules-and-regulations.pdf ===
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+YJUBMR+FiraSans-Regular              CID Type 0C       Identity-H       yes yes yes     12  0
+DKMTVE+FiraSans-Medium               CID Type 0C       Identity-H       yes yes yes     19  0
+SFLDQJ+FiraSans-Light                CID Type 0C       Identity-H       yes yes yes     26  0
+RBVLOE+TimesNewRomanPSMT             CID Type 0C       Identity-H       yes yes yes     33  0
+Calibri-Light                        TrueType          WinAnsi          yes no  no    2185  0
+ArialMT                              TrueType          WinAnsi          no  no  no    1486  0
+LHUDLL+FiraSans-Bold                 CID Type 0C       Identity-H       yes yes yes     48  0
+GLVQQA+SymbolMT                      CID Type 0C       Identity-H       yes yes yes     62  0
+
+=== /raw/student-handbook-jun-2026.pdf ===
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    871  0
+WAXNEQ+TimesNewRomanPS-ItalicMT      TrueType          WinAnsi          yes yes yes    877  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    878  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    882  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    903  0
+HIFGGU+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    891  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    365  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    371  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    364  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    369  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    373  0
+NXKGII+Cambria-Italic                TrueType          WinAnsi          yes yes yes    380  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    382  0
+HIFGGU+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    376  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    383  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    388  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    386  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    390  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    392  0
+VTMGMI+MazzardH-Medium               CID TrueType      Identity-H       yes yes yes    910  0
+TEUMOL+MazzardH-Medium               CID TrueType      Identity-H       yes yes yes    979  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    394  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    400  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    404  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    399  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    398  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    417  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    411  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    407  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    413  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    415  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    410  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    422  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    425  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    421  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    428  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    427  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    430  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    426  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    440  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    449  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    437  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    447  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    435  0
+PTEIKE+Arial-BoldMT                  TrueType          WinAnsi          yes yes yes    444  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    434  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    443  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    452  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    451  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    456  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    453  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    458  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    460  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    465  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    467  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    466  0
+BOXXWG+SymbolMT                      CID TrueType      Identity-H       yes yes yes    482  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    480  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    483  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    473  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    485  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    474  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    491  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    490  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    488  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    493  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    495  0
+TSXWOW+SymbolMT                      CID TrueType      Identity-H       yes yes yes    500  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    497  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    499  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    505  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    506  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    507  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    519  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    513  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    509  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    518  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    514  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    515  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    528  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    525  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    521  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    530  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    531  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    522  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    534  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    539  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    544  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    541  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    536  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    537  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    551  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    548  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    553  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    545  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    552  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    556  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    560  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    562  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    563  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    558  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    570  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    576  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    567  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    569  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    574  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    568  0
+HJKIXU+SymbolMT                      CID TrueType      Identity-H       yes yes yes    578  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    583  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    588  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    582  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    585  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    581  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    584  0
+SKXWVY+SymbolMT                      CID TrueType      Identity-H       yes yes yes    595  0
+ZFMHPK+SymbolMT                      CID TrueType      Identity-H       yes yes yes    596  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    605  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    593  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    600  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    602  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    609  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    607  0
+GAWXJW+SymbolMT                      CID TrueType      Identity-H       yes yes yes    623  0
+HHJYXU+SymbolMT                      CID TrueType      Identity-H       yes yes yes    622  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    610  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    616  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    629  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    615  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    612  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    618  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    617  0
+NDEIDI+SymbolMT                      CID TrueType      Identity-H       yes yes yes    641  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    635  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    638  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    636  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    642  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    631  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    645  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    647  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    649  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    643  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    652  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    654  0
+TGHVOW+Cambria                       TrueType          WinAnsi          yes yes yes    655  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    661  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    658  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    666  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    662  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    665  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    672  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    674  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    673  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    677  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    670  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    678  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    690  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    686  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    684  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    683  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    679  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    682  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    696  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    694  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    697  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    692  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    699  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    702  0
+AIJTDI+SymbolMT                      CID TrueType      Identity-H       yes yes yes    710  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    703  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    717  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    715  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    704  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    711  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    708  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    723  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    726  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    718  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    724  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    725  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    730  0
+HIFGGU+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    731  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    744  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    734  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    746  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    738  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    741  0
+BIJMWG+ArialMT                       TrueType          WinAnsi          yes yes yes    745  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    344  0
+HIFGGU+Montserrat-Regular            Type 1C           WinAnsi          yes yes yes    735  0
+SUZPAY+TimesNewRomanPSMT             TrueType          WinAnsi          yes yes yes    750  0
+NKMLII+MazzardH-Medium               TrueType          WinAnsi          yes yes yes    749  0
+HAHGGU+Montserrat-Light              TrueType          WinAnsi          yes yes yes    359  0
+
+=== /raw/undergraduate-academic-rules-aug-2023.pdf ===
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+ACSMTO+Calibri-Bold                  CID Type 0C       Identity-H       yes yes yes     13  0
+BTDGSO+LEMONMILK-Regular             CID Type 0C       Identity-H       yes yes yes     20  0
+UVDMBE+Calibri                       CID Type 0C       Identity-H       yes yes yes    201  0
+
