@@ -167,7 +167,7 @@
     .pending .dot { animation: none; }
   }
 
-  form { position: fixed; left: 0; right: 0; bottom: 0; padding: 18px 20px 22px;
+  form { position: fixed; left: 0; right: 0; bottom: 0; z-index: 2; padding: 18px 20px 22px;
          background: linear-gradient(to top, var(--bg) 60%, transparent); }
   .bar { max-width: 740px; margin: 0 auto; display: flex; gap: 10px; align-items: center;
          background: color-mix(in srgb, var(--panel) 86%, transparent);
@@ -526,7 +526,8 @@ function stat(icon, label, value, kind) {
 
 async function loadStats() {
   try {
-    const res = await fetch(`${API_BASE}/readyz`);
+    // Live state: never answer this from the browser cache.
+    const res = await fetch(`${API_BASE}/readyz`, { cache: "no-store" });
     const body = await res.json();
     statsBox.replaceChildren();
     if (res.ok && body.status === "ready") {
