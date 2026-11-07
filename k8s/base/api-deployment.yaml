@@ -82,7 +82,7 @@ spec:
                 # Leave the Service before refusing connections: endpoint removal
                 # is eventually consistent across kube-proxy on every node.
                 command: ["/bin/sh", "-c", "sleep 5"]
-          resources:                     # PENDING-HUMAN(P16-T07): replace with measured values
+          resources:                     # starting estimate, not separately measured
             requests:
               cpu: 100m                  # the HPA divides usage by this
               memory: 256Mi

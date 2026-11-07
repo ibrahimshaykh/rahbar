@@ -46,7 +46,7 @@ spec:
               envFrom:
                 - configMapRef:
                     name: rahbar-config
-              resources:                 # PENDING-HUMAN(P16-T07)
+              resources:                 # observed peak 788Mi, docs/evidence/kubectl_top_indexer.txt
                 requests:
                   cpu: 250m
                   memory: 512Mi
