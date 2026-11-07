@@ -40,3 +40,7 @@ filled with invented output. They were later run live on the team's own
 machine and the markers were replaced with the real outputs, which are in
 `docs/evidence/`. The agent also opened pull requests and handled the
 CI repair, but a human merged the final pull request.
+
+## Commit authorship
+
+`scripts/check_submission.py` warns that one author wrote most of the commits. Nearly all commits were made under one shared git identity, `RAHBAR Team`, by the AI agent working in the repository, and every commit message carries `Co-Authored-By:` trailers naming both partners. `git shortlog` therefore shows the committer and not the co-authors, and it does not measure who contributed what.
