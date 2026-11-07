@@ -16,6 +16,15 @@ spec:
       http:
         paths:
           # More specific path first.
+          # The UI's status chip reads the API's own readiness. Exact, so only
+          # this one path reaches the api; /healthz and /metrics stay internal.
+          - path: /readyz
+            pathType: Exact
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
           - path: /api
             pathType: Prefix
             backend:
