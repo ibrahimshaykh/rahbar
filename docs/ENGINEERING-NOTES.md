@@ -2,9 +2,8 @@
 
 Seven questions from section 7 of the assignment, each answered pointing at
 our own files and line numbers. Where an answer needs a number only a live
-cluster can produce, that number is marked `PENDING-HUMAN(<task>)` rather
-than guessed — see `harness/99_HUMAN_RUNBOOK.md` for the exact command that
-fills it in.
+cluster can produce, the figure comes from a live minikube run and the
+evidence file that holds the raw output is named next to it in `docs/evidence/`.
 
 ## 1. Indexing in API startup: what breaks with 3 replicas and one Chroma volume?
 
@@ -97,17 +96,17 @@ that goes with it, not a replacement for it.
 
 ## 4. The indexer's peak memory, the limit, the margin, and the exit code if wrong
 
-`k8s/base/indexer-job.yaml` currently ships a **starting** value, explicitly
-marked `# PENDING-HUMAN(P16-T07): replace with measured values` in the
-manifest itself — `requests.memory: 512Mi`, `limits.memory: 2Gi`.
+`k8s/base/indexer-job.yaml` ships `requests.memory: 512Mi` and
+`limits.memory: 2Gi`.
 
-The real peak, measured with `kubectl top pods -n rahbar` while a real
-indexer Job runs against the real corpus, is `PENDING-HUMAN(P16-T07)` —
-this development host has no Kubernetes cluster to run that command against.
-The capture script `scripts/evidence/P16-T06_top.sh` samples every ten
-seconds for two minutes while a Job runs and is ready to produce the real
-figure and the real margin (peak as a percentage of the limit) the moment a
-cluster exists.
+The highest reading we actually observed with `kubectl top pod` during a real
+indexer run against the real corpus (about 20 minutes) was **788Mi**, taken
+mid-extraction while the indexer was working through a scanned document
+(`docs/evidence/kubectl_top_indexer.txt`). That is about 38% of the 2Gi limit,
+roughly 61% headroom. The pod finished and was garbage-collected before a
+snapshot could be taken at the embedding stage, so 788Mi is the highest
+reading seen and not a proven maximum. The margin is therefore an observed
+margin, and the limit is deliberately generous because of that.
 
 **The exit code if the limit is set wrong, which does not need a
 measurement to answer:** exceeding the **memory** limit gets the container
@@ -201,12 +200,12 @@ conflict is logged at ERROR level both at startup (`api/app/main.py`'s
 `lifespan`, which logs the pin state once at boot without raising — raising
 would `CrashLoopBackOff` and never recover once the ConfigMap is fixed,
 since the pod could not stay up long enough to re-read it) and on every
-subsequent `/readyz` probe. The live capture of this exact sequence —
-`0/1 READY`, the conflict log line naming both models, zero addresses on
-`kubectl get endpoints api` — is `PENDING-HUMAN(P16-T10)`, with
-`scripts/evidence/P16-T10_pin.sh` ready to produce it the moment a cluster
-exists; it changes `EMBED_MODEL` on the ConfigMap **without re-indexing**,
-waits, captures all three facts, then restores it.
+subsequent `/readyz` probe. The live capture of this sequence is
+`docs/evidence/pin_mismatch_not_ready.txt` (2026-11-05): `EMBED_MODEL` was
+changed on the ConfigMap **without re-indexing**, and the new pod stayed at
+`0/1 READY` while the three older pods kept serving. Its log line names both
+models: `collection indexed with 'dummy-768' but EMBED_MODEL is
+'nomic-embed-text'; re-index or revert the ConfigMap`.
 
 **What it would have done without the guardrail:** nothing would error
 anywhere. The API would embed every incoming question with the *new* model

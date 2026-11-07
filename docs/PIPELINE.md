@@ -33,8 +33,10 @@ fail the whole indexing Job for the other nine documents in the corpus.
 scanned) and `undergraduate-academic-rules-aug-2023.pdf` (**24 of 26 pages**,
 2–25) — the latter is also our version-pair's superseded half, so its content
 is only recoverable once the indexer runs with `tesseract-ocr` and
-`poppler-utils` present (the indexer Docker image; `PENDING-HUMAN(P15-T02)` for
-the first real cluster run). On **this** host, running the real pipeline
+`poppler-utils` present, which the indexer Docker image provides. The indexer
+ran in that image on the cluster, and `docs/evidence/kubectl_top_indexer.txt`
+records memory samples taken while it was OCR-ing a scanned document. On the
+Windows development host, which has no `poppler-utils`, running the real pipeline
 against the fetched corpus (`python scripts/amplification.py --corpus
 corpus/raw`) exercised the designed degrade path for real: `pdf2image` raised
 `PDFInfoNotInstalledError` (no `poppler-utils`), caught by `extract.py`'s

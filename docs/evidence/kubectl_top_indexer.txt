@@ -16,5 +16,4 @@ Observed peak during this run: 788Mi against a 2048Mi limit - a real margin of
 approximately 61% headroom (788/2048 ~= 38% utilised at observed peak).
 The true peak (likely during embedding, when ~1117 vectors + chunk text were held
 in memory before the final Chroma write) was not captured by a live kubectl top call
-and is PENDING-HUMAN(P16-T06) for a tighter measurement via a dedicated monitoring
-loop run alongside the next re-index.
+and was not measured. 788Mi is the highest reading actually observed, not a proven maximum.
