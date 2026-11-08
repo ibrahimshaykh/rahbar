@@ -247,6 +247,59 @@ recorded value against its own `EMBED_MODEL` at every `/readyz` probe
 mismatch, logging exactly which two values conflict. See ADR 0001 and section
 4.4 of the assignment.
 
+## Abstention: three layers, and why one floor was not enough
+
+**The bug.** In the live demo on 2026-11-08, "yoo" and "whats up ?" came back
+marked "Grounded in the documents", each citing a random real passage. The
+shipped `RELEVANCE_FLOOR` was 0.35, and with `nomic-embed-text` almost nothing
+scores that low: "qwerty zxcv" scored 0.50 against the corpus, so the floor
+never fired and every message reached the model, which picked the closest
+passage and called it an answer.
+
+**What we measured** (live 1117-chunk index, cosine, the API's own query path;
+raw numbers in the session's scratch files, method in `harness/00_MASTER_PLAN_AND_STATUS.md`):
+
+| Probe set | n | Max-similarity range |
+| --- | --- | --- |
+| Real questions (golden set plus casual phrasings, incl. the UI's three suggestion chips) | 41 | **0.592** to 0.917 |
+| Small talk and word-free messages ("hi", "test", "123", "???", "bye") | 23 | 0.471 to **0.737** |
+| Off-topic and general knowledge (hostel, bus, gym, France, 2+2, Python) | 24 | 0.465 to 0.679 |
+
+The groups overlap: "123" (0.737) scores above "What is the refund policy?"
+(0.592). **No single floor separates them.** We also tested `nomic-embed-text`'s
+task prefixes (`search_query:` / `search_document:`), re-embedding all 1117
+chunks: separation got *worse* ("test" rose from 0.672 to 0.741), so we did not
+ship that change.
+
+**What we built instead, cheapest layer first:**
+
+1. **Input guard** (`api/app/services/abstain.py::is_not_a_question`). A
+   whole-message pattern for small talk, plus "contains no word of two or more
+   letters". It runs before the cache, Chroma and the model, returns a fixed help
+   reply, and is never cached. It matches the whole message only, so
+   "hi, what is the attendance requirement?" still goes through.
+2. **Relevance floor 0.55** (ConfigMap). The lowest real question we found
+   scored 0.592. Seven of the 24 off-topic and general-knowledge probes and
+   most nonsense strings ("qwerty zxcv" 0.50) score below 0.55 and are now
+   declined in 1 to 3 seconds with no model call.
+3. **The model**, for real but off-topic questions that clear the floor. The
+   system prompt now says an unrelated question is not answered from context,
+   and asks for the rule restated with its conditions rather than a bare number.
+
+**Live result after the fix** (through the Ingress, one request at a time,
+with the guard, the 0.55 floor and the off-topic prompt rule deployed; before
+the two later prompt rules on answer form and short reasoning):
+all 8 small-talk and word-free probes declined in about 0.1 s; all 6
+nonsense and general-knowledge probes declined at the floor; all 5 off-topic
+probes declined by the model; all 7 real questions answered with a citation; the
+prompt-injection probe was declined. "hi" alone is rejected earlier still, with
+HTTP 422, by the 3-to-500-character rule.
+
+**The honest cost.** The floor and the guard trade a little recall for
+correctness. A genuinely relevant question phrased very loosely can score below
+0.55 and be declined; we judged a wrong "I can't answer" cheaper than a
+confident wrong answer, which is what the abstention rubric rewards.
+
 ## Semantic cache
 
 **Store: Redis**, defended in `docs/adr/0003-cache-store.md` against a second

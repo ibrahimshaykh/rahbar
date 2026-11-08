@@ -93,3 +93,11 @@ def test_system_prompt_asks_for_a_complete_answer_not_a_bare_number() -> None:  
     lowered = SYSTEM_PROMPT.lower()
     assert "never a bare number" in lowered
     assert "conditions" in lowered
+
+
+def test_system_prompt_keeps_the_discarded_reasoning_short() -> None:  # T-PRM-10
+    # reasoning is stripped before the user sees it, but on a CPU-only host
+    # every output token costs latency: one live answer used 122 output tokens
+    # and took 93 s, against a 100 s provider timeout.
+    from app.services.prompt import SYSTEM_PROMPT
+    assert "at most one short sentence" in SYSTEM_PROMPT.lower()

@@ -33,7 +33,8 @@ RULES
    else. No markdown fences, no commentary before or after the JSON.
 
 FIELDS
-- reasoning: your short private working. It is stripped before the user sees it.
+- reasoning: at most one short sentence of private working. It is stripped
+  before the user sees it, so do not spend words on it.
 - answer: the user-facing answer, plain prose, no markdown. One or two complete
   sentences that restate the rule from the evidence with its numbers and
   conditions, never a bare number. Read the clause carefully: a required
