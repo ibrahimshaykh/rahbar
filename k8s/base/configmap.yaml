@@ -26,6 +26,10 @@ data:
   RELEVANCE_FLOOR: "0.35"
 
   # --- generation
+  # How long the API waits for the model. A 3B model on a CPU-only host took
+  # 52 s for one answer in the live demo, so the default 60 s was too tight.
+  # Must stay below the Ingress proxy-read-timeout (120 s).
+  LLM_TIMEOUT_SECONDS: "100"
   # Facts and JSON belong at 0 to 0.3: a higher value makes the model paraphrase
   # the evidence and invent clause numbers. 0.2 keeps one re-roll's worth of
   # wording variety without that. See docs/PIPELINE.md.

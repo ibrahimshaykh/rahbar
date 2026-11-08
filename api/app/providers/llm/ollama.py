@@ -25,9 +25,14 @@ class OllamaProvider(BaseHTTPProvider):
             "format": ANSWER_JSON_SCHEMA,
             "options": {"temperature": self.settings.temperature},
         }
-        with httpx.Client(transport=self._transport,
-                          timeout=self.settings.llm_timeout_seconds) as client:
-            r = client.post(f"{self.settings.ollama_url}/api/chat", json=payload)
+        try:
+            with httpx.Client(transport=self._transport,
+                              timeout=self.settings.llm_timeout_seconds) as client:
+                r = client.post(f"{self.settings.ollama_url}/api/chat", json=payload)
+        except httpx.HTTPError as exc:
+            # Timeouts and connection failures are provider failures, so the
+            # caller takes the safe-fallback path instead of returning HTTP 500.
+            raise ProviderError(f"ollama request failed: {type(exc).__name__}") from exc
         if r.status_code >= 400:
             raise ProviderError(f"ollama HTTP {r.status_code}: {r.text[:200]}")
         body = r.json()

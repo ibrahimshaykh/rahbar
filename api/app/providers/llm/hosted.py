@@ -36,10 +36,14 @@ class HostedProvider(BaseHTTPProvider):
         }
         headers = {"Authorization": f"Bearer {self.settings.llm_api_key}",
                   "Content-Type": "application/json"}
-        with httpx.Client(transport=self._transport,
-                          timeout=self.settings.llm_timeout_seconds) as client:
-            r = client.post(f"{self.settings.hosted_base_url.rstrip('/')}/chat/completions",
-                            json=payload, headers=headers)
+        try:
+            with httpx.Client(transport=self._transport,
+                              timeout=self.settings.llm_timeout_seconds) as client:
+                r = client.post(f"{self.settings.hosted_base_url.rstrip('/')}/chat/completions",
+                                json=payload, headers=headers)
+        except httpx.HTTPError as exc:
+            # Only the exception type is reported, never its text (it can carry the URL).
+            raise ProviderError(f"hosted request failed: {type(exc).__name__}") from exc
         if r.status_code >= 400:
             # Never include r.text here: some providers echo the Authorization
             # header, or the key, back in an error body.

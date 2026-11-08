@@ -182,3 +182,28 @@ def test_hosted_sends_bearer_authorization(monkeypatch: pytest.MonkeyPatch) -> N
     p = HostedProvider(get_settings(), transport=httpx.MockTransport(handler))
     p.generate("q", [])
     assert captured["auth"] == "Bearer mykey123"
+
+
+def _timing_out_transport() -> httpx.MockTransport:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("timed out", request=request)
+    return httpx.MockTransport(handler)
+
+
+def test_ollama_timeout_raises_provider_error() -> None:                # T-PRV-17
+    # Found in the live demo: a cold model on a CPU-only host exceeded the 60 s
+    # read timeout, httpx.ReadTimeout escaped, and the API answered HTTP 500
+    # instead of taking the documented safe-fallback path.
+    p = OllamaProvider(get_settings(), transport=_timing_out_transport())
+    with pytest.raises(ProviderError, match="timed out|ReadTimeout"):
+        p.generate("q", [])
+
+
+def test_hosted_timeout_raises_provider_error(monkeypatch: pytest.MonkeyPatch) -> None:  # T-PRV-18
+    monkeypatch.setenv("LLM_PROVIDER", "hosted")
+    monkeypatch.setenv("LLM_API_KEY", "test-not-a-real-key")
+    monkeypatch.setenv("HOSTED_BASE_URL", "https://example.invalid/v1")
+    reset_settings_cache()
+    p = HostedProvider(get_settings(), transport=_timing_out_transport())
+    with pytest.raises(ProviderError):
+        p.generate("q", [])
