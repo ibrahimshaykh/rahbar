@@ -34,7 +34,10 @@ RULES
 
 FIELDS
 - reasoning: your short private working. It is stripped before the user sees it.
-- answer: the user-facing answer, plain prose, no markdown.
+- answer: the user-facing answer, plain prose, no markdown. One or two complete
+  sentences that restate the rule from the evidence with its numbers and
+  conditions, never a bare number. Read the clause carefully: a required
+  amount and an allowed exception are different numbers.
 - citations: one entry per passage you actually used.
 - answered_from_context: true only if the evidence answers the question.
 - confidence: "high" when one passage states the answer directly, "medium" when
