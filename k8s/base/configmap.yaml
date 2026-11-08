@@ -22,8 +22,11 @@ data:
   # --- retrieval
   TOP_K: "5"
   # Below this cosine similarity nothing retrieved is relevant, so the service
-  # abstains without calling the model. Measured in P15; see docs/PIPELINE.md.
-  RELEVANCE_FLOOR: "0.35"
+  # abstains without calling the model. Re-measured 2026-11-08 on the live
+  # index: the lowest real question seen scored 0.592 (44 probes), while most
+  # nonsense and general-knowledge questions scored 0.47-0.55. The old 0.35
+  # never fired. See docs/PIPELINE.md.
+  RELEVANCE_FLOOR: "0.55"
 
   # --- generation
   # How long the API waits for the model. A 3B model on a CPU-only host took
