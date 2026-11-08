@@ -58,3 +58,52 @@ def abstention_answer(reason: str) -> Answer:
         answered_from_context=False,
         confidence="low",
     )
+
+
+# --- input guard (runs before the cache, retrieval and the model) -----------
+# Measured 2026-11-08 against the live 1117-chunk index (nomic-embed-text):
+# small talk scores 0.47-0.74 cosine against the corpus ("123" 0.737, "test"
+# 0.672, "bye" 0.616), overlapping real questions (lowest seen: 0.592). No
+# similarity floor separates the two, so messages that are plainly not a
+# question about the documents are recognised here instead. Deterministic,
+# no model call, and conservative: it matches the WHOLE message only, so
+# "hi, what is the attendance requirement?" still goes through.
+SMALL_TALK_PATTERN = re.compile(
+    r"^\s*(?:"
+    r"h+i+|he+y+|hel+o+(?:\s+there)?|hiya|yo+|su+p|w(?:h)?at'?s+\s*up|"
+    r"good\s+(?:morning|afternoon|evening|night)|"
+    r"how\s+are\s+(?:you|u)(?:\s+doing)?|who\s+are\s+(?:you|u)|"
+    r"what\s+(?:can|do)\s+you\s+do|can\s+you\s+help(?:\s+me)?|help|"
+    r"thanks?(?:\s+(?:you|u))?(?:\s+(?:so\s+|very\s+)?much)?|"
+    r"thank\s+(?:you|u)(?:\s+(?:so\s+|very\s+)?much)?|thx|ty|"
+    r"ok(?:ay)?|k|cool|nice|great|lol+|lmao|ha(?:ha)+|"
+    r"bye+|good\s*bye|see\s+(?:you|ya)|test(?:ing)?|ping|"
+    r"tell\s+me\s+a\s+joke"
+    r")\s*[!?.,]*\s*$",
+    re.IGNORECASE,
+)
+_HAS_A_WORD = re.compile(r"[A-Za-z]{2,}")
+
+NOT_A_QUESTION_TEXT = (
+    "I answer questions about the FAST-NUCES university documents, such as "
+    "attendance, grading, fees and academic rules, and I cite the exact source "
+    "for every answer. Ask me something about those."
+)
+
+
+def is_not_a_question(question: str) -> bool:
+    """True for messages with no word at all ("123", "???") and for whole-message
+    small talk ("yoo", "whats up ?", "thanks"). Pure function, no I/O."""
+    if not _HAS_A_WORD.search(question):
+        return True
+    return bool(SMALL_TALK_PATTERN.match(question))
+
+
+def not_a_question_answer() -> Answer:
+    return Answer(
+        reasoning="abstained: not_a_question",
+        answer=NOT_A_QUESTION_TEXT,
+        citations=[],
+        answered_from_context=False,
+        confidence="low",
+    )

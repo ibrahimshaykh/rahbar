@@ -22,7 +22,8 @@ from ..routes.metrics import (
     RETRIEVAL_SECONDS,
 )
 from ..schemas import AskResponse, RetrievedRef
-from .abstain import abstention_answer, should_abstain
+from .abstain import (abstention_answer, is_not_a_question, not_a_question_answer,
+                      should_abstain)
 from .cache import is_cacheable, is_followup
 from .citations import enforce_citations
 from .validate import safe_fallback
@@ -40,6 +41,18 @@ def answer_question(
     no model call, which is what makes abstention correctness exactly 100%);
     citation enforcement after generation (nothing to check until then)."""
     rid = request_id_var.get()
+    # 1. input guard: small talk and messages with no words never reach the
+    # cache, Chroma or the model, and are never cached (see abstain.py).
+    if is_not_a_question(question):
+        ABSTENTIONS.labels(reason="not_a_question").inc()
+        guard = not_a_question_answer()
+        log.info("answered", extra={"abstained": True, "abstain_reason": "not_a_question",
+                                    "answered_from_context": False, "cache": "skipped"})
+        return AskResponse(
+            request_id=rid, answer=guard.answer, citations=[],
+            answered_from_context=False, confidence=guard.confidence,
+            retrieved=[], provider=provider.name,
+        ), False
     followup = is_followup(question)
     question_vector: list[float] | None = None
 
