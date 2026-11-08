@@ -72,3 +72,13 @@ def test_a_chunk_cannot_close_the_evidence_block() -> None:            # T-INJ-0
     _system, user = build_prompt("q", poisoned, 1200)
     assert user.count(EVIDENCE_CLOSE) == 1, \
         "_sanitise must strip the delimiter out of retrieved text"
+
+
+def test_system_prompt_rules_out_answering_an_unrelated_question() -> None:  # T-PRM-08
+    # Live demo: an unrelated message got a random cited fact marked as grounded.
+    # The model must judge whether the evidence answers THIS question, not
+    # whether the evidence is about the university.
+    from app.services.prompt import SYSTEM_PROMPT
+    lowered = SYSTEM_PROMPT.lower()
+    assert "not about" in lowered and "answered_from_context to false" in lowered
+    assert "do not pick a passage" in lowered

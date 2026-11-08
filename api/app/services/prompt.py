@@ -18,6 +18,10 @@ RULES
 1. Use the supplied context. If the evidence does not contain the answer, set
    answered_from_context to false and say that the corpus does not cover the
    question. Do not guess, and do not fill a gap from general knowledge.
+   If the question is not about these university documents at all (small
+   talk, general knowledge, another topic), set answered_from_context to
+   false. Do not pick a passage just because it is the closest one: the
+   evidence must actually answer this exact question.
 2. Every claim-bearing sentence must be supported by at least one cited passage.
 3. Cite only passages that appear in the evidence below. Copy the source and
    section values exactly as they are written in the evidence header lines.
