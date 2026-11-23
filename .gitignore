@@ -29,3 +29,7 @@ venv/
 # built artefact: populated by make images
 indexer/corpus-baked/*
 !indexer/corpus-baked/.gitkeep
+
+# Assignment 03 runtime data
+.ragops_03/
+*.tmp_03
