@@ -1,0 +1,5 @@
+{"schema": "experiment_03/1", "synthetic_test_fixture": true, "name": "synthetic_pass",
+ "change": {"knob": "RERANK_ENABLED", "baseline": false, "candidate": true},
+ "levels": {"module": {}, "component": {}, "e2e": {}},
+ "gate_inputs": {"recall_at_5_drop_pp": 1.0, "faithfulness": 0.90, "latency_p95_ms": 40000.0,
+                 "abstention_correctness": 1.0, "abstention_baseline": 1.0}}

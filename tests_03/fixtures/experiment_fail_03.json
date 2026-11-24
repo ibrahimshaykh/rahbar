@@ -1,0 +1,5 @@
+{"schema": "experiment_03/1", "synthetic_test_fixture": true, "name": "synthetic_fail",
+ "change": {"knob": "CHUNK_SIZE", "baseline": 400, "candidate": 60},
+ "levels": {"module": {}, "component": {}, "e2e": {}},
+ "gate_inputs": {"recall_at_5_drop_pp": 12.5, "faithfulness": 0.55, "latency_p95_ms": 40000.0,
+                 "abstention_correctness": 1.0, "abstention_baseline": 1.0}}

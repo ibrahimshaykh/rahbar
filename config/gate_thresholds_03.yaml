@@ -1,0 +1,5 @@
+# Release gate thresholds (Assignment 03, Part C). Every key is mandatory.
+recall_at_5_max_drop_pp: 2.0        # candidate may lose at most 2 percentage points vs baseline
+min_faithfulness: 0.80              # absolute floor on e2e.faithfulness (pre-calibration default)
+max_p95_latency_ms: 100000          # absolute ceiling on e2e.latency_p95_ms (pre-calibration default; below ingress 120 s timeout)
+abstention_correctness_min_vs_baseline: 0.0   # candidate >= baseline + this (0.0 => must not drop)

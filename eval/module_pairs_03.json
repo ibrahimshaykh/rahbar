@@ -1,0 +1,41 @@
+{
+  "_note": "Hand-written FAST-NUCES-domain sentence pairs for the embedding-model module test. Paraphrase pairs share meaning but few words; unrelated pairs are cross-topic.",
+  "paraphrase": [
+    ["A student must keep a CGPA of at least 2.00 to stay clear of an academic warning.", "Falling under a two point zero cumulative average puts an undergraduate on probation."],
+    ["Students who miss too many lectures cannot sit the final examination.", "Poor class presence makes a learner ineligible for the end-of-semester paper."],
+    ["The tuition fee must be paid before the semester begins.", "Course charges have to be cleared prior to the start of the term."],
+    ["Retaking a failed course replaces the old grade in the CGPA.", "When a subject is attempted again, only the newest result counts towards the cumulative average."],
+    ["The security deposit is returned when the degree is completed.", "Money held as a guarantee at admission is paid back once graduation is finished."],
+    ["Admission is cancelled if the student does not meet the eligibility criteria.", "A candidate lacking the required qualifications loses the seat."],
+    ["Using generative AI for assignments is acceptable only as a supporting aid.", "Chat assistants may help with coursework, but never as the sole reference."],
+    ["The Head of Department may excuse a limited amount of absence for illness.", "A department chair can forgive some missed classes when sickness is the reason."],
+    ["A withdrawn course is marked W on the transcript.", "The letter W appears next to a subject the learner dropped."],
+    ["Late examinations are allowed only for unavoidable emergencies.", "Rescheduled papers are granted just when a serious unforeseen event occurs."],
+    ["Students with a semester GPA between 3.50 and 3.99 are named on the Dean's list.", "High achievers scoring 3.5 or above for the term get honoured on the faculty roll."],
+    ["Plagiarism means presenting someone else's work as your own.", "Passing off another person's writing without credit is a form of copying."],
+    ["Three consecutive low semesters lead to closure of the student's admission.", "Being under the minimum average for three terms in a row ends enrolment."],
+    ["The degree must be completed within six years of first admission.", "Graduating has a maximum time limit of six years counted from the first enrolment."],
+    ["Refund of fees depends on how many days have passed since classes began.", "The share of money returned shrinks as the weeks of teaching go by."],
+    ["Students should dress modestly and respect local cultural values.", "Clothing on campus ought to be decent and consistent with the local culture."],
+    ["The annual report lists the number of graduates in each degree level.", "Yearly publication gives counts of people who received bachelor, master and doctoral degrees."]
+  ],
+  "unrelated": [
+    ["A student must keep a CGPA of at least 2.00 to stay clear of an academic warning.", "The cafeteria offers a discounted lunch on Fridays."],
+    ["Students who miss too many lectures cannot sit the final examination.", "The campus parking lot is closed for repainting this weekend."],
+    ["The tuition fee must be paid before the semester begins.", "Photosynthesis converts sunlight into chemical energy in plants."],
+    ["Retaking a failed course replaces the old grade in the CGPA.", "The football team won the inter-campus tournament in the final minute."],
+    ["The security deposit is returned when the degree is completed.", "A binary search tree keeps its keys in sorted order."],
+    ["Admission is cancelled if the student does not meet the eligibility criteria.", "The monsoon rains flooded several roads near the airport."],
+    ["Using generative AI for assignments is acceptable only as a supporting aid.", "Boil the rice for twelve minutes and let it rest before serving."],
+    ["The Head of Department may excuse a limited amount of absence for illness.", "The telescope captured an image of a distant spiral galaxy."],
+    ["A withdrawn course is marked W on the transcript.", "Electric buses will replace diesel ones on the city ring road."],
+    ["Late examinations are allowed only for unavoidable emergencies.", "The orchestra rehearsed a symphony by Beethoven all afternoon."],
+    ["Students with a semester GPA between 3.50 and 3.99 are named on the Dean's list.", "Copper is a good conductor of electricity and heat."],
+    ["Plagiarism means presenting someone else's work as your own.", "The bakery opens at six in the morning on weekdays."],
+    ["Three consecutive low semesters lead to closure of the student's admission.", "Wireless routers should be placed away from thick concrete walls."],
+    ["The degree must be completed within six years of first admission.", "The museum exhibits ancient pottery from the Indus valley."],
+    ["Refund of fees depends on how many days have passed since classes began.", "Marathon runners hydrate regularly to avoid cramps."],
+    ["Students should dress modestly and respect local cultural values.", "The compiler reported an undefined reference at link time."],
+    ["The annual report lists the number of graduates in each degree level.", "Mountain trails get slippery after an overnight frost."]
+  ]
+}
