@@ -1,0 +1,563 @@
+{
+ "generated_at": "20261123T165336Z",
+ "corpus": "corpus/batch_b_03",
+ "embedding": "dummy-256",
+ "totals": {
+  "documents": 14,
+  "accepted": 7,
+  "superseded_accepted": 0,
+  "quarantined": 7,
+  "unchanged": 0
+ },
+ "by_reason": {
+  "DUPLICATE_EXACT": 2,
+  "DUPLICATE_NEAR": 1,
+  "EMPTY": 1,
+  "GARBLED_NON_ASCII": 1,
+  "MISSING_METADATA": 1,
+  "TRUNCATED": 1
+ },
+ "documents": [
+  {
+   "file": "no_metadata_circular_03.md",
+   "doc_id": "no-metadata-circular-03",
+   "sha256": "350ca3f9306949c56820ad595b3e7b4a7a75009ad9d936edabea2e45419649a1",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.803",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": false,
+     "reason_code": "MISSING_METADATA",
+     "detail": "missing: date|version, page_count, title",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.0000",
+     "value": 0.0
+    }
+   ]
+  },
+  {
+   "file": "attendance_notice_truncated_03.md",
+   "doc_id": "attendance-notice",
+   "sha256": "c49ffe9f37708cedcdbd283dd29f38bda8c02964f9732d42d8f4b2554fe43c7a",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.799",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": false,
+     "reason_code": "TRUNCATED",
+     "detail": "declared page_count=4 but extracted 2",
+     "value": 2.0
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.0000",
+     "value": 0.0
+    }
+   ]
+  },
+  {
+   "file": "corrupt_scan_03.txt",
+   "doc_id": "corrupt-scan",
+   "sha256": "4aab347c87d1cfbd85f41303f57b39b1ea994307d5ebeeee9efcc33980b7df04",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": false,
+     "reason_code": "GARBLED_NON_ASCII",
+     "detail": "non_ascii_ratio=0.637 replacement_ratio=0.049 nul=False",
+     "value": 0.6374172185430463
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "skipped: unreadable text",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "empty_stub_03.md",
+   "doc_id": "empty-stub",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": false,
+     "reason_code": "EMPTY",
+     "detail": "chars=0 words=0",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "no text to test for truncation",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "skipped: unreadable text",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "exam_conduct_03.md",
+   "doc_id": "exam-conduct",
+   "sha256": "42a9ebad8f5e7c3caeac21aa328ad2a16f6dd8095638dd1bf10d717e68e06dbc",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.786",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.0000",
+     "value": 0.0
+    }
+   ]
+  },
+  {
+   "file": "exam_conduct_copy_03.md",
+   "doc_id": "exam-conduct-copy",
+   "sha256": "42a9ebad8f5e7c3caeac21aa328ad2a16f6dd8095638dd1bf10d717e68e06dbc",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.786",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_EXACT",
+     "detail": "identical text to doc_id=exam-conduct",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "hostel_rules_03.md",
+   "doc_id": "hostel-rules",
+   "sha256": "b9399aad6c5e8a802c9bdf719f2730b204771978a4e3386d199e5854902a87e8",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.779",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.7662",
+     "value": 0.7661543962903129
+    }
+   ]
+  },
+  {
+   "file": "hostel_rules_reworded_03.md",
+   "doc_id": "hostel-rules-reworded",
+   "sha256": "f3f2b88528c6026bb52413e116e4e6af0763374f354615990e19ae813cf28049",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.781",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_NEAR",
+     "detail": "cosine=0.9826 with doc_id=hostel-rules",
+     "value": 0.9825674235607813
+    }
+   ]
+  },
+  {
+   "file": "library_policy_03.md",
+   "doc_id": "library-policy",
+   "sha256": "986e9223b6f7be6564e0b2bb204eb824fa5031ad87863ffee8aa44577e55b354",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.773",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8455",
+     "value": 0.8454669906595206
+    }
+   ]
+  },
+  {
+   "file": "library_policy_mirror_03.md",
+   "doc_id": "library-policy-mirror",
+   "sha256": "986e9223b6f7be6564e0b2bb204eb824fa5031ad87863ffee8aa44577e55b354",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.773",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_EXACT",
+     "detail": "identical text to doc_id=library-policy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "scholarship_rules_03.md",
+   "doc_id": "scholarship-rules",
+   "sha256": "ca16376e48f6bbabfc09872331072591dd3a3957f91667ffda4d5820d71e9b83",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.773",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8255",
+     "value": 0.8255072130265448
+    }
+   ]
+  },
+  {
+   "file": "student_notice_injected_03.md",
+   "doc_id": "student-notice-injected",
+   "sha256": "7ffa9fa34a64ead90de73f700a6fb388c0e4658ffc5ed2f0f05e757749cb8107",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.777",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8242",
+     "value": 0.824186201110159
+    }
+   ]
+  },
+  {
+   "file": "transport_policy_03.md",
+   "doc_id": "transport-policy",
+   "sha256": "f971b57c478295a5f88569742231154601c080ae81dc6ea7a0536eed2c03decd",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.767",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8507",
+     "value": 0.8506730305454417
+    }
+   ]
+  },
+  {
+   "file": "academic_rules_handbook_v2026-11_03.md",
+   "doc_id": "academic-rules-handbook",
+   "sha256": "27d1823dcd043fd32fd660cc937f80f367d9d0113d7700ee39fe3bcb17df68ee",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.784",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8520",
+     "value": 0.852008716771514
+    }
+   ]
+  }
+ ],
+ "quarantined_paths": [
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\no_metadata_circular_03.md",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\attendance_notice_truncated_03.md",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\corrupt_scan_03.txt",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\empty_stub_03.md",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\exam_conduct_copy_03.md",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\hostel_rules_reworded_03.md",
+  ".ragops_03\\a1_demo\\quarantine\\20261123T165336Z\\library_policy_mirror_03.md"
+ ]
+}
