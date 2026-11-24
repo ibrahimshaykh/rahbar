@@ -1,0 +1,208 @@
+# Additive policies (NetworkPolicies are unioned with A02's default-deny and allow rules).
+# Nothing in k8s/base is edited. The host CIDR is the one captured for A02 in
+# k8s/overlays/dev/patch-indexer-host-ipblock.yaml (192.168.65.254 on the author's host);
+# re-capture with: minikube ssh "grep host.minikube.internal /etc/hosts"
+# 1 - ingest Job / CronJob: chroma, redis, DNS, Ollama on the host.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 70-ragops-ingest-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: ragops-ingest-03
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: chroma
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports: [{protocol: TCP, port: 6379}]
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    - to:
+        - ipBlock:
+            cidr: 192.168.65.254/32
+      ports: [{protocol: TCP, port: 11434}]
+---
+# 2 - eval Job: the live api, the candidate api, chroma (judge fetches text), DNS, Ollama.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 71-ragops-eval-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: ragops-eval-03
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: api
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector:
+            matchLabels:
+              app: api-candidate-03
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector:
+            matchLabels:
+              app: chroma
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    - to:
+        - ipBlock:
+            cidr: 192.168.65.254/32
+      ports: [{protocol: TCP, port: 11434}]
+---
+# 3 - candidate api: egress chroma, redis, DNS, Ollama; ingress from the eval Job only
+#     (humans reach it through kubectl port-forward, which bypasses NetworkPolicy).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 72-api-candidate-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: api-candidate-03
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ragops-eval-03
+      ports: [{protocol: TCP, port: 8000}]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: chroma
+      ports: [{protocol: TCP, port: 8000}]
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports: [{protocol: TCP, port: 6379}]
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+    - to:
+        - ipBlock:
+            cidr: 192.168.65.254/32
+      ports: [{protocol: TCP, port: 11434}]
+---
+# 4 - additive: the eval Job may call the live api pods (A02's 30-api-policy is not edited).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 73-allow-eval-to-api-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ragops-eval-03
+      ports: [{protocol: TCP, port: 8000}]
+---
+# 5 - additive: A02's 40-chroma-policy admits only api and indexer, so the A03 pods
+#     that talk to chroma need their own allow rule. ui is deliberately absent.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 74-allow-ragops-to-chroma-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: chroma
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ragops-ingest-03
+        - podSelector:
+            matchLabels:
+              app: api-candidate-03
+        - podSelector:
+            matchLabels:
+              app: ragops-eval-03
+      ports: [{protocol: TCP, port: 8000}]
+---
+# 6 - additive: redis admits the A03 ingest Job (cache generation INCR) and the candidate api.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 75-allow-ragops-to-redis-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: ragops-ingest-03
+        - podSelector:
+            matchLabels:
+              app: api-candidate-03
+      ports: [{protocol: TCP, port: 6379}]
+---
+# 7 - helper pod: no ingress, no egress (it only holds the volume for kubectl cp).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 76-ragops-helper-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  podSelector:
+    matchLabels:
+      app: ragops-helper-03
+  policyTypes: [Ingress, Egress]

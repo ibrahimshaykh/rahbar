@@ -1,0 +1,44 @@
+# Holds the PVC so a human can kubectl cp documents in (/data/incoming) and results out
+# (/data/eval/results). Uses the A03 image: no pull from the internet.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ragops-helper-03
+  namespace: rahbar
+  labels:
+    app: ragops-helper-03
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  restartPolicy: Never
+  serviceAccountName: rahbar-ragops-03
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: helper
+      image: rahbar-ragops-03:dev
+      imagePullPolicy: IfNotPresent
+      command: ["sleep", "3600"]
+      resources:                     # initial, not measured
+        requests: {cpu: 10m, memory: 16Mi}
+        limits: {cpu: 100m, memory: 64Mi}
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        capabilities:
+          drop: [ALL]
+      volumeMounts:
+        - {name: ragops-data, mountPath: /data}
+        - {name: tmp, mountPath: /tmp}
+  volumes:
+    - name: ragops-data
+      persistentVolumeClaim:
+        claimName: rahbar-ragops-pvc-03
+    - {name: tmp, emptyDir: {}}

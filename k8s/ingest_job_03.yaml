@@ -1,0 +1,69 @@
+# Sole writer to the A03 Chroma collections. Apply: kubectl apply -f k8s/ingest_job_03.yaml
+# Jobs are immutable: kubectl -n rahbar delete job ragops-ingest-03 --ignore-not-found first.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ragops-ingest-03
+  namespace: rahbar
+  labels:
+    app: ragops-ingest-03
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  completions: 1            # parallelism unset (=1): exactly one writer
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: ragops-ingest-03
+        app.kubernetes.io/part-of: rahbar
+        ragops: "03"
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: rahbar-ragops-03
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ingest
+          image: rahbar-ragops-03:dev
+          imagePullPolicy: IfNotPresent
+          command: ["python", "-m", "indexer.run_ingest_03"]
+          args:
+            - "--corpus"
+            - "/corpus-baked"
+            - "--corpus"
+            - "/app/corpus/batch_b_03"
+            - "--corpus-optional"
+            - "/data/incoming"
+            - "--collection"
+            - "rahbar_ragops_03"
+          envFrom:
+            - configMapRef:
+                name: rahbar-config
+          env:
+            - {name: RAGOPS_ROOT, value: /data}
+            - {name: RAGOPS_RESULTS_DIR, value: /data/eval/results}
+          resources:                     # initial, not measured; revised in F-T06 from F-T07
+            requests: {cpu: 250m, memory: 512Mi}
+            limits: {cpu: 2000m, memory: 2Gi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: ragops-data, mountPath: /data}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: ragops-data
+          persistentVolumeClaim:
+            claimName: rahbar-ragops-pvc-03
+        - {name: tmp, emptyDir: {}}

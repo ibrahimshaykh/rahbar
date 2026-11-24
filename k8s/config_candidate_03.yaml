@@ -1,0 +1,19 @@
+# Candidate overrides (later envFrom wins). Never EMBED_MODEL (the pin stays single-sourced
+# in rahbar-config), never keys or tokens. Regenerate for another candidate with
+# scripts/make_candidate_config_03.py <env-file> > k8s/config_candidate_03.yaml
+# Currently selected: the passing candidate (rerank on, pool 8, own collection).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-config-candidate-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+data:
+  ALLOW_CACHE_BYPASS_03: "true"
+  CHROMA_COLLECTION: "rahbar_candidate_03"
+  GUARDRAIL_MODE: "block"
+  RERANK_ENABLED: "true"
+  RERANK_POOL: "8"
+  TOP_K: "5"

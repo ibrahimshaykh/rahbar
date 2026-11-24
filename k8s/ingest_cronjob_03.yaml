@@ -1,0 +1,73 @@
+# Weekly re-ingest. The pod spec is kept in sync with ingest_job_03.yaml (test T-K8S-13b).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ragops-ingest-cron-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  schedule: "0 2 * * 0"          # Sunday 02:00, same cadence as the A02 reindex CronJob
+  concurrencyPolicy: Forbid      # never two writers
+  startingDeadlineSeconds: 600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: ragops-ingest-03
+            app.kubernetes.io/part-of: rahbar
+            ragops: "03"
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: rahbar-ragops-03
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            fsGroup: 10001
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: ingest
+              image: rahbar-ragops-03:dev
+              imagePullPolicy: IfNotPresent
+              command: ["python", "-m", "indexer.run_ingest_03"]
+              args:
+                - "--corpus"
+                - "/corpus-baked"
+                - "--corpus"
+                - "/app/corpus/batch_b_03"
+                - "--corpus-optional"
+                - "/data/incoming"
+                - "--collection"
+                - "rahbar_ragops_03"
+              envFrom:
+                - configMapRef:
+                    name: rahbar-config
+              env:
+                - {name: RAGOPS_ROOT, value: /data}
+                - {name: RAGOPS_RESULTS_DIR, value: /data/eval/results}
+              resources:                     # initial, not measured; revised in F-T06 from F-T07
+                requests: {cpu: 250m, memory: 512Mi}
+                limits: {cpu: 2000m, memory: 2Gi}
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                capabilities:
+                  drop: [ALL]
+              volumeMounts:
+                - {name: ragops-data, mountPath: /data}
+                - {name: tmp, mountPath: /tmp}
+          volumes:
+            - name: ragops-data
+              persistentVolumeClaim:
+                claimName: rahbar-ragops-pvc-03
+            - {name: tmp, emptyDir: {}}

@@ -1,0 +1,16 @@
+# Mirrors config/gate_thresholds_03.yaml (test T-K8S-11 fails on drift).
+# Mounted as a volume at /config so the gate re-reads it on every Job start.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-gate-03
+  namespace: rahbar
+  labels:
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+data:
+  gate_thresholds_03.yaml: |
+    recall_at_5_max_drop_pp: 2.0
+    min_faithfulness: 0.80
+    max_p95_latency_ms: 100000
+    abstention_correctness_min_vs_baseline: 0.0
