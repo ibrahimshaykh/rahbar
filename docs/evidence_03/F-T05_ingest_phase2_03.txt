@@ -1,0 +1,45 @@
+# F-T05 phase 2: baked + Batch B (real Ollama + Chroma, fixed image)
+$ kubectl -n rahbar logs job/ragops-ingest-03
+{"ts": "2026-11-25T20:09:07Z", "logger": "rahbar.indexer.ingest_03", "msg": "optional corpus skipped", "corpus": "/data/incoming"}
+{"ts": "2026-11-25T20:15:43Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 23, "accepted": 15, "quarantined": 8, "unchanged_docs": 8, "embedded_chunks": 41, "kept_chunks": 807, "deleted_chunks": 0, "deactivated_chunks": 312, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": "/data/eval/results/verification_report_03_20261125T200907Z.json", "md": "/data/eval/results/verification_report_03_20261125T200907Z.md"}, "collection_version": 2, "seconds": 395.76}
+embedded_chunks=41 kept_chunks=807 deleted_chunks=0 deactivated_chunks=312 collection_version=2
+
+$ ls PVC (archive, quarantine, lake)
+/data/archive/academic-rules-handbook/2026-06/meta_03.json
+/data/quarantine/20261125T200907Z/academic-rules-handbook-jun-2026.pdf
+/data/quarantine/20261125T200907Z/academic-rules-handbook-jun-2026.pdf.reason_03.json
+/data/quarantine/20261125T200907Z/attendance_notice_truncated_03.md
+/data/quarantine/20261125T200907Z/attendance_notice_truncated_03.md.reason_03.json
+/data/quarantine/20261125T200907Z/corrupt_scan_03.txt
+/data/quarantine/20261125T200907Z/corrupt_scan_03.txt.reason_03.json
+/data/quarantine/20261125T200907Z/empty_stub_03.md
+/data/quarantine/20261125T200907Z/empty_stub_03.md.reason_03.json
+/data/quarantine/20261125T200907Z/exam_conduct_copy_03.md
+/data/quarantine/20261125T200907Z/exam_conduct_copy_03.md.reason_03.json
+/data/quarantine/20261125T200907Z/hostel_rules_reworded_03.md
+/data/quarantine/20261125T200907Z/hostel_rules_reworded_03.md.reason_03.json
+/data/quarantine/20261125T200907Z/library_policy_mirror_03.md
+/data/quarantine/20261125T200907Z/library_policy_mirror_03.md.reason_03.json
+/data/quarantine/20261125T200907Z/no_metadata_circular_03.md
+/data/quarantine/20261125T200907Z/no_metadata_circular_03.md.reason_03.json
+/data/state/ingest.lock_03
+/data/state/manifest_03.json
+
+# Chroma collection rahbar_ragops_03 metadata + chunk counts by (version,is_active,superseded)
+metadata {'collection_version': 2, 'indexed_at': '2026-11-25T20:15:39+00:00', 'embed_version': 'nomic-embed-text@768', 'chunk_overlap': 50, 'dimension': 768, 'chunk_size': 400, 'embed_model': 'nomic-embed-text', 'chunk_count': 1160} count 1160
+('academic-rules-handbook-jun-2026.pdf', '2026-06', 'False', 'True') 312
+('academic_rules_handbook_v2026-11_03.md', '2026-11', 'True', 'False') 7
+('annual-report-2019-20.pdf', '2019-20', 'True', 'False') 69
+('annual-report-2023-24.pdf', '2023-24', 'True', 'False') 220
+('exam_conduct_03.md', '2026-09', 'True', 'False') 6
+('faculty-entrepreneurship-and-technical-start-ups-policy.pdf', '2022-05', 'True', 'False') 26
+('fee-structure-page.html', '2026-27', 'True', 'False') 13
+('grading-page.html', '2026', 'True', 'False') 11
+('hostel_rules_03.md', '2026-09', 'True', 'False') 6
+('library_policy_03.md', '2026-09', 'True', 'False') 6
+('prospectus-2026-academic-rules-and-regulations.pdf', '2026', 'True', 'False') 35
+('scholarship_rules_03.md', '2026-09', 'True', 'False') 6
+('student-handbook-jun-2026.pdf', '2026-06', 'True', 'False') 312
+('student_notice_injected_03.md', '2026-09', 'True', 'False') 4
+('transport_policy_03.md', '2026-09', 'True', 'False') 6
+('undergraduate-academic-rules-aug-2023.pdf', '2023-08', 'False', 'True') 121

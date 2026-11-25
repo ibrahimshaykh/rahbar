@@ -1,0 +1,909 @@
+{
+ "generated_at": "20261125T200907Z",
+ "corpus": "/corpus-baked,/app/corpus/batch_b_03",
+ "embedding": "nomic-embed-text",
+ "totals": {
+  "documents": 23,
+  "accepted": 15,
+  "superseded_accepted": 1,
+  "quarantined": 8,
+  "unchanged": 8
+ },
+ "by_reason": {
+  "DUPLICATE_EXACT": 2,
+  "DUPLICATE_NEAR": 1,
+  "EMPTY": 1,
+  "GARBLED_NON_ASCII": 1,
+  "MISSING_METADATA": 1,
+  "NEWER_VERSION": 1,
+  "STALE_VERSION": 1,
+  "TRUNCATED": 1,
+  "UNCHANGED": 9
+ },
+ "documents": [
+  {
+   "file": "no_metadata_circular_03.md",
+   "doc_id": "no-metadata-circular-03",
+   "sha256": "350ca3f9306949c56820ad595b3e7b4a7a75009ad9d936edabea2e45419649a1",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.971",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": false,
+     "reason_code": "MISSING_METADATA",
+     "detail": "missing: date|version, page_count, title",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.7315",
+     "value": 0.7314603654097369
+    }
+   ]
+  },
+  {
+   "file": "annual-report-2019-20.pdf",
+   "doc_id": "annual-report-2019-20",
+   "sha256": "319ae0bb72696633ee8d452ed889fb1dc88496b0778cb3d19c2bc4d8a4b141f8",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.002 alpha_ratio=0.862",
+     "value": 0.0017190366782922032
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=33 declared=33",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2019-20",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf",
+   "doc_id": "faculty-entrepreneurship-policy",
+   "sha256": "dd7505039354c825eebe71145974e665cabb8cbc5be484407b65d27492ea8078",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.002 alpha_ratio=0.948",
+     "value": 0.0017789072426937739
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=8 declared=8",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2022-05",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "undergraduate-academic-rules-aug-2023.pdf",
+   "doc_id": "undergraduate-academic-rules",
+   "sha256": "340375d33c8c8ed5ffa09f8a4a636764ebb4c7c8b3755abb63f2f9bc2fc5b069",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.930",
+     "value": 0.00025029722795820035
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=26 declared=26",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2023-08",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "annual-report-2023-24.pdf",
+   "doc_id": "annual-report-2023-24",
+   "sha256": "13c974b6201c69f7b763429cbcb516628486f7c54a66cf655127e1e0c5ce053e",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.002 alpha_ratio=0.911",
+     "value": 0.0017030549693038076
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=85 declared=85",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2023-24",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "grading-page.html",
+   "doc_id": "grading-policy",
+   "sha256": "c2cbf9497bf3609f3e24892e134a0f11746d22dc93de96d1622a0952cdeb1ca3",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.926",
+     "value": 0.00018031374591789714
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2026",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "doc_id": "prospectus-academic-rules",
+   "sha256": "540649e561e211840c84f4ae068a2819ea6f288a98241bb33fa35f138c02be73",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.946",
+     "value": 0.00024246097893620245
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=5 declared=5",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2026",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "academic-rules-handbook-jun-2026.pdf",
+   "doc_id": "academic-rules-handbook",
+   "sha256": "e3ed8aa54bd02d77bb6da9c2de09944c307695fe567a9480d17ff5c46323c464",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.001 alpha_ratio=0.938",
+     "value": 0.0007117576513947525
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=58 declared=58",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": false,
+     "reason_code": "STALE_VERSION",
+     "detail": "older than 2026-11 in the same batch",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "student-handbook-jun-2026.pdf",
+   "doc_id": "student-handbook",
+   "sha256": "e08e29fb63db1d3556bb810468916ce13bb89bc730b0abaa120c06bdeb9eed9a",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.002 alpha_ratio=0.938",
+     "value": 0.002481621325932943
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=64 declared=64",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2026-06",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "attendance_notice_truncated_03.md",
+   "doc_id": "attendance-notice",
+   "sha256": "c49ffe9f37708cedcdbd283dd29f38bda8c02964f9732d42d8f4b2554fe43c7a",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.961",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": false,
+     "reason_code": "TRUNCATED",
+     "detail": "declared page_count=4 but extracted 2",
+     "value": 2.0
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8133",
+     "value": 0.8133400982708875
+    }
+   ]
+  },
+  {
+   "file": "corrupt_scan_03.txt",
+   "doc_id": "corrupt-scan",
+   "sha256": "4aab347c87d1cfbd85f41303f57b39b1ea994307d5ebeeee9efcc33980b7df04",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": false,
+     "reason_code": "GARBLED_NON_ASCII",
+     "detail": "non_ascii_ratio=0.637 replacement_ratio=0.049 nul=False",
+     "value": 0.6374172185430463
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "skipped: unreadable text",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "empty_stub_03.md",
+   "doc_id": "empty-stub",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": false,
+     "reason_code": "EMPTY",
+     "detail": "chars=0 words=0",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "no text to test for truncation",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "skipped: unreadable text",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "exam_conduct_03.md",
+   "doc_id": "exam-conduct",
+   "sha256": "42a9ebad8f5e7c3caeac21aa328ad2a16f6dd8095638dd1bf10d717e68e06dbc",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.952",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.7972",
+     "value": 0.7972487382779488
+    }
+   ]
+  },
+  {
+   "file": "exam_conduct_copy_03.md",
+   "doc_id": "exam-conduct-copy",
+   "sha256": "42a9ebad8f5e7c3caeac21aa328ad2a16f6dd8095638dd1bf10d717e68e06dbc",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.952",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_EXACT",
+     "detail": "identical text to doc_id=exam-conduct",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "hostel_rules_03.md",
+   "doc_id": "hostel-rules",
+   "sha256": "b9399aad6c5e8a802c9bdf719f2730b204771978a4e3386d199e5854902a87e8",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.939",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.7401",
+     "value": 0.7401027595679613
+    }
+   ]
+  },
+  {
+   "file": "hostel_rules_reworded_03.md",
+   "doc_id": "hostel-rules-reworded",
+   "sha256": "f3f2b88528c6026bb52413e116e4e6af0763374f354615990e19ae813cf28049",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.940",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_NEAR",
+     "detail": "cosine=0.9933 with doc_id=hostel-rules",
+     "value": 0.9932716035321484
+    }
+   ]
+  },
+  {
+   "file": "library_policy_03.md",
+   "doc_id": "library-policy",
+   "sha256": "986e9223b6f7be6564e0b2bb204eb824fa5031ad87863ffee8aa44577e55b354",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.942",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8043",
+     "value": 0.8043043501556734
+    }
+   ]
+  },
+  {
+   "file": "library_policy_mirror_03.md",
+   "doc_id": "library-policy-mirror",
+   "sha256": "986e9223b6f7be6564e0b2bb204eb824fa5031ad87863ffee8aa44577e55b354",
+   "decision": "quarantine",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.942",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": false,
+     "reason_code": "DUPLICATE_EXACT",
+     "detail": "identical text to doc_id=library-policy",
+     "value": null
+    }
+   ]
+  },
+  {
+   "file": "scholarship_rules_03.md",
+   "doc_id": "scholarship-rules",
+   "sha256": "ca16376e48f6bbabfc09872331072591dd3a3957f91667ffda4d5820d71e9b83",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.942",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8175",
+     "value": 0.8175184390154411
+    }
+   ]
+  },
+  {
+   "file": "student_notice_injected_03.md",
+   "doc_id": "student-notice-injected",
+   "sha256": "7ffa9fa34a64ead90de73f700a6fb388c0e4658ffc5ed2f0f05e757749cb8107",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.935",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8490",
+     "value": 0.8490414033478024
+    }
+   ]
+  },
+  {
+   "file": "transport_policy_03.md",
+   "doc_id": "transport-policy",
+   "sha256": "f971b57c478295a5f88569742231154601c080ae81dc6ea7a0536eed2c03decd",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.935",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.7894",
+     "value": 0.7893576575112361
+    }
+   ]
+  },
+  {
+   "file": "academic_rules_handbook_v2026-11_03.md",
+   "doc_id": "academic-rules-handbook",
+   "sha256": "27d1823dcd043fd32fd660cc937f80f367d9d0113d7700ee39fe3bcb17df68ee",
+   "decision": "supersede",
+   "supersedes": "2026-06",
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.945",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=2 declared=2",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": "NEWER_VERSION",
+     "detail": "incoming 2026-11 is newer than indexed 2026-06",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.8963",
+     "value": 0.8962809491474721
+    }
+   ]
+  },
+  {
+   "file": "fee-structure-page.html",
+   "doc_id": "fee-structure",
+   "sha256": "09b6e518e3027fa3770f9c9fafca368b62bf1e24ae15a4d9c7d6dcfe863e398c",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": true,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.924",
+     "value": 0.00018239299610894942
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "same version 2026-27",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": "UNCHANGED",
+     "detail": "same doc_id, version and hash as the indexed copy",
+     "value": null
+    }
+   ]
+  }
+ ],
+ "quarantined_paths": [
+  "/data/quarantine/20261125T200907Z/no_metadata_circular_03.md",
+  "/data/quarantine/20261125T200907Z/academic-rules-handbook-jun-2026.pdf",
+  "/data/quarantine/20261125T200907Z/attendance_notice_truncated_03.md",
+  "/data/quarantine/20261125T200907Z/corrupt_scan_03.txt",
+  "/data/quarantine/20261125T200907Z/empty_stub_03.md",
+  "/data/quarantine/20261125T200907Z/exam_conduct_copy_03.md",
+  "/data/quarantine/20261125T200907Z/hostel_rules_reworded_03.md",
+  "/data/quarantine/20261125T200907Z/library_policy_mirror_03.md"
+ ]
+}
