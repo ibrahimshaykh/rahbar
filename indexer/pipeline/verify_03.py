@@ -264,13 +264,16 @@ def check_quality_03(doc: ExtractedDoc03, cfg: IndexerSettings03) -> CheckResult
     n = len(text)
     non_ascii = sum(1 for ch in text if ord(ch) > 127) / n
     repl = text.count("�") / n
-    has_nul = "\x00" in text
+    # A lone NUL is a PDF text-layer artefact; flag only when NULs are a visible fraction.
+    has_nul = text.count("\x00") / n > 0.001
     if doc.meta.extra.get("lang") != "ur" and (
             non_ascii > cfg.non_ascii_max or repl > cfg.replacement_char_max or has_nul):
         return CheckResult03("quality", False, "GARBLED_NON_ASCII",
                              f"non_ascii_ratio={non_ascii:.3f} replacement_ratio={repl:.3f}"
                              f" nul={has_nul}", non_ascii)
-    alpha = sum(1 for ch in text if ch.isalpha()) / n
+    # Whitespace (HTML indentation, blank lines) carries no signal; divide by visible chars.
+    visible = sum(1 for ch in text if not ch.isspace()) or 1
+    alpha = sum(1 for ch in text if ch.isalpha()) / visible
     if alpha < cfg.alpha_min:
         return CheckResult03("quality", False, "GARBLED_SYMBOLS",
                              f"alpha_ratio={alpha:.3f}", alpha)
@@ -375,6 +378,21 @@ def check_uniqueness_03(doc: ExtractedDoc03, text_hash: str, state: ManifestStat
                           f"max_cosine={max(best, 0.0):.4f}", max(best, 0.0)), False, vec)
 
 
+def _newest_in_batch_03(docs: list[ExtractedDoc03]) -> dict[str, ExtractedDoc03]:
+    """doc_id -> the document with the newest version/date in this batch, only for doc_ids
+    that appear more than once (so a lone document never has a rival)."""
+    best: dict[str, ExtractedDoc03] = {}
+    count: dict[str, int] = {}
+    for d in docs:
+        did = d.meta.doc_id
+        count[did] = count.get(did, 0) + 1
+        cur = best.get(did)
+        if cur is None or compare_incoming_03(d.meta.date, d.meta.version,
+                                              cur.meta.date, cur.meta.version) > 0:
+            best[did] = d
+    return {k: v for k, v in best.items() if count[k] > 1}
+
+
 def verify_documents(docs: list[ExtractedDoc03], state: ManifestState03,
                      embed_fn: EmbedFn, cfg: IndexerSettings03) -> list[Verdict03]:
     """Pure: no file moves, no network. All four checks for every document.
@@ -383,11 +401,17 @@ def verify_documents(docs: list[ExtractedDoc03], state: ManifestState03,
                                           str(d.meta.path.name)))
     retained: list[tuple[str, str, list[float] | None]] = []
     out: list[Verdict03] = []
+    newest = _newest_in_batch_03(ordered)
     for doc in ordered:
         text_hash = sha256_text(doc.text)
         quality = check_quality_03(doc, cfg)
         completeness = check_completeness_03(doc)
         recency, supersedes = check_recency_03(doc, state)
+        rival = newest.get(doc.meta.doc_id)
+        if rival is not None and rival is not doc and recency.passed:
+            recency = CheckResult03("recency", False, "STALE_VERSION",
+                                    f"older than {rival.meta.version} in the same batch")
+            supersedes = None
         if quality.reason_code in {"EXTRACT_FAILED", "EMPTY", "GARBLED_NON_ASCII"}:
             unique = CheckResult03("uniqueness", True, None, "skipped: unreadable text")
             unchanged, vec = False, None

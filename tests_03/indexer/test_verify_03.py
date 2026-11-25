@@ -93,6 +93,12 @@ def test_T_A1_Q_03_nul_bytes(tmp_path):
     assert codes(v)["quality"] == "GARBLED_NON_ASCII"
 
 
+def test_T_A1_Q_09_single_stray_nul_in_long_text_is_tolerated(tmp_path):
+    """Regression: one NUL from a PDF text layer quarantined a whole 26-page document."""
+    v = run([mk((GOOD + " ") * 30 + chr(0))], tmp_path)[0]
+    assert codes(v)["quality"] is None
+
+
 def test_T_A1_Q_04_extraction_error(tmp_path):
     v = run([mk("", error="ValueError", pages=[])], tmp_path)[0]
     assert codes(v)["quality"] == "EXTRACT_FAILED"
@@ -107,6 +113,16 @@ def test_T_A1_Q_05_normal_text_passes(tmp_path):
 def test_T_A1_Q_06_symbol_noise(tmp_path):
     v = run([mk("#@$% 1234 !!?? " * 40)], tmp_path)[0]
     assert codes(v)["quality"] == "GARBLED_SYMBOLS"
+
+
+def test_T_A1_Q_08_indentation_whitespace_does_not_dilute_alpha_ratio(tmp_path):
+    """Regression: HTML pages extracted with heavy indentation (fee/grading pages) were
+    quarantined as GARBLED_SYMBOLS because letters were divided by ALL characters."""
+    pad = chr(10) + " " * 8
+    indented = chr(10).join(" " * 48 + line for line in GOOD.split(". "))
+    padded = (pad * 400) + indented + (pad * 400)
+    v = run([mk(padded)], tmp_path)[0]
+    assert codes(v)["quality"] is None
 
 
 def test_T_A1_Q_07_urdu_declared_skips_non_ascii_rule(tmp_path):
@@ -167,6 +183,19 @@ def test_T_A1_R_02_newer_supersedes(tmp_path):
 def test_T_A1_R_03_older_is_stale(tmp_path):
     v = run([mk(version="2025-01", date="2025-01-01")], tmp_path, state_with(text="old text"))[0]
     assert codes(v)["recency"] == "STALE_VERSION" and v.decision == "quarantine"
+
+
+def test_T_A1_R_05_older_version_in_same_batch_is_stale(tmp_path):
+    """Regression: both versions of one doc_id in a single batch used to be accepted
+    ("new doc_id" twice), leaving the stale version's chunks active next to the new ones."""
+    old = mk(doc_id="h", text=GOOD, version="2026-06", date="2026-06-01", path=Path("h_old.md"))
+    new = mk(doc_id="h", text=GOOD + " Revised clause on attendance.", version="2026-11",
+             date="2026-11-01", path=Path("h_new.md"))
+    vs = {v.doc.path.name: v for v in run([old, new], tmp_path)}
+    assert vs["h_new.md"].decision == "accept"
+    assert vs["h_old.md"].decision == "quarantine"
+    assert codes(vs["h_old.md"])["recency"] == "STALE_VERSION"
+    assert "batch" in vs["h_old.md"].checks[2].detail
 
 
 def test_T_A1_R_04_version_ordering():

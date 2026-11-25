@@ -50,6 +50,8 @@ spec:
           env:
             - {name: RAGOPS_ROOT, value: /data}
             - {name: RAGOPS_RESULTS_DIR, value: /data/eval/results}
+            - {name: OMP_THREAD_LIMIT, value: "1"}   # tesseract thrashes under a CPU limit when multi-threaded
+            - {name: OCR_DPI, value: "200"}          # A02 default 300; ~17 scanned pages only (Decision D3-ocr)
           resources:                     # initial, not measured; revised in F-T06 from F-T07
             requests: {cpu: 250m, memory: 512Mi}
             limits: {cpu: 2000m, memory: 2Gi}
