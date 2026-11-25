@@ -52,7 +52,8 @@ def get_settings_03() -> Settings03:
         trace_warn_bytes=_int("TRACE_WARN_BYTES", 50 * 1024 * 1024),
         guardrail_mode=mode if mode in GUARDRAIL_MODES else "flag",
         trace_http_enabled=_bool("TRACE_HTTP_ENABLED", False),
-        allow_cache_bypass=_bool("ALLOW_CACHE_BYPASS", False),
+        # documented name is ALLOW_CACHE_BYPASS_03 (manifests); the bare name stays accepted
+        allow_cache_bypass=_bool("ALLOW_CACHE_BYPASS_03", _bool("ALLOW_CACHE_BYPASS", False)),
         rerank_enabled=_bool("RERANK_ENABLED", False),
         rerank_pool=_int("RERANK_POOL", 8),
         chunk_size=_int("CHUNK_SIZE", 400),

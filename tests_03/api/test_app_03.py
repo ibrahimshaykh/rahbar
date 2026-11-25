@@ -86,6 +86,18 @@ def test_bypass_header_honoured_only_when_enabled(monkeypatch, tmp_path):  # T-T
         assert trace_records(tmp_path / str(enabled))[1]["bypass_cache"] is enabled
 
 
+def test_bypass_enabled_by_documented_env_name(monkeypatch, tmp_path):  # T-TR-INT-04b
+    """Regression: manifests set ALLOW_CACHE_BYPASS_03 but the code read ALLOW_CACHE_BYPASS,
+    so the live API ignored the header and --require-cold suites failed on cache hits."""
+    passages = [passage("c1", "Attendance must be at least 80 percent.", 0.9)]
+    with running_app(monkeypatch, tmp_path, ALLOW_CACHE_BYPASS_03="true",
+                     CACHE_ENABLED="true") as client:
+        _install(client, FakeRetriever(passages), FakeProvider())
+        client.post("/api/ask", json=BODY)
+        second = client.post("/api/ask", json=BODY, headers={"X-Bypass-Cache-03": "1"})
+    assert second.headers["X-Cache"] == "miss"
+
+
 def test_health_ready_metrics_still_answer(monkeypatch, tmp_path):  # T-TR-INT-05
     with running_app(monkeypatch, tmp_path) as client:
         assert client.get("/healthz").status_code == 200

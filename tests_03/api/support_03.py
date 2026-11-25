@@ -35,7 +35,8 @@ def _load_a02_doubles():
 
 FakeRedis = _load_a02_doubles().FakeRedis
 ENV_KEYS = ("RAGOPS_ROOT", "GUARDRAIL_MODE", "RETRIEVER", "LLM_PROVIDER", "CACHE_ENABLED",
-            "RELEVANCE_FLOOR", "LLM_API_KEY", "ALLOW_CACHE_BYPASS", "TRACE_HTTP_ENABLED",
+            "RELEVANCE_FLOOR", "LLM_API_KEY", "ALLOW_CACHE_BYPASS", "ALLOW_CACHE_BYPASS_03",
+            "TRACE_HTTP_ENABLED",
             "RERANK_ENABLED", "TOP_K")
 
 
