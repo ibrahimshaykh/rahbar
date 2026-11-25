@@ -40,6 +40,7 @@ spec:
                 name: rahbar-config
           env:
             - {name: RAGOPS_ROOT, value: /data}
+            - {name: TIMING_CORPUS_DIR, value: /corpus-baked}   # raw corpus files live here in the image
             - {name: EVAL_TARGET_URL, value: "http://api-candidate-03:8000"}
             - {name: EVAL_BASELINE_URL, value: "http://api:8000"}
             - {name: EVAL_TAG, value: candidate}

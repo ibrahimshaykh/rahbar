@@ -274,3 +274,12 @@ def test_k8s_16b_job_entry_syntax_if_present():
     assert entry.exists(), "eval/job_entry_03.sh missing (Builder-2 artefact)"
     r = subprocess.run(["sh", "-n", str(entry)], capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
+
+
+def test_k8s_16c_job_entry_can_reuse_baseline_and_limit_candidate_runs():
+    """Each real suite run costs ~25 min on a CPU-only LLM, so a gate demo must be able to
+    reuse the stored baseline and run the candidate once (defaults keep the full protocol)."""
+    text = (ROOT / "eval" / "job_entry_03.sh").read_text(encoding="utf-8")
+    assert "REUSE_BASELINE" in text and "CANDIDATE_RUNS" in text
+    assert '${CANDIDATE_RUNS:-2}' in text           # default stays 2 runs
+    assert '${REUSE_BASELINE:-0}' in text           # default stays "run the baseline"

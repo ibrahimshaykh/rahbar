@@ -39,8 +39,15 @@ OFFLINE_DOCS = [
     "corpus/batch_b_03/academic_rules_handbook_v2026-11_03.md",
 ]
 DISTRACTOR_DOCS = [f"corpus/noise_03/distractor_{i}_03.md" for i in (1, 2, 3)]
-LIVE_TIMING_DOCS = ["corpus/raw/fee-structure-page.html", "corpus/raw/grading-page.html",
-                    "corpus/raw/student-handbook-jun-2026.pdf"]
+LIVE_TIMING_FILES = ["fee-structure-page.html", "grading-page.html",
+                     "student-handbook-jun-2026.pdf"]
+
+
+def live_timing_docs_03() -> list[str]:
+    """Raw corpus files used for the module timing probe. TIMING_CORPUS_DIR lets the cluster
+    image point at /corpus-baked (it does not ship corpus/raw)."""
+    base = config_03.env_str("TIMING_CORPUS_DIR", "corpus/raw").rstrip("/")
+    return [f"{base}/{name}" for name in LIVE_TIMING_FILES]
 DETERMINISTIC_MODULE = ("paraphrase_mean_cos", "unrelated_mean_cos", "separation_gap",
                         "n_paraphrase", "n_unrelated", "n_timed_chunks")
 
@@ -224,7 +231,7 @@ def build_context(args: argparse.Namespace, golden: list[dict]) -> dict:
     return {"ask": HttpAsk03(args.api), "noise_ask": HttpAsk03(args.noise_api) if args.noise_api else None,
             "lookup": lookup, "judge": judge, "judge_name": args.judge,
             "embed": lambda texts: real_embed(texts, settings), "pairs": pairs, "human": human,
-            "timing": load_corpus_chunks(LIVE_TIMING_DOCS, int(cfg.get("chunk_size") or 400),
+            "timing": load_corpus_chunks(live_timing_docs_03(),int(cfg.get("chunk_size") or 400),
                                          int(cfg.get("chunk_overlap") or 50), 50),
             "config": {k: cfg.get(k) for k in ("top_k", "chunk_size", "chunk_overlap", "rerank",
                                                "prompt_template")},

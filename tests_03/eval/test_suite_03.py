@@ -84,3 +84,13 @@ def test_live_without_passage_source_exits_2(tmp_path):
 def test_bad_args_exit_2(tmp_path):
     assert rs.main(["--bogus"]) == 2
     assert rs.main(["--mode", "offline", "--api", "http://x", "--golden", "nope.jsonl"]) == 2
+
+
+def test_timing_docs_dir_is_configurable(monkeypatch):  # T-SUITE-LIVE-DIR
+    """The cluster image has the raw corpus under /corpus-baked, not corpus/raw."""
+    monkeypatch.delenv("TIMING_CORPUS_DIR", raising=False)
+    assert rs.live_timing_docs_03()[0] == "corpus/raw/fee-structure-page.html"
+    monkeypatch.setenv("TIMING_CORPUS_DIR", "/corpus-baked")
+    docs = rs.live_timing_docs_03()
+    assert docs == ["/corpus-baked/fee-structure-page.html", "/corpus-baked/grading-page.html",
+                    "/corpus-baked/student-handbook-jun-2026.pdf"]
