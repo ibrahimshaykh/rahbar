@@ -50,8 +50,8 @@ spec:
             - {name: REUSE_CANDIDATE, value: "0"}   # "1" = reuse the stored candidate run
             - {name: CANDIDATE_RUNS, value: "1"}    # one run per candidate (~1 h on this CPU)
             - {name: MAX_ERROR_RATE, value: "0.05"} # transient host errors, recorded in output
-          resources:                     # initial, not measured; revised in F-T06
-            requests: {cpu: 100m, memory: 128Mi}
+          resources:                     # observed up to 349Mi in the eval pod (kubectl top)
+            requests: {cpu: 100m, memory: 384Mi}
             limits: {cpu: 500m, memory: 512Mi}
           securityContext:
             allowPrivilegeEscalation: false

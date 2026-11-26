@@ -50,8 +50,8 @@ spec:
             - {name: EVAL_TAG, value: candidate}
             - {name: GATE_THRESHOLDS_PATH, value: /config/gate_thresholds_03.yaml}
             - {name: GATE_ONLY, value: "0"}     # "1" = re-gate the stored experiment only
-          resources:                     # initial, not measured; revised in F-T06
-            requests: {cpu: 100m, memory: 128Mi}
+          resources:                     # observed up to 349Mi in the eval pod (kubectl top)
+            requests: {cpu: 100m, memory: 384Mi}
             limits: {cpu: 500m, memory: 512Mi}
           securityContext:
             allowPrivilegeEscalation: false

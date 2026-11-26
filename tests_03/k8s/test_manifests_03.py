@@ -303,3 +303,18 @@ def test_k8s_16d_job_entry_lets_the_error_budget_decide_and_can_reuse_candidate(
     text = (ROOT / "eval" / "job_entry_03.sh").read_text(encoding="utf-8")
     assert "run_suite_tolerating_errors" in text and "-ne 5" in text
     assert "${REUSE_CANDIDATE:-0}" in text
+
+
+def test_k8s_20_resource_patches_cover_measured_peaks():
+    """Requests/limits come from kubectl top: api peak 73Mi, chroma 282Mi, ingest 1254Mi."""
+    def mem(v):
+        return int(v[:-2]) * (1024 if v.endswith("Gi") else 1)
+
+    (api,) = load(K8S / "patch_api_resources_03.yaml")
+    (chroma,) = load(K8S / "patch_chroma_resources_03.yaml")
+    a = api["spec"]["template"]["spec"]["containers"][0]["resources"]
+    c = chroma["spec"]["template"]["spec"]["containers"][0]["resources"]
+    assert mem(a["requests"]["memory"]) >= 73 and mem(a["limits"]["memory"]) >= 2 * 87
+    assert mem(c["requests"]["memory"]) >= 282 and mem(c["limits"]["memory"]) >= 2 * 282
+    job = by_name("Job", "ragops-ingest-03")["spec"]["template"]["spec"]["containers"][0]
+    assert mem(job["resources"]["limits"]["memory"]) >= 1254 * 1.5

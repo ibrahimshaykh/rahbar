@@ -1,0 +1,26 @@
+=== F-T10: ingest CronJob, triggered once by hand ===
+Thu, Nov 26, 2026  8:17:09 AM
+$ kubectl apply -f k8s/ingest_cronjob_03.yaml
+cronjob.batch/ragops-ingest-cron-03 created
+NAME                    SCHEDULE    TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+ragops-ingest-cron-03   0 2 * * 0   <none>     False     0        <none>          0s
+$ kubectl create job --from=cronjob/ragops-ingest-cron-03 ragops-ingest-manual-03
+job.batch/ragops-ingest-manual-03 created
+ask 200 30.860420s
+ask 200 70.423659s
+ask 200 64.673306s
+ask 500 9.069530s
+(job finished; captured after the wait)
+$ kubectl -n rahbar get cronjob,job
+NAME                                  SCHEDULE    TIMEZONE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+cronjob.batch/ragops-ingest-cron-03   0 2 * * 0   <none>         False     0        <none>          9m50s
+cronjob.batch/reindex                 0 2 * * 0   Asia/Karachi   False     0        <none>          21d
+
+NAME                                STATUS     COMPLETIONS   DURATION   AGE
+job.batch/ragops-baseline-03        Failed     0/1           5h42m      5h42m
+job.batch/ragops-eval-03            Failed     0/1           22m        22m
+job.batch/ragops-ingest-manual-03   Complete   1/1           9m34s      9m49s
+$ kubectl -n rahbar logs job/ragops-ingest-manual-03
+{"ts": "2026-11-26T08:17:16Z", "logger": "rahbar.indexer.ingest_03", "msg": "optional corpus skipped", "corpus": "/data/incoming"}
+{"ts": "2026-11-26T08:26:39Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 23, "accepted": 15, "quarantined": 8, "unchanged_docs": 15, "embedded_chunks": 0, "kept_chunks": 848, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": "/data/eval/results/verification_report_03_20261126T081716Z.json", "md": "/data/eval/results/verification_report_03_20261126T081716Z.md"}, "collection_version": 2, "seconds": 563.82}
+embedded_chunks=0 kept_chunks=848 deleted_chunks=0 deactivated_chunks=0 collection_version=2

@@ -1,0 +1,228 @@
+=== F-T07: kubectl top pods, sampled every ~15 s during the manual ingest CronJob run and live asks (2026-11-26, 08:17-08:25 UTC) ===
+peak per pod over all samples:
+api-7b7899bc87-58zqx                       cpu_peak=  414m mem_peak=   66Mi samples=19
+api-7b7899bc87-jk2s4                       cpu_peak=  440m mem_peak=   68Mi samples=19
+api-7b7899bc87-w8drg                       cpu_peak=  341m mem_peak=   73Mi samples=19
+api-candidate-03-779dd85785-hxw7w          cpu_peak=    8m mem_peak=   87Mi samples=20
+chroma-0                                   cpu_peak=    7m mem_peak=  282Mi samples=20
+ragops-helper-03                           cpu_peak=   40m mem_peak=    6Mi samples=20
+ragops-ingest-manual-03-m46pq              cpu_peak=  995m mem_peak= 1254Mi samples=15
+redis-5db6cb7bdf-n9qsm                     cpu_peak=   29m mem_peak=   17Mi samples=20
+ui-7ff8c5f7b5-mkxh5                        cpu_peak=    1m mem_peak=    2Mi samples=20
+ui-7ff8c5f7b5-sfc7w                        cpu_peak=    2m mem_peak=    4Mi samples=20
+
+$ kubectl -n rahbar top pods (after)
+NAME                                CPU(cores)   MEMORY(bytes)   
+api-7b7899bc87-58zqx                7m           66Mi            
+api-7b7899bc87-jk2s4                7m           67Mi            
+api-7b7899bc87-w8drg                6m           73Mi            
+api-candidate-03-779dd85785-hxw7w   7m           85Mi            
+chroma-0                            5m           276Mi           
+ragops-helper-03                    0m           4Mi             
+redis-5db6cb7bdf-n9qsm              42m          17Mi            
+ui-7ff8c5f7b5-mkxh5                 1m           2Mi             
+ui-7ff8c5f7b5-sfc7w                 1m           3Mi             
+
+raw samples:
+08:17:10 api-candidate-03-779dd85785-hxw7w 8m 86Mi
+08:17:10 chroma-0 7m 282Mi
+08:17:10 ragops-helper-03 40m 6Mi
+08:17:10 redis-5db6cb7bdf-n9qsm 18m 11Mi
+08:17:10 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:17:10 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:17:26 api-7b7899bc87-58zqx 414m 66Mi
+08:17:26 api-7b7899bc87-jk2s4 440m 66Mi
+08:17:26 api-7b7899bc87-w8drg 341m 66Mi
+08:17:26 api-candidate-03-779dd85785-hxw7w 6m 87Mi
+08:17:26 chroma-0 4m 282Mi
+08:17:26 ragops-helper-03 39m 5Mi
+08:17:26 redis-5db6cb7bdf-n9qsm 14m 10Mi
+08:17:26 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:17:26 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:17:41 api-7b7899bc87-58zqx 414m 66Mi
+08:17:41 api-7b7899bc87-jk2s4 440m 66Mi
+08:17:41 api-7b7899bc87-w8drg 341m 66Mi
+08:17:41 api-candidate-03-779dd85785-hxw7w 6m 87Mi
+08:17:41 chroma-0 4m 282Mi
+08:17:41 ragops-helper-03 39m 5Mi
+08:17:41 redis-5db6cb7bdf-n9qsm 14m 10Mi
+08:17:41 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:17:41 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:17:56 api-7b7899bc87-58zqx 414m 66Mi
+08:17:56 api-7b7899bc87-jk2s4 440m 66Mi
+08:17:56 api-7b7899bc87-w8drg 341m 66Mi
+08:17:56 api-candidate-03-779dd85785-hxw7w 6m 87Mi
+08:17:56 chroma-0 4m 282Mi
+08:17:56 ragops-helper-03 39m 5Mi
+08:17:56 redis-5db6cb7bdf-n9qsm 14m 10Mi
+08:17:56 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:17:56 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:18:12 api-7b7899bc87-58zqx 414m 66Mi
+08:18:12 api-7b7899bc87-jk2s4 440m 66Mi
+08:18:12 api-7b7899bc87-w8drg 341m 66Mi
+08:18:12 api-candidate-03-779dd85785-hxw7w 6m 87Mi
+08:18:12 chroma-0 4m 282Mi
+08:18:12 ragops-helper-03 39m 5Mi
+08:18:12 redis-5db6cb7bdf-n9qsm 14m 10Mi
+08:18:12 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:18:12 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:18:29 api-7b7899bc87-58zqx 7m 66Mi
+08:18:29 api-7b7899bc87-jk2s4 7m 66Mi
+08:18:29 api-7b7899bc87-w8drg 12m 66Mi
+08:18:29 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:18:29 chroma-0 6m 282Mi
+08:18:29 ragops-helper-03 0m 5Mi
+08:18:29 ragops-ingest-manual-03-m46pq 973m 245Mi
+08:18:29 redis-5db6cb7bdf-n9qsm 18m 10Mi
+08:18:29 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:18:29 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:18:52 api-7b7899bc87-58zqx 7m 66Mi
+08:18:52 api-7b7899bc87-jk2s4 7m 66Mi
+08:18:52 api-7b7899bc87-w8drg 12m 66Mi
+08:18:52 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:18:52 chroma-0 6m 282Mi
+08:18:52 ragops-helper-03 0m 5Mi
+08:18:52 ragops-ingest-manual-03-m46pq 973m 245Mi
+08:18:52 redis-5db6cb7bdf-n9qsm 18m 10Mi
+08:18:52 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:18:52 ui-7ff8c5f7b5-sfc7w 1m 2Mi
+08:22:25 api-7b7899bc87-58zqx 6m 66Mi
+08:22:25 api-7b7899bc87-jk2s4 7m 68Mi
+08:22:25 api-7b7899bc87-w8drg 11m 73Mi
+08:22:25 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:22:25 chroma-0 4m 280Mi
+08:22:25 ragops-helper-03 0m 5Mi
+08:22:25 ragops-ingest-manual-03-m46pq 951m 482Mi
+08:22:25 redis-5db6cb7bdf-n9qsm 23m 14Mi
+08:22:25 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:22:25 ui-7ff8c5f7b5-sfc7w 2m 4Mi
+08:22:41 api-7b7899bc87-58zqx 6m 66Mi
+08:22:41 api-7b7899bc87-jk2s4 7m 68Mi
+08:22:41 api-7b7899bc87-w8drg 11m 73Mi
+08:22:41 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:22:41 chroma-0 4m 280Mi
+08:22:41 ragops-helper-03 0m 5Mi
+08:22:41 ragops-ingest-manual-03-m46pq 951m 482Mi
+08:22:41 redis-5db6cb7bdf-n9qsm 23m 14Mi
+08:22:41 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:22:41 ui-7ff8c5f7b5-sfc7w 2m 4Mi
+08:22:56 api-7b7899bc87-58zqx 6m 66Mi
+08:22:56 api-7b7899bc87-jk2s4 7m 68Mi
+08:22:56 api-7b7899bc87-w8drg 11m 73Mi
+08:22:56 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:22:56 chroma-0 4m 280Mi
+08:22:56 ragops-helper-03 0m 5Mi
+08:22:56 ragops-ingest-manual-03-m46pq 951m 482Mi
+08:22:56 redis-5db6cb7bdf-n9qsm 23m 14Mi
+08:22:56 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:22:56 ui-7ff8c5f7b5-sfc7w 2m 4Mi
+08:23:12 api-7b7899bc87-58zqx 6m 66Mi
+08:23:12 api-7b7899bc87-jk2s4 7m 68Mi
+08:23:12 api-7b7899bc87-w8drg 11m 73Mi
+08:23:12 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:23:12 chroma-0 4m 280Mi
+08:23:12 ragops-helper-03 0m 5Mi
+08:23:12 ragops-ingest-manual-03-m46pq 951m 482Mi
+08:23:12 redis-5db6cb7bdf-n9qsm 23m 14Mi
+08:23:12 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:23:12 ui-7ff8c5f7b5-sfc7w 2m 4Mi
+08:23:28 api-7b7899bc87-58zqx 7m 66Mi
+08:23:28 api-7b7899bc87-jk2s4 5m 68Mi
+08:23:28 api-7b7899bc87-w8drg 6m 73Mi
+08:23:28 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:23:28 chroma-0 5m 280Mi
+08:23:28 ragops-helper-03 0m 5Mi
+08:23:28 ragops-ingest-manual-03-m46pq 979m 677Mi
+08:23:28 redis-5db6cb7bdf-n9qsm 10m 14Mi
+08:23:28 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:23:28 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:23:44 api-7b7899bc87-58zqx 7m 66Mi
+08:23:44 api-7b7899bc87-jk2s4 5m 68Mi
+08:23:44 api-7b7899bc87-w8drg 6m 73Mi
+08:23:44 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:23:44 chroma-0 5m 280Mi
+08:23:44 ragops-helper-03 0m 5Mi
+08:23:44 ragops-ingest-manual-03-m46pq 979m 677Mi
+08:23:44 redis-5db6cb7bdf-n9qsm 10m 14Mi
+08:23:44 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:23:44 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:23:59 api-7b7899bc87-58zqx 7m 66Mi
+08:23:59 api-7b7899bc87-jk2s4 5m 68Mi
+08:23:59 api-7b7899bc87-w8drg 6m 73Mi
+08:23:59 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:23:59 chroma-0 5m 280Mi
+08:23:59 ragops-helper-03 0m 5Mi
+08:23:59 ragops-ingest-manual-03-m46pq 979m 677Mi
+08:23:59 redis-5db6cb7bdf-n9qsm 10m 14Mi
+08:23:59 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:23:59 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:24:15 api-7b7899bc87-58zqx 7m 66Mi
+08:24:15 api-7b7899bc87-jk2s4 5m 68Mi
+08:24:15 api-7b7899bc87-w8drg 6m 73Mi
+08:24:15 api-candidate-03-779dd85785-hxw7w 7m 87Mi
+08:24:15 chroma-0 5m 280Mi
+08:24:15 ragops-helper-03 0m 5Mi
+08:24:15 ragops-ingest-manual-03-m46pq 979m 677Mi
+08:24:15 redis-5db6cb7bdf-n9qsm 10m 14Mi
+08:24:15 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:24:15 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:24:30 api-7b7899bc87-58zqx 6m 66Mi
+08:24:30 api-7b7899bc87-jk2s4 7m 68Mi
+08:24:30 api-7b7899bc87-w8drg 7m 73Mi
+08:24:30 api-candidate-03-779dd85785-hxw7w 6m 86Mi
+08:24:30 chroma-0 5m 278Mi
+08:24:30 ragops-helper-03 0m 5Mi
+08:24:30 ragops-ingest-manual-03-m46pq 995m 935Mi
+08:24:30 redis-5db6cb7bdf-n9qsm 27m 13Mi
+08:24:30 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:24:30 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:24:46 api-7b7899bc87-58zqx 6m 66Mi
+08:24:46 api-7b7899bc87-jk2s4 7m 68Mi
+08:24:46 api-7b7899bc87-w8drg 7m 73Mi
+08:24:46 api-candidate-03-779dd85785-hxw7w 6m 86Mi
+08:24:46 chroma-0 5m 278Mi
+08:24:46 ragops-helper-03 0m 5Mi
+08:24:46 ragops-ingest-manual-03-m46pq 995m 935Mi
+08:24:46 redis-5db6cb7bdf-n9qsm 27m 13Mi
+08:24:46 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:24:46 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:25:01 api-7b7899bc87-58zqx 6m 66Mi
+08:25:01 api-7b7899bc87-jk2s4 7m 68Mi
+08:25:01 api-7b7899bc87-w8drg 7m 73Mi
+08:25:01 api-candidate-03-779dd85785-hxw7w 6m 86Mi
+08:25:01 chroma-0 5m 278Mi
+08:25:01 ragops-helper-03 0m 5Mi
+08:25:01 ragops-ingest-manual-03-m46pq 995m 935Mi
+08:25:01 redis-5db6cb7bdf-n9qsm 27m 13Mi
+08:25:01 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:25:01 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:25:17 api-7b7899bc87-58zqx 6m 66Mi
+08:25:17 api-7b7899bc87-jk2s4 7m 68Mi
+08:25:17 api-7b7899bc87-w8drg 7m 73Mi
+08:25:17 api-candidate-03-779dd85785-hxw7w 6m 86Mi
+08:25:17 chroma-0 5m 278Mi
+08:25:17 ragops-helper-03 0m 5Mi
+08:25:17 ragops-ingest-manual-03-m46pq 995m 935Mi
+08:25:17 redis-5db6cb7bdf-n9qsm 27m 13Mi
+08:25:17 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:25:17 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+08:25:32 api-7b7899bc87-58zqx 7m 66Mi
+08:25:32 api-7b7899bc87-jk2s4 7m 68Mi
+08:25:32 api-7b7899bc87-w8drg 7m 73Mi
+08:25:32 api-candidate-03-779dd85785-hxw7w 6m 85Mi
+08:25:32 chroma-0 6m 277Mi
+08:25:32 ragops-helper-03 0m 5Mi
+08:25:32 ragops-ingest-manual-03-m46pq 986m 1254Mi
+08:25:32 redis-5db6cb7bdf-n9qsm 29m 17Mi
+08:25:32 ui-7ff8c5f7b5-mkxh5 1m 2Mi
+08:25:32 ui-7ff8c5f7b5-sfc7w 1m 3Mi
+
+## after F-T06: requests/limits applied (kubectl get ... -o jsonpath)
+deploy/api: {"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}
+sts/chroma: {"limits":{"cpu":"1","memory":"1Gi"},"requests":{"cpu":"100m","memory":"384Mi"}}
+api-76df6f8749-2jw97                1/1     Running       0                55s
+api-76df6f8749-vjhxn                1/1     Running       0                18s
+api-76df6f8749-w4895                1/1     Running       0                32s
+api-7b7899bc87-w8drg                1/1     Terminating   0                13m
+api-candidate-03-779dd85785-hxw7w   1/1     Running       0                79m
+chroma-0                            1/1     Running       0                4s
