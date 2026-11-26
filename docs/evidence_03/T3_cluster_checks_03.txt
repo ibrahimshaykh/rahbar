@@ -1,0 +1,155 @@
+=== BEGIN T3 ===
+Thu, Nov 26, 2026  9:39:31 AM
+9ce97e0
+
+## T3-00 cluster readiness
+
+$ kubectl config current-context
+minikube
+exit=0
+
+$ kubectl top nodes
+NAME       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+minikube   881m         22%      2831Mi          36%         
+exit=0
+
+## T3-01 nothing in default, A03 services are ClusterIP
+
+$ kubectl get all -n default
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   21d
+exit=0
+
+$ kubectl -n rahbar get svc
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+api                ClusterIP   10.103.35.224    <none>        8000/TCP   21d
+api-candidate-03   ClusterIP   10.101.51.98     <none>        8000/TCP   4h45m
+chroma             ClusterIP   None             <none>        8000/TCP   21d
+redis              ClusterIP   10.98.239.241    <none>        6379/TCP   21d
+ui                 ClusterIP   10.111.144.211   <none>        8080/TCP   21d
+exit=0
+
+$ kubectl -n rahbar get pvc rahbar-ragops-pvc-03
+NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+rahbar-ragops-pvc-03   Bound    pvc-f252fd28-f0ec-42b1-8b62-cf1645ee0a4b   2Gi        RWO            standard       <unset>                 2d
+exit=0
+
+## T3-02 a-c: a file on the PVC survives replacing the pod
+
+$ kubectl -n rahbar get pod ragops-helper-03 -o jsonpath={.metadata.uid}
+63c9e2bd-5d35-4b04-8f5b-85dbea46227cexit=0
+
+$ kubectl -n rahbar exec ragops-helper-03 -- cat /data/state/persist_03.txt
+Thu Nov 26 09:40:33 UTC 2026
+exit=0
+
+$ kubectl -n rahbar delete pod ragops-helper-03
+pod "ragops-helper-03" deleted from rahbar namespace
+exit=0
+
+$ kubectl -n rahbar get pod ragops-helper-03 -o jsonpath={.metadata.uid}
+3d1b33a9-7051-4b39-9bf1-a1436119f7f9exit=0
+
+$ kubectl -n rahbar exec ragops-helper-03 -- cat /data/state/persist_03.txt
+Thu Nov 26 09:40:33 UTC 2026
+exit=0
+
+$ kubectl -n rahbar exec ragops-helper-03 -- sh -c ls /data/archive /data/state; ls /data/quarantine | tail -1
+/data/archive:
+academic-rules-handbook
+library-policy
+
+/data/state:
+ingest.lock_03
+manifest_03.json
+persist_03.txt
+20261126T085014Z
+exit=0
+
+## T3-03 f, h, i: CronJob policy, single-writer lock, cache generation
+
+$ kubectl -n rahbar get cronjob ragops-ingest-cron-03 -o jsonpath={.spec.schedule} {.spec.concurrencyPolicy}
+0 2 * * 0 Forbidexit=0
+
+cache generation before an unchanged ingest: 48
+job.batch "ragops-ingest-manual-03" deleted from rahbar namespace
+
+$ kubectl -n rahbar create job --from=cronjob/ragops-ingest-cron-03 ragops-ingest-manual-03
+job.batch/ragops-ingest-manual-03 created
+exit=0
+pod/ragops-ingest-manual-03-gbqz5 condition met
+second writer started while the first is running:
+
+$ kubectl apply -f k8s/ingest_job_03.yaml
+job.batch/ragops-ingest-03 created
+exit=0
+
+$ kubectl -n rahbar logs job/ragops-ingest-03
+{"ts": "2026-11-26T09:42:18Z", "logger": "rahbar.indexer.ingest_03", "msg": "another ingest is running"}
+exit=0
+
+$ kubectl -n rahbar get pods -l app=ragops-ingest-03 -o jsonpath={range .items[*]}{.metadata.name} lastExit={.status.containerStatuses[0].lastState.terminated.exitCode} exit={.status.containerStatuses[0].state.terminated.exitCode}{"\n"}{end}
+ragops-ingest-03-7vrqj lastExit=75 exit=75
+ragops-ingest-manual-03-gbqz5 lastExit= exit=
+exit=0
+
+$ kubectl -n rahbar delete job ragops-ingest-03
+job.batch "ragops-ingest-03" deleted from rahbar namespace
+exit=0
+
+$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1
+embedded_chunks=0 kept_chunks=848 deleted_chunks=0 deactivated_chunks=0 collection_version=6
+cache generation after the unchanged ingest: 48
+
+## T3-07 requests/limits on every running container, no OOMKilled, HPA
+
+$ kubectl -n rahbar get pods --field-selector=status.phase=Running -o jsonpath={range .items[*]}{.metadata.name}{" "}{.spec.containers[0].resources}{" lastTerminated="}{.status.containerStatuses[0].lastState.terminated.reason}{"\n"}{end}
+api-76df6f8749-hkjxk {"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}} lastTerminated=
+api-76df6f8749-jp524 {"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}} lastTerminated=
+api-76df6f8749-jqj7p {"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}} lastTerminated=
+api-candidate-03-779dd85785-qvgvv {"limits":{"cpu":"500m","memory":"512Mi"},"requests":{"cpu":"100m","memory":"256Mi"}} lastTerminated=
+chroma-0 {"limits":{"cpu":"1","memory":"1Gi"},"requests":{"cpu":"100m","memory":"384Mi"}} lastTerminated=
+ragops-helper-03 {"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"16Mi"}} lastTerminated=
+redis-5db6cb7bdf-n9qsm {"limits":{"cpu":"300m","memory":"256Mi"},"requests":{"cpu":"50m","memory":"64Mi"}} lastTerminated=Completed
+ui-7ff8c5f7b5-mkxh5 {"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"16Mi"}} lastTerminated=Completed
+ui-7ff8c5f7b5-sfc7w {"limits":{"cpu":"100m","memory":"64Mi"},"requests":{"cpu":"10m","memory":"16Mi"}} lastTerminated=Completed
+exit=0
+
+$ kubectl -n rahbar get hpa
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+api    Deployment/api   cpu: 9%/70%   3         8         3          21d
+exit=0
+
+## T3-08 Assignment 02 behaviour through the Ingress, and NetworkPolicy
+$ curl -H 'Host: rahbar.local' -X POST /api/ask (through ingress-nginx)
+{"request_id":"fc77644a62e93d328eebf34076011b83","answer":"Students are required to maintain full attendance in all scheduled classes, with a maximum of 10% absence condoned by the Head of Department for genuine reasons.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","page":1}],"answered_from_context":true,"confidence":"high","retrieved":[{"chunk_id":"academic-rules-handbook:2026-11:0000","source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","page":1,"score":0.7612102000000001},{"chunk_id":"academic-rules-handbook:2026-11:0001","source":"academic_rules_handbook_v2026-11_03.md","section":"1.22 Fail
+http=200
+
+$ kubectl -n rahbar exec deploy/ui -- sh -c wget -T 5 -qO- http://chroma:8000/api/v2/heartbeat && echo UI_REACHED_CHROMA || echo ui-cannot-reach-chroma
+wget: download timed out
+ui-cannot-reach-chroma
+exit=0
+
+$ kubectl -n rahbar get job
+NAME                      STATUS     COMPLETIONS   DURATION   AGE
+ragops-baseline-03        Failed     0/1           7h12m      7h12m
+ragops-eval-03            Failed     0/1           47m        47m
+ragops-ingest-manual-03   Complete   1/1           11m        15m
+exit=0
+
+$ kubectl -n rahbar get pods
+NAME                                READY   STATUS      RESTARTS         AGE
+api-76df6f8749-hkjxk                1/1     Running     0                42m
+api-76df6f8749-jp524                1/1     Running     0                43m
+api-76df6f8749-jqj7p                1/1     Running     0                42m
+api-candidate-03-779dd85785-qvgvv   1/1     Running     0                80m
+chroma-0                            1/1     Running     0                87m
+ragops-baseline-03-8s827            0/1     Error       0                7h12m
+ragops-eval-03-kf852                0/1     Error       0                47m
+ragops-helper-03                    1/1     Running     0                15m
+ragops-ingest-manual-03-gbqz5       0/1     Completed   0                15m
+redis-5db6cb7bdf-n9qsm              1/1     Running     8 (3h2m ago)     19d
+ui-7ff8c5f7b5-mkxh5                 1/1     Running     26 (6h14m ago)   18d
+ui-7ff8c5f7b5-sfc7w                 1/1     Running     29 (136m ago)    18d
+exit=0
+=== END T3 ===

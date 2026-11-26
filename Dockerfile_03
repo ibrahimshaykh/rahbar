@@ -29,6 +29,12 @@ COPY corpus/batch_b_03 /app/corpus/batch_b_03
 # Baked Batch A corpus (populated by `make images`, see Makefile).
 COPY indexer/corpus-baked /corpus-baked
 
+# A Windows checkout with core.autocrlf=true gives CRLF files: sh cannot run such a script.
+RUN sed -i 's/\r$//' /app/eval/job_entry_03.sh /app/corpus/batch_b_03/*
+# Fail the build, not the cluster, when the corpus was never fetched and baked.
+RUN find /corpus-baked -type f ! -name .gitkeep | grep -q . \
+ || { echo "corpus-baked is empty: run 'make corpus' then 'make images' first" >&2; exit 1; }
+
 RUN groupadd --gid 10001 rahbar \
  && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin rahbar \
  && mkdir -p /data \

@@ -7,14 +7,17 @@ in a Bash/WSL shell.
 ## 0. Prerequisites (extra commands beyond the A02 README)
 
 ```bash
+# On Windows clone with:  git clone -c core.autocrlf=input <repo>   (CRLF checkouts break scripts and hashes)
 # A02 cluster and stack, exactly as the root README.md says
 make cluster                                  # minikube + Calico + metrics-server + ingress addons
-make images apply                             # A02 images and the dev overlay
+make install corpus                           # fetches the real corpus into corpus/raw/ (git-ignored)
+make images apply                             # bakes the corpus into indexer/corpus-baked/, builds, applies
 export LLM_API_KEY=...   && make secret       # only if a hosted LLM is used; never commit it
 minikube addons enable storage-provisioner default-storageclass   # the PVC needs a default StorageClass
 minikube addons enable metrics-server                             # kubectl top / HPA
 
-# The A03 image (one image runs ingest, eval and the candidate API)
+# The A03 image (one image runs ingest, eval and the candidate API). It copies indexer/corpus-baked/,
+# which `make images` fills; the build stops with a message if that directory is empty.
 docker build -f Dockerfile_03 -t rahbar-ragops-03:dev .
 minikube image load rahbar-ragops-03:dev
 # or in one go, with evidence:  bash scripts/evidence_03/F-T02_image_03.sh

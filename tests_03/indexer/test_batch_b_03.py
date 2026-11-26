@@ -109,3 +109,13 @@ def test_generator_is_idempotent_and_manifest_hashes_are_computed():
         if name != "EXPECTED_03.json":
             assert digest in manifest, name
     assert "synthetic test documents" in manifest
+
+
+def test_generator_writes_lf_line_endings_on_every_platform():
+    """Regression: on Windows write_text produced CRLF, so a fresh LF checkout changed under
+    regeneration and the idempotence test failed there."""
+    subprocess.run([sys.executable, str(REPO / "scripts" / "gen_batch_b_03.py")], check=True,
+                   capture_output=True, cwd=REPO)
+    outputs = [*BATCH_B.iterdir(), REPO / "corpus" / "MANIFEST_batch_b_03.md",
+               *(REPO / "corpus" / "noise_03").glob("*")]
+    assert [p.name for p in outputs if p.is_file() and b"\r\n" in p.read_bytes()] == []

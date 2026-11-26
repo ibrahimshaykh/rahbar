@@ -318,3 +318,11 @@ def test_k8s_20_resource_patches_cover_measured_peaks():
     assert mem(c["requests"]["memory"]) >= 282 and mem(c["limits"]["memory"]) >= 2 * 282
     job = by_name("Job", "ragops-ingest-03")["spec"]["template"]["spec"]["containers"][0]
     assert mem(job["resources"]["limits"]["memory"]) >= 1254 * 1.5
+
+
+def test_k8s_15b_image_survives_crlf_checkouts_and_empty_corpus():
+    """A fresh Windows clone (core.autocrlf=true) gives CRLF shell scripts, and a clone that
+    skipped the corpus fetch has only .gitkeep in corpus-baked; the image must handle both."""
+    text = (ROOT / "Dockerfile_03").read_text(encoding="utf-8")
+    assert r"sed -i 's/\r$//'" in text and "/app/eval/job_entry_03.sh" in text
+    assert "corpus-baked is empty" in text
