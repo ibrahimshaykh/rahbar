@@ -254,3 +254,34 @@ def test_http_ask_retries_a_read_timeout_only_once():  # T-E2E-RETRY-4
                     connect_retries=8, connect_retry_wait=0)("q")
     assert out["response"] is None and "ReadTimeout" in out["error"]
     assert calls["n"] <= 4      # at most one extra attempt (A02's own retry may double each)
+
+
+def test_chroma_lookup_disables_telemetry(monkeypatch):  # T-E2E-TELEMETRY
+    """Regression: the Chroma client's telemetry thread tried to reach the internet behind the
+    NetworkPolicy and kept the eval process alive long after the results were written."""
+    import sys
+    import types
+
+    seen = {}
+
+    class _Col:
+        def get(self, ids):
+            return {"ids": ids, "documents": ["text"] * len(ids)}
+
+    def http_client(**kwargs):
+        seen.update(kwargs)
+        return types.SimpleNamespace(get_collection=lambda name: _Col())
+
+    class _Settings:
+        def __init__(self, **kw):
+            self.kw = kw
+
+    fake = types.ModuleType("chromadb")
+    fake.HttpClient = http_client
+    fake_cfg = types.ModuleType("chromadb.config")
+    fake_cfg.Settings = _Settings
+    monkeypatch.setitem(sys.modules, "chromadb", fake)
+    monkeypatch.setitem(sys.modules, "chromadb.config", fake_cfg)
+    out = make_passage_lookup_03(chroma=True, chroma_cfg={"host": "h", "port": 1})(["a"])
+    assert out == {"a": "text"}
+    assert seen["settings"].kw == {"anonymized_telemetry": False}

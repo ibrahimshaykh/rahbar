@@ -316,8 +316,12 @@ def make_passage_lookup_03(traces: str | None = None, chroma: bool = False,
 
     def from_chroma(ids: list[str]) -> dict[str, str]:
         import chromadb
+        from chromadb.config import Settings as ChromaSettings
 
-        client = chromadb.HttpClient(host=cfg.get("host", "chroma"), port=int(cfg.get("port", 8000)))
+        # Telemetry off, like the A02 clients: its thread tries to reach the internet behind
+        # the NetworkPolicy and keeps the eval process alive after the results are written.
+        client = chromadb.HttpClient(host=cfg.get("host", "chroma"), port=int(cfg.get("port", 8000)),
+                                     settings=ChromaSettings(anonymized_telemetry=False))
         got = client.get_collection(cfg.get("collection", "rahbar_ragops_03")).get(ids=ids)
         return dict(zip(got["ids"], got["documents"]))
 

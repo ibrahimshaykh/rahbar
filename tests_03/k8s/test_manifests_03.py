@@ -295,3 +295,11 @@ def test_k8s_09b_patch_relaxes_api_probes_for_a_loaded_node():
     assert c["livenessProbe"]["timeoutSeconds"] >= 10 and c["livenessProbe"]["failureThreshold"] >= 6
     assert c["readinessProbe"]["timeoutSeconds"] >= 10
     assert c["startupProbe"]["failureThreshold"] >= 120
+
+
+def test_k8s_16d_job_entry_lets_the_error_budget_decide_and_can_reuse_candidate():
+    """run_suite exits 5 on any request error; under `set -e` the Job died before the gate even
+    when the errors were inside the declared budget."""
+    text = (ROOT / "eval" / "job_entry_03.sh").read_text(encoding="utf-8")
+    assert "run_suite_tolerating_errors" in text and "-ne 5" in text
+    assert "${REUSE_CANDIDATE:-0}" in text
