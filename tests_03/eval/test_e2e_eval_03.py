@@ -163,3 +163,11 @@ def test_ollama_judge_uses_its_own_schema_not_the_answer_schema():  # T-E2E-JUDG
     assert seen["url"] == "http://ollama.test:11434/api/chat"
     assert p["format"] == JUDGE_JSON_SCHEMA_03 and "supported" in p["format"]["properties"]
     assert p["options"]["temperature"] == 0 and p["stream"] is False and p["model"] == "llama3.2:3b"
+
+
+def test_run_e2e_items_record_the_request_error_text():  # T-E2E-ERR
+    """A bare 'N request error(s)' count made the live smoke failure undiagnosable."""
+    items = [{"id": "G1", "category": "answerable", "question": "q"}]
+    err = lambda _q: {"response": None, "latency_ms": 1.0, "cache": None, "error": "ReadTimeout: x"}  # noqa: E731
+    e2e, _, _ = run_e2e(items, err, rule_judge, lambda ids: {})
+    assert e2e["items"][0]["error"] == "ReadTimeout: x"

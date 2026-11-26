@@ -66,3 +66,13 @@ def test_percentile_nearest_rank():  # T-MET-05
 
 def test_mean_skips_none():  # T-MET-06
     assert mean([1.0, None, 3.0]) == 2.0 and mean([None]) is None
+
+
+def test_ndcg_never_exceeds_one_when_chunks_repeat_a_reference():  # T-MET-04b
+    """Regression: five chunks from the same page each scored a hit against ONE relevant
+    reference, giving nDCG 1.19 on the live smoke run. A reference is credited once."""
+    ret = [R("a"), R("a"), R("a"), R("x"), R("a")]
+    assert ndcg_at_k(ret, [R("a")], 5) == 1.0
+    assert ndcg_at_k([R("x"), R("a"), R("a")], [R("a")], 5) < 1.0
+    # a page-less golden reference (any page of the source) is also credited once
+    assert ndcg_at_k([R("a", 1), R("a", 2), R("a", 3)], [{"source": "a", "page": None}], 5) == 1.0

@@ -304,6 +304,7 @@ def run_e2e(items: list[dict], ask: AskFn, judge: JudgeFn, lookup: Callable,
         "items": [{"id": r["item"]["id"], "trace_id": r.get("trace_id"),
                    "answered_from_context": (r["response"] or {}).get("answered_from_context"),
                    "latency_ms": r["latency_ms"], "cache": r.get("cache"),
+                   "error": r.get("error"),
                    "answer": (r["response"] or {}).get("answer"),
                    "retrieved_ids": [x["chunk_id"] for x in (r["response"] or {}).get("retrieved") or []]}
                   for r in records],

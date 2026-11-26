@@ -46,7 +46,16 @@ def reciprocal_rank(retrieved: list[dict], relevant: list[dict]) -> float | None
 def ndcg_at_k(retrieved: list[dict], relevant: list[dict], k: int) -> float | None:
     if not relevant:
         return None
-    flags = relevance_flags(retrieved[:k], relevant)
+    # Each relevant reference earns gain once: several chunks of the same page must not
+    # push DCG above the ideal DCG (nDCG <= 1).
+    credited: set[int] = set()
+    flags = []
+    for r in retrieved[:k]:
+        hit = next((j for j, g in enumerate(relevant)
+                    if j not in credited and ref_matches(r, g)), None)
+        if hit is not None:
+            credited.add(hit)
+        flags.append(hit is not None)
     dcg = sum(1.0 / math.log2(i + 1) for i, f in enumerate(flags, start=1) if f)
     ideal = min(len(relevant), k)
     idcg = sum(1.0 / math.log2(i + 1) for i in range(1, ideal + 1))
