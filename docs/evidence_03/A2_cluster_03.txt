@@ -112,3 +112,6 @@ $ curl -X POST /api/retrieve_03  (attendance condonation)
   academic-rules-handbook:2026-11:0005 0.668 academic_rules_handbook_v2026-11_03.md
   student-handbook:2026-06:0109 0.62 student-handbook-jun-2026.pdf
 === END A2-T09 ===
+
+## after A2-T09 deleted library-policy, the next CronJob run restored only that document
+embedded_chunks=6 kept_chunks=842 deleted_chunks=0 deactivated_chunks=0 collection_version=6

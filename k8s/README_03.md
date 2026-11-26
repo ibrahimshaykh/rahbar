@@ -32,16 +32,28 @@ Windows / macOS with the docker driver: run `minikube tunnel` in a second termin
 ```bash
 kubectl apply -f k8s/pvc_03.yaml -f k8s/serviceaccount_03.yaml -f k8s/networkpolicy_03.yaml
 kubectl apply -f k8s/gate_configmap_03.yaml
-kubectl apply -f k8s/ingest_job_03.yaml          # sole writer; wait for it:
-kubectl -n rahbar wait --for=condition=complete job/ragops-ingest-03 --timeout=900s
+kubectl -n rahbar patch statefulset chroma --patch-file k8s/patch_chroma_probe_03.yaml      # or ingest fails
+kubectl -n rahbar patch statefulset chroma --patch-file k8s/patch_chroma_resources_03.yaml
+kubectl apply -f k8s/ingest_job_03.yaml          # sole writer; wait for it (about 20 min on a laptop CPU):
+kubectl -n rahbar wait --for=condition=complete job/ragops-ingest-03 --timeout=3600s
 kubectl apply -f k8s/ingest_cronjob_03.yaml
 kubectl -n rahbar patch deployment api --patch-file k8s/patch_api_rollout_03.yaml     # live api -> A03 app, revision 2
+kubectl -n rahbar patch deployment api --patch-file k8s/patch_api_resources_03.yaml
 kubectl -n rahbar rollout status deploy/api --timeout=600s
 kubectl apply -f k8s/helper_pod_03.yaml          # volume holder for kubectl cp (unseen-document demo, results)
 kubectl apply -f k8s/config_candidate_03.yaml -f k8s/api_candidate_03.yaml            # candidate API (own collection)
 kubectl -n rahbar rollout status deploy/api-candidate-03 --timeout=600s
-kubectl apply -f k8s/eval_job_03.yaml            # Part B + C: exit status is the release gate's
+kubectl apply -f k8s/eval_baseline_job_03.yaml   # Part B: two-run baseline (about 2 h on a laptop CPU)
+kubectl -n rahbar wait --for=jsonpath='{.status.conditions[0].type}' job/ragops-baseline-03 --timeout=3h
+kubectl apply -f k8s/eval_job_03.yaml            # Part C: candidate vs stored baseline; exit status is the gate's
 ```
+
+To show a real supersede-and-archive, ingest twice the first time: once with the `/app/corpus/batch_b_03`
+argument removed from the Job (Batch A only), then the Job as committed.
+
+Render another candidate preset with `python scripts/make_candidate_config_03.py config/candidate_fail_03.env >
+k8s/config_candidate_03.yaml`, apply it, `rollout restart deploy/api-candidate-03`, set `EVAL_TAG` in the eval
+Job to the preset name, and run the Job again.
 
 Jobs are immutable: to re-run one, `kubectl -n rahbar delete job <name> --ignore-not-found` first, then apply again.
 `patch_api_rollout_03.yaml` is a patch for a live object, not a manifest to `apply`: it is **not** part of
@@ -59,13 +71,14 @@ Jobs are immutable: to re-run one, `kubectl -n rahbar delete job <name> --ignore
 | `ingest_cronjob_03.yaml` | CronJob `ragops-ingest-cron-03` | weekly re-ingest, `concurrencyPolicy: Forbid` |
 | `eval_job_03.yaml` | Job `ragops-eval-03` | offline evaluation + gate; `backoffLimit: 0` |
 | `api_candidate_03.yaml` | Deployment + ClusterIP Service `api-candidate-03` | candidate release target, own collection |
+| `eval_baseline_job_03.yaml` | Job `ragops-baseline-03` | two seeded baseline runs against the live api |
 | `config_candidate_03.yaml` | ConfigMap `rahbar-config-candidate-03` | candidate overrides (never `EMBED_MODEL`) |
 | `patch_api_rollout_03.yaml` | strategic-merge patch for Deployment `api` | A03 app + PVC, `maxUnavailable: 0` |
 | `helper_pod_03.yaml` | Pod `ragops-helper-03` | holds the PVC for `kubectl cp`; no network |
 
-`patch_api_resources_03.yaml` and `patch_chroma_resources_03.yaml` are **not committed yet**: their values must come
-from the `kubectl top` measurement (`scripts/evidence_03/F-T07_kubectl_top_03.sh`). The Job, candidate and helper
-manifests carry initial requests/limits labelled "initial, not measured" in a comment.
+`patch_api_resources_03.yaml` and `patch_chroma_resources_03.yaml` (and the Job requests/limits) come from the
+`kubectl top` measurement in `docs/evidence_03/F-T07_kubectl_top_03.txt`. `patch_chroma_probe_03.yaml` relaxes
+the Chroma probes: with the 1 s default the kubelet killed Chroma during ingest.
 
 ## 3. Useful runtime commands
 
@@ -85,10 +98,9 @@ kubectl -n rahbar rollout history deploy/api
 | Script | Proves |
 |---|---|
 | `scripts/evidence_03/F-T02_image_03.sh` | image build and load |
-| `scripts/evidence_03/F-T07_kubectl_top_03.sh` | measured CPU/memory for requests/limits |
-| `scripts/evidence_03/F-T09_pvc_03.sh` | PVC persistence across pod restarts |
-| `scripts/evidence_03/F-T10_jobs_03.sh` | ingest Job, idempotent re-run, CronJob, single-writer lock |
-| `scripts/evidence_03/F-T11_gate_flip_03.sh` | gate verdict flips by editing only the ConfigMap |
-| `scripts/evidence_03/F-T12_canary_03.sh` | blocked candidate, promotion, bad release, `rollout undo`, trace |
+| `scripts/evidence_03/F-T07b_pvc_cron_top_03.sh` | PVC persistence, CronJob run, `kubectl top` measurement |
+| `scripts/evidence_03/A2-T09_cluster_lifecycle_03.sh` | delete with orphan report, rollback, roll forward |
+| `scripts/evidence_03/F-T11b_gate_flip_03.sh` | gate verdict flips by editing only the ConfigMap |
+| `scripts/evidence_03/F-T12b_rollback_03.sh` | blocked candidates, bad release, `rollout undo`, traces |
 | `scripts/evidence_03/F-T13_clean_clone_03.sh` | this README, executed from a fresh clone |
 | `scripts/evidence_03/SS-A..SS-F_*_03.sh` | the six uncropped screenshots of the report appendix |

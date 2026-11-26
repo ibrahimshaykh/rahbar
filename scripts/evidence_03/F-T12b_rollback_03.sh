@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 export MSYS_NO_PATHCONV=1
 NS=rahbar
-OUT=docs/evidence_03/F-T12_canary_03.txt
+OUT="${OUT_FILE:-docs/evidence_03/F-T12_canary_03.txt}"
 mkdir -p .ragops_03
 Q="What is the attendance requirement?"
 PORT=18091
@@ -18,7 +18,7 @@ run() { echo "\$ $*"; "$@"; }
 
 rollout_watching_availability() {   # prints availableReplicas every 3 s while rolling out
   ( while true; do
-      echo "  availableReplicas=$($K get deploy api -o jsonpath='{.status.availableReplicas}') updated=$($K get deploy api -o jsonpath='{.status.updatedReplicas}')"
+      echo "  availableReplicas=$($K get deploy api -o jsonpath='{.status.availableReplicas}' 2>/dev/null) updated=$($K get deploy api -o jsonpath='{.status.updatedReplicas}' 2>/dev/null)"
       sleep 5
     done ) &
   local watcher=$!

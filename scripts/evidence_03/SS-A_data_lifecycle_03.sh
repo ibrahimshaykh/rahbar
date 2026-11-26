@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
-# SS-A [HUMAN] screenshot script. Run in a MAXIMISED terminal and capture the WHOLE window
-# (window capture, not a region crop). Both banners BEGIN/END SS-A must be visible.
-# Text twin: docs/evidence_03/SS-A_data_lifecycle_03.txt   Image: docs/evidence_03/SS-A_data_lifecycle_03.png
+# Appendix screenshot A: A1: Batch B verification report. A2: unchanged ingest embeds 0 chunks.
+# Run, then take one uncropped screenshot from the BEGIN banner to the END banner.
+# Needs the cluster up (minikube) with the Assignment 03 objects applied.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-L=A
-NS=rahbar
-OUT=docs/evidence_03/SS-${L}_data_lifecycle_03.txt
-mkdir -p docs/evidence_03
-PF_PID=""
-trap '[ -n "$PF_PID" ] && kill "$PF_PID" 2>/dev/null || true' EXIT
-# step CMD...: echo the command line, run it, print its exit code, never abort the capture
-step(){ echo; echo "\$ $*"; set +e; "$@"; local rc=$?; set -e; echo "exit=$rc"; return 0; }
+export MSYS_NO_PATHCONV=1
+K="kubectl -n rahbar"
+PY=.venv/Scripts/python; [ -x "$PY" ] || PY=.venv/bin/python
+export PYTHONPATH=".;api;indexer"; [ "$PY" = .venv/bin/python ] && export PYTHONPATH=".:api:indexer"
+OUT=docs/evidence_03/SS-A_data_lifecycle_03.txt
+helper() {   # a pod that mounts the PVC, so results can be read from our own cluster
+  if [ "$($K get pod ragops-helper-03 -o jsonpath='{.status.phase}' 2>/dev/null)" != Running ]; then
+    $K delete pod ragops-helper-03 --ignore-not-found >/dev/null
+    kubectl apply -f k8s/helper_pod_03.yaml >/dev/null
+    $K wait --for=condition=Ready pod/ragops-helper-03 --timeout=120s >/dev/null
+  fi
+}
+show() { echo; echo "\$ $*"; "$@" || true; }
 {
-  echo "=== BEGIN SS-$L ==="; date -u; git rev-parse --short HEAD; kubectl config current-context 2>&1 || echo "kubectl context: none"
-  echo "# Part A1+A2. Local offline run with the in-memory collection double (state this in the caption)"
-  step python -m indexer.pipeline.verify_03 --corpus corpus/batch_b_03 --lake "${RAGOPS_ROOT:-.ragops_03}" --dummy-embed
-  step ls -l "${RAGOPS_ROOT:-.ragops_03}/quarantine"
-  step python -m indexer.run_ingest_03 --corpus corpus/batch_b_03 --dummy-embed --collection-double
-  echo "# second, unchanged ingest: expect embedded_chunks=0"
-  step python -m indexer.run_ingest_03 --corpus corpus/batch_b_03 --dummy-embed --collection-double
-  DOC_ID="${DOC_ID:?set DOC_ID=<a doc_id from the ingest summary>}"
-  VERSION="${VERSION:?set VERSION=<an archived version of that document>}"
-  step python -m indexer.delete_doc_03 --doc-id "$DOC_ID" --collection-double
-  step python -m indexer.delete_doc_03 --orphan-report --collection-double
-  step python -m indexer.rollback_03 --doc-id "$DOC_ID" --version "$VERSION" --collection-double
-  echo "# In-cluster twin (preferred when available): kubectl -n $NS logs job/ragops-ingest-03 | grep 'ingest finished'"
-  echo "=== END SS-$L ==="
+echo "=== BEGIN SS-A ==="; date -u; git rev-parse --short HEAD; kubectl config current-context
+helper
+R=$($K exec ragops-helper-03 -- sh -c 'ls /data/eval/results/verification_report_03_20261125T200907Z.md')
+echo "# A1 verification report from the cluster run that first ingested Batch B"
+show $K exec ragops-helper-03 -- cat "$R"
+echo "# A2 second, unchanged ingest (CronJob run by hand): expect embedded_chunks=0"
+echo "\$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1"
+$K logs job/ragops-ingest-manual-03 | tail -1 || cat docs/evidence_03/F-T05_ingest_phase3_03.txt | tail -1
+echo "=== END SS-A ==="
 } 2>&1 | tee "$OUT"

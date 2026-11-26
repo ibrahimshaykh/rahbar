@@ -1,0 +1,45 @@
+=== BEGIN SS-B ===
+Thu, Nov 26, 2026  8:50:10 AM
+90cdf0d
+minikube
+
+$ kubectl -n rahbar exec ragops-helper-03 -- sh -c ls /data/eval/results | grep -E "suite_03|summary_03"
+suite_03_baseline_20261126T024641Z_run1.json
+suite_03_baseline_20261126T024641Z_run2.json
+suite_03_candidate_fail_20261126T050743Z_run1.json
+suite_03_candidate_pass2_20261126T071315Z_run1.json
+suite_03_candidate_pass_20261126T061626Z_run1.json
+summary_03_20261126T024641Z.md
+summary_03_20261126T050743Z.md
+summary_03_20261126T061626Z.md
+summary_03_20261126T071315Z.md
+
+$ kubectl -n rahbar exec ragops-helper-03 -- sh -c grep -E "metric|---|module\.(sep|det|embed)|component\.(recall|mrr|ndcg|noise\.delta)|e2e\.(faith|abst|false|answer|citation_validity|latency)" /data/eval/results/summary_03_20261126T024641Z.md
+| metric | run1 | run2 | abs delta |
+| --- | ---: | ---: | ---: |
+| component.mrr | 0.75 | 0.75 | 0 |
+| component.ndcg_at_5 | 0.758183 | 0.758183 | 0 |
+| component.noise.delta_mrr | -0.0234375 | -0.0234375 | 0 |
+| component.noise.delta_ndcg_at_5 | -0.0177914 | -0.0177914 | 0 |
+| component.noise.delta_recall_at_5 | 0 | 0 | 0 |
+| component.recall_at_3 | 0.78125 | 0.78125 | 0 |
+| component.recall_at_5 | 0.78125 | 0.78125 | 0 |
+| e2e.abstention_correctness | 1 | 0.833333 | 0.166667 |
+| e2e.answer_hit_rate | 0.548387 | 0.633333 | 0.0849462 |
+| e2e.citation_validity | 1 | 1 | 0 |
+| e2e.faithfulness | 0.96 | 0.925926 | 0.0340741 |
+| e2e.false_abstention_rate | 0.2 | 0.0833333 | 0.116667 |
+| e2e.latency_p50_ms | 70879.7 | 55695.1 | 15184.5 |
+| e2e.latency_p95_ms | 143321 | 90993.1 | 52328 |
+| module.determinism_max_abs_diff | 0 | 0 | 0 |
+| module.determinism_n_texts | 10 | 10 | 0 |
+| module.embed_ms_per_chunk_mean | 1148.28 | 1147.02 | 1.26157 |
+| module.separation_gap | 0.344772 | 0.344772 | 0 |
+- `e2e.abstention_correctness`: |delta| = 0.166667. LLM sampling variance (temperature>0 in the API) and judge nondeterminism.
+- `e2e.answer_hit_rate`: |delta| = 0.0849462. LLM sampling variance (temperature>0 in the API) and judge nondeterminism.
+- `e2e.faithfulness`: |delta| = 0.0340741. LLM sampling variance (temperature>0 in the API) and judge nondeterminism.
+- `e2e.false_abstention_rate`: |delta| = 0.116667. LLM sampling variance (temperature>0 in the API) and judge nondeterminism.
+- `e2e.latency_p50_ms`: |delta| = 15184.5. network/CPU scheduling and model decode time vary run to run.
+- `e2e.latency_p95_ms`: |delta| = 52328. network/CPU scheduling and model decode time vary run to run.
+- `module.embed_ms_per_chunk_mean`: |delta| = 1.26157. network/CPU scheduling and model decode time vary run to run.
+=== END SS-B ===

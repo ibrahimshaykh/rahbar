@@ -1,0 +1,164 @@
+=== BEGIN SS-F ===
+Thu, Nov 26, 2026  9:08:45 AM
+90cdf0d
+minikube
+
+$ kubectl -n rahbar get all,pvc,configmap,cronjob,job
+NAME                                    READY   STATUS      RESTARTS         AGE
+pod/api-76df6f8749-7mjhj                1/1     Running     0                2m43s
+pod/api-76df6f8749-k2ffs                1/1     Running     0                2m56s
+pod/api-76df6f8749-ptkvs                1/1     Running     0                3m9s
+pod/api-candidate-03-779dd85785-qvgvv   1/1     Running     0                32m
+pod/chroma-0                            1/1     Running     0                39m
+pod/ragops-baseline-03-8s827            0/1     Error       0                6h23m
+pod/ragops-delete-03-xkrf8              0/1     Completed   0                30m
+pod/ragops-eval-03-q54w9                0/1     Error       0                9m15s
+pod/ragops-helper-03                    1/1     Running     0                4h35m
+pod/ragops-ingest-manual-03-jlh75       0/1     Completed   0                18m
+pod/ragops-rollback-03-jvx2r            0/1     Completed   0                29m
+pod/ragops-rollforward-03-nf69w         0/1     Completed   0                28m
+pod/redis-5db6cb7bdf-n9qsm              1/1     Running     8 (134m ago)     19d
+pod/ui-7ff8c5f7b5-mkxh5                 1/1     Running     26 (5h26m ago)   18d
+pod/ui-7ff8c5f7b5-sfc7w                 1/1     Running     29 (88m ago)     18d
+
+NAME                       TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/api                ClusterIP   10.103.35.224    <none>        8000/TCP   21d
+service/api-candidate-03   ClusterIP   10.101.51.98     <none>        8000/TCP   4h14m
+service/chroma             ClusterIP   None             <none>        8000/TCP   21d
+service/redis              ClusterIP   10.98.239.241    <none>        6379/TCP   21d
+service/ui                 ClusterIP   10.111.144.211   <none>        8080/TCP   21d
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/api                3/3     3            3           21d
+deployment.apps/api-candidate-03   1/1     1            1           4h14m
+deployment.apps/redis              1/1     1            1           21d
+deployment.apps/ui                 2/2     2            2           21d
+
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/api-55f7745979                0         0         0       7h51m
+replicaset.apps/api-5fbd48c666                0         0         0       6m17s
+replicaset.apps/api-6767dd6c9c                0         0         0       6h25m
+replicaset.apps/api-76df6f8749                3         3         3       39m
+replicaset.apps/api-77c96847d8                0         0         0       59m
+replicaset.apps/api-7b7899bc87                0         0         0       6h25m
+replicaset.apps/api-candidate-03-5c78cfb6f8   0         0         0       4h3m
+replicaset.apps/api-candidate-03-6466bcb4fc   0         0         0       33m
+replicaset.apps/api-candidate-03-779dd85785   1         1         1       118m
+replicaset.apps/api-candidate-03-78c6c6c7c8   0         0         0       4h14m
+replicaset.apps/api-candidate-03-8597dc5bbb   0         0         0       174m
+replicaset.apps/redis-5db6cb7bdf              1         1         1       19d
+replicaset.apps/redis-f8c956b5f               0         0         0       21d
+replicaset.apps/ui-5966f767f6                 0         0         0       20d
+replicaset.apps/ui-6b6cc8dc69                 0         0         0       18d
+replicaset.apps/ui-75b4f7555b                 0         0         0       19d
+replicaset.apps/ui-7ff8c5f7b5                 2         2         2       18d
+replicaset.apps/ui-c45c4fd5d                  0         0         0       21d
+
+NAME                      READY   AGE
+statefulset.apps/chroma   1/1     21d
+
+NAME                                      REFERENCE        TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/api   Deployment/api   cpu: 12%/70%   3         8         3          21d
+
+NAME                                  SCHEDULE    TIMEZONE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+cronjob.batch/ragops-ingest-cron-03   0 2 * * 0   <none>         False     0        <none>          51m
+cronjob.batch/reindex                 0 2 * * 0   Asia/Karachi   False     0        <none>          21d
+
+NAME                                STATUS     COMPLETIONS   DURATION   AGE
+job.batch/ragops-baseline-03        Failed     0/1           6h23m      6h23m
+job.batch/ragops-delete-03          Complete   1/1           20s        30m
+job.batch/ragops-eval-03            Failed     0/1           9m15s      9m15s
+job.batch/ragops-ingest-manual-03   Complete   1/1           8m32s      18m
+job.batch/ragops-rollback-03        Complete   1/1           10s        29m
+job.batch/ragops-rollforward-03     Complete   1/1           15s        28m
+
+NAME                                         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/data-chroma-0          Bound    pvc-e6b4cb96-0278-45bf-aa4a-d4cd382ef067   2Gi        RWO            standard       <unset>                 21d
+persistentvolumeclaim/rahbar-ragops-pvc-03   Bound    pvc-f252fd28-f0ec-42b1-8b62-cf1645ee0a4b   2Gi        RWO            standard       <unset>                 2d
+persistentvolumeclaim/redis-data             Bound    pvc-020fe131-b57e-43bd-a6ca-673a650081f0   1Gi        RWO            standard       <unset>                 21d
+
+NAME                                   DATA   AGE
+configmap/kube-root-ca.crt             1      21d
+configmap/rahbar-config                23     21d
+configmap/rahbar-config-candidate-03   6      4h14m
+configmap/rahbar-gate-03               1      2d
+$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1
+embedded_chunks=0 kept_chunks=848 deleted_chunks=0 deactivated_chunks=0 collection_version=6
+# gate result changing after a ConfigMap edit
+
+$ grep -E ^## |abstention_correctness_min|RELEASE GATE|release_gate_exit|ragops-eval-03 |sha256 docs/evidence_03/SS-F_gate_flip_03.txt
+## 1. committed thresholds
+abstention_correctness_min_vs_baseline: 0.0
+job.batch/ragops-eval-03 created
+RELEASE GATE: FAIL (1 check(s) failed: abstention)
+release_gate_exit=1
+ragops-eval-03   Failed   0/1           8s         8s
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+## 2. ConfigMap edited: abstention may drop by 0.17 (one question of six)
+abstention_correctness_min_vs_baseline: -0.17
+job.batch/ragops-eval-03 created
+RELEASE GATE: PASS
+release_gate_exit=0
+ragops-eval-03   Complete   1/1           6s         8s
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+## 3. ConfigMap reverted to the committed file
+abstention_correctness_min_vs_baseline: 0.0
+job.batch/ragops-eval-03 created
+RELEASE GATE: FAIL (1 check(s) failed: abstention)
+release_gate_exit=1
+ragops-eval-03   Failed   0/1           13s        13s
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+# rollout, rollout undo and new traces (screenshot this section too if it scrolls)
+
+$ grep -E ^### |REVISION|^[0-9]+ |successfully|rolled back|trace_id=|^collection:|^embedding: docs/evidence_03/SS-F_rollback_03.txt
+### 1. Release decision: candidates blocked by the gate, live api unchanged
+REVISION  CHANGE-CAUSE
+30        <none>
+31        <none>
+33        bad release: CHROMA_COLLECTION=rahbar
+34        <none>
+36        bad release: CHROMA_COLLECTION=rahbar
+37        <none>
+### 2. Good state (before)
+trace_id=8c3c1301ae4d41b48092d365131d20fa
+collection: rahbar_ragops_03@v6
+embedding: nomic-embed-text (nomic-embed-text@768)
+### 3. Bad release: point the live api at the stale Assignment 02 collection
+deployment "api" successfully rolled out
+REVISION  CHANGE-CAUSE
+30        <none>
+31        <none>
+33        bad release: CHROMA_COLLECTION=rahbar
+34        <none>
+37        <none>
+38        bad release: CHROMA_COLLECTION=rahbar
+trace_id=2a0a9b2ae04d4ec8bb199a078e2b86ca
+collection: rahbar@unknown
+embedding: nomic-embed-text (nomic-embed-text@768)
+### 4. Revert: kubectl rollout undo
+deployment.apps/api rolled back
+deployment "api" successfully rolled out
+REVISION  CHANGE-CAUSE
+30        <none>
+31        <none>
+33        bad release: CHROMA_COLLECTION=rahbar
+34        <none>
+38        bad release: CHROMA_COLLECTION=rahbar
+39        <none>
+### 5. New trace after the undo
+trace_id=8fa63d2fb196409ca188777af32a0010
+collection: rahbar_ragops_03@v6
+embedding: nomic-embed-text (nomic-embed-text@768)
+
+$ kubectl -n rahbar top pods
+NAME                                CPU(cores)   MEMORY(bytes)   
+api-76df6f8749-hkjxk                8m           66Mi            
+api-76df6f8749-jp524                11m          66Mi            
+api-76df6f8749-jqj7p                62m          66Mi            
+api-candidate-03-779dd85785-qvgvv   8m           66Mi            
+chroma-0                            6m           155Mi           
+ragops-helper-03                    0m           5Mi             
+redis-5db6cb7bdf-n9qsm              15m          18Mi            
+ui-7ff8c5f7b5-mkxh5                 1m           2Mi             
+ui-7ff8c5f7b5-sfc7w                 1m           4Mi             
+=== END SS-F ===

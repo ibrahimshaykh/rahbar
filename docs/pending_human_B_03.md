@@ -8,11 +8,13 @@ done, the corresponding number stays out of the report (token `PENDING-HUMAN(<id
 | PENDING-HUMAN(B-T01a) | Partners write >= 8 golden questions personally (origin `human`) | both partners | see `eval/human_questions_todo_03.md` steps 1; edit lines in `eval/golden_03.jsonl` |
 | PENDING-HUMAN(B-T01b) | Partners review >= 8 other items against the sources (`human_reviewed: true`) | both partners | `eval/human_questions_todo_03.md` step 2; then `python -m eval.golden_validate_03 eval/golden_03.jsonl --strict` must exit 0 (today it exits 1 with `AWAITING-HUMAN`) |
 | PENDING-HUMAN(B-T02) | >= 8 human faithfulness labels (>= 2 false) | partners, after a live suite run | `python -m eval.make_human_sheet_03 --suite eval/results/suite_03_baseline_<ts>_run1.json`, label the template, save as `eval/human_faithfulness_03.json`, check with `python -m eval.make_human_sheet_03 --check eval/human_faithfulness_03.json` |
-| PENDING-HUMAN(B-T10) | Real two-run suite on the cluster | human with cluster + Ollama | `API_URL=http://localhost:8000 bash scripts/evidence_03/B-T10_suite_03.sh` -> `docs/evidence_03/B_suite_03.txt` |
-| PENDING-HUMAN(C-T04) | Baseline, failing and passing candidate through the gate | human with cluster | `bash scripts/evidence_03/C-T04_gate_03.sh` -> `C_baseline_03.txt`, `C_gate_fail_03.txt`, `C_gate_pass_03.txt` |
-| PENDING-HUMAN(C-T05) | Calibrate `min_faithfulness` / `max_p95_latency_ms` from the measured baseline (print-only) | human, then commit | `python -m eval.release_gate_03 --calibrate eval/results/suite_03_baseline_<ts>_run1.json` |
-| PENDING-HUMAN(E-T04) | Data drift on the real stack (Batch A only vs Batch A + B) | human with cluster | `python -m eval.drift_coverage_03 --data-drift --mode live --before-api <A-only api> --after-api <A+B api>` |
-| PENDING-HUMAN(E-T05) | Real-embedding coverage before/after | human with Ollama | `bash scripts/evidence_03/E-T05_drift_03.sh` -> `docs/evidence_03/E_drift_03.txt` |
+
+Done by the agent on the live cluster (2026-11-26), results committed: B-T10 (two-run baseline), C-T04
+(three candidates through the gate), C-T05 (p95 ceiling calibrated from the baseline), E-T04 (data drift),
+E-T05 (real-embedding coverage). The label sheet for B-T02 is generated from the real baseline run:
+`eval/human_faithfulness_sheet_03.md` and `eval/human_faithfulness_template_03.json`. The sheet shows
+answers; read the retrieved passages with `python -m api.trace_tool_03 --trace-id <id> --file
+traces/traces_03.jsonl`.
 
 Notes
 * `eval/golden_03.jsonl` holds 38 items (29 original + 9 appended by step E-T03, ids G03-101..109), all

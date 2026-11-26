@@ -34,11 +34,11 @@ Results below are copied from files produced by our own runs; a cell reading `PE
 <!-- src: config/gate_thresholds_03.yaml -->
 | Quality | What we measure | Our threshold | Evidence |
 |---|---|---|---|
-| Adaptability | Chunks re-embedded on an unchanged re-ingest; a version change touching only its own chunks; rollback restores the old version | `embedded_chunks=0` on an unchanged re-run; rollback restores the requested version | `docs/evidence_03/F-T10_jobs_03.txt` PENDING-HUMAN(F-T10) |
-| Monitorability | Five metrics from traces over a time window (latency per stage, abstention rate, cache hit rate, guardrail actions, error rate) | gate: `max_p95_latency_ms: 180000` | `eval/trace_metrics_summary_03.py` output PENDING-HUMAN(D-T07) |
-| Observability | Every request writes one JSON line to stdout and to `/data/traces/traces_03.jsonl`; `/metrics` reachable by port-forward | one trace line per response | `docs/evidence_03/SS-D_trace_03.txt` PENDING-HUMAN(SS-D) |
-| Traceability | A trace id rebuilds the retrieved chunks, the full prompt, collection name/version and embedding version | trace completeness: every required field present | `api/trace_tool_03.py` output PENDING-HUMAN(D-T07) |
-| Reliability | PVC survives pod restarts; one writer (Job plus lock); abstention below the relevance floor; `rollout undo` restores the previous release | trace file line count never decreases after an API pod restart; `RELEVANCE_FLOOR=0.55` | `docs/evidence_03/F-T09_pvc_03.txt`, `docs/evidence_03/F-T12_canary_03.txt` PENDING-HUMAN(F-T09, F-T12) |
+| Adaptability | Chunks re-embedded on an unchanged re-ingest; a version change touching only its own chunks; rollback restores the old version | `embedded_chunks=0` on an unchanged re-run; rollback restores the requested version | `F-T05_ingest_phase2/3_03.txt`, `F-T10_cronjob_03.txt`, `A2_cluster_03.txt` |
+| Monitorability | Five metrics from traces over a time window (latency per stage, abstention rate, cache hit rate, guardrail actions, error rate) | gate: `max_p95_latency_ms: 180000` | `D_trace_cluster_03.txt` |
+| Observability | Every request writes one JSON line to stdout and to `/data/traces/traces_03.jsonl`; `/metrics` reachable by port-forward | one trace line per response | `traces/traces_03.jsonl` (522 records at export) |
+| Traceability | A trace id rebuilds the retrieved chunks, the full prompt, collection name/version and embedding version | trace completeness: every required field present | `D_trace_cluster_03.txt`, `F-T12_canary_03.txt` |
+| Reliability | PVC survives pod restarts; one writer (Job plus lock); abstention below the relevance floor; `rollout undo` restores the previous release | trace file line count never decreases after an API pod restart; `RELEVANCE_FLOOR=0.55` | `F-T09_pvc_03.txt`, `F-T12_canary_03.txt` |
 
 ## 3. Part A - data management
 
@@ -67,9 +67,10 @@ Across the whole run (9 Batch A + 14 Batch B): 23 documents, 15 accepted, 8 quar
 | 3. Unchanged re-run | **0** | 848 | 0 | 2 | `F-T05_ingest_phase3_03.txt` |
 
 <!-- src: docs/evidence_03/A2_lifecycle_03.txt -->
-Per-document replace, delete with orphan report (`orphans=0`) and rollback were run with the offline doubles
-(`A2_lifecycle_03.txt`: a one-chunk change gives `embedded_chunks=1`, `deleted_chunks=1`). On-cluster delete and
-rollback: PENDING-HUMAN(A2-T09).
+Per-document replace was run with the offline doubles (`A2_lifecycle_03.txt`: a one-chunk change gives
+`embedded_chunks=1`, `deleted_chunks=1`). On the cluster (`A2_cluster_03.txt`): deleting `library-policy` removed 6
+chunks, archived the source and left `orphans=0`; rolling the handbook back to 2026-06 reactivated 312 chunks with 0
+re-embedded and retrieval returned only 2026-06 chunks; rolling forward restored 2026-11, `orphans=0`.
 
 **Defects the live run exposed (fixed test-first, `tests_03/indexer`):** two versions of one document in the same
 batch were both accepted; HTML indentation diluted the letter ratio and quarantined the fee and grading pages; one
@@ -115,19 +116,94 @@ can no longer be retrieved: the golden set went stale when the data changed.
 | p95 latency at most | 180000 ms | baseline run-1 p95 143.3 s x 1.25, rounded up; fixed before any candidate ran |
 | Abstention correctness vs baseline | candidate >= baseline + 0.0 | abstention must not regress |
 
-Experiment table (3 levels x baseline / candidate_fail / candidate_pass) and release decision:
-PENDING-HUMAN(C-T04). Candidate presets: `config/candidate_fail_03.env`, `config/candidate_pass_03.env`.
+<!-- src: eval/results/experiment_03_candidate_fail_20261126T061318Z.md -->
+One factor changes per candidate; each ran once against the stored baseline (run 1). All used `rahbar_ragops_03`.
+
+| Level | Metric | baseline | fail: `TOP_K` 5 to 1 | rerank, pool 8 | rerank, pool 5 |
+|---|---|---|---|---|---|
+| Module | separation gap | 0.345 | 0.345 | 0.345 | 0.345 |
+| Component | recall@5 | 0.781 | 0.719 | 0.781 | 0.781 |
+| Component | MRR / nDCG@5 | 0.750 / 0.758 | 0.719 / 0.719 | 0.714 / 0.731 | 0.714 / 0.731 |
+| End to end | faithfulness | 0.960 | 0.926 | 0.833 | 0.889 |
+| End to end | abstention correctness | 1.000 | 1.000 | 0.500 | 0.833 |
+| End to end | false abstention rate | 0.200 | 0.154 | 0.385 | 0.192 |
+| End to end | answer fact hit rate | 0.548 | 0.594 | 0.531 | 0.562 |
+| End to end | p95 latency (s) | 143.3 | 57.1 | 102.4 | 101.4 |
+| Gate | verdict (failed check) | | **FAIL** (recall@5, -6.2 pp) | **FAIL** (abstention) | **FAIL** (abstention) |
+
+**Release decision: all three candidates blocked; the live API was not changed.** Thresholds were fixed before any
+candidate ran and were not edited afterwards. The pool-8 reranker pulled lexically similar passages from outside the
+top 5 (a library fine for a tuition question) and the model answered instead of abstaining. The pool-5 variant failed
+by one question (G03-026), which the baseline's own second run also answered: with 6 unanswerable items and a zero
+margin, one non-deterministic answer decides the check. We would fix the check (more unanswerable items, repeated
+runs), not relax it after seeing results. No candidate passed the gate, so none was promoted.
+
+<!-- src: docs/evidence_03/F-T11_gate_flip_03.txt -->
+Gate behaviour on one stored experiment and one image (`sha256:a74a949a...`), changing only ConfigMap
+`rahbar-gate-03`: committed thresholds **FAIL**, abstention margin edited to -0.17 **PASS**, reverted **FAIL**. This
+shows the mechanism; it is not a release approval.
 
 ## 6. Part D - traces, metrics, guardrails
 
-Abridged real trace record (at most 20 lines): PENDING-HUMAN(D-T07). Five-metric table: PENDING-HUMAN(D-T07).
-Guardrail log for the injected Batch B document: PENDING-HUMAN(D-T07). Five-line root-cause analysis of one failed
-answer, from one trace only: PENDING-HUMAN(D-T08).
+<!-- src: docs/evidence_03/D_full_trace_G03-027_03.json -->
+One real record, abridged (29 fields; full text in the file):
+
+```json
+{"trace_id":"9b8ee73af996470386fd018dbc5058c7","timestamp":"2026-11-26T06:51:37.075Z",
+ "user_query":"What is the late-payment surcharge per day when a tuition fee instalment is overdue?",
+ "collection_name":"rahbar_ragops_03","collection_version":"v2","embedding_version":"nomic-embed-text@768",
+ "retrieved_chunks":[{"chunk_id":"library-policy:2026-09:0001","score":0.633}, "... 4 more"],
+ "rerank_enabled":true,"prompt_hash":"42c08790...","model":"llama3.2:3b",
+ "latency_per_stage":{"retrieve_ms":1905,"rerank_ms":12,"generate_ms":59193,"total_ms":61113},
+ "abstained":false,"outcome":"answered","citations":["library_policy_03.md 2.2"]}
+```
+
+`api/trace_tool_03.py` rebuilds the retrieved text, filters, reranked order and the full prompt from the trace id.
+
+<!-- src: docs/evidence_03/D_trace_cluster_03.txt -->
+| Metric (522 cluster queries) | Value |
+|---|---|
+| top-1 similarity p25 / p50 / p75 | 0.712 / 0.763 / 0.829 |
+| abstention rate (by reason) | 6.5 % (`no_valid_citations` 26, `floor` 8) |
+| cache hit rate | 18.2 % |
+| p95 latency: retrieve / generate / total | 4.9 s / 98.4 s / 97.1 s |
+| prompt-injection attempts | 1, blocked 1 |
+
+Guardrail log: `{"guardrail":"prompt_injection","action":"blocked","chunk_id":"student-notice-injected:2026-09:0001",
+"pattern":"ignore_previous","stage":"retrieval"}`.
+
+<!-- src: docs/evidence_03/D_rca_03.md -->
+**Root cause (from that one trace).**
+1. Symptom: a tuition late-surcharge question was answered "Rs 10 per day", citing the library policy.
+2. Retrieval: the library chunk (0.633) scored below the fee chunk (0.667), yet the reranker placed it first.
+3. Context: it states a *book* fine of Rs 10 per day; no passage states a tuition surcharge; top score was above the 0.55 floor.
+4. Generation: the model transferred the fine to tuition; citation enforcement checks provenance, not support.
+5. Fix: keep reranking inside the top 5 and check that the cited passage names the asked subject; G03-027 guards it.
 
 ## 7. Part E - drift and query coverage
 
-Coverage before and after versus the 85 % threshold, clusters, number of new golden questions with one example, data
-drift deltas: PENDING-HUMAN(E-T05). Live queries are written by the authors, not collected from users (`docs/PIPELINE_03.md`).
+<!-- src: docs/evidence_03/E_drift_03.txt -->
+Live queries are 40 questions written by the authors, not collected from users. A query is covered when its best
+golden-question similarity is at least 0.70 (`nomic-embed-text`).
+
+| | golden items | coverage | threshold | verdict |
+|---|---|---|---|---|
+| Before | 29 | **62.5 %** | 85 % | gap, exit 1 |
+| After adding 9 questions | 38 | **82.5 %** | 85 % | gap remains, exit 1 |
+
+Largest uncovered clusters before: library fines (5 queries), assignments/CGPA (3), costs (3), bus fees (2),
+scholarships (2). Example new question G03-101: "How do I get a hostel room, and which students get priority in the
+allocation?" 7 queries remain uncovered and are the next golden candidates; we did not add questions just to cross
+the line.
+
+<!-- src: docs/evidence_03/E_data_drift_03.txt -->
+| Data drift (retrieval, golden set) | Batch A only | Batch A + B |
+|---|---|---|
+| recall@5, items not needing Batch B (19) | 0.895 | 0.737 |
+| recall@5, items needing Batch B (13) | 0.000 | 0.846 |
+| mean top-1 similarity of live queries | 0.689 | 0.721 |
+
+The drop on older items reflects the superseded handbook; new items become answerable.
 
 ## 8. Part F - Kubernetes
 
@@ -135,13 +211,38 @@ drift deltas: PENDING-HUMAN(E-T05). Live queries are written by the authors, not
 Manifests (all namespace `rahbar`, ClusterIP only): `k8s/pvc_03.yaml`, `k8s/serviceaccount_03.yaml`,
 `k8s/networkpolicy_03.yaml`, `k8s/gate_configmap_03.yaml`, `k8s/ingest_job_03.yaml`, `k8s/ingest_cronjob_03.yaml`,
 `k8s/eval_job_03.yaml`, `k8s/api_candidate_03.yaml`, `k8s/config_candidate_03.yaml`, `k8s/patch_api_rollout_03.yaml`,
-`k8s/helper_pod_03.yaml`; image `Dockerfile_03`. Static checks: `tests_03/k8s/test_manifests_03.py`.
+`k8s/helper_pod_03.yaml`, `k8s/eval_baseline_job_03.yaml`, `k8s/patch_chroma_probe_03.yaml`,
+`k8s/patch_api_resources_03.yaml`, `k8s/patch_chroma_resources_03.yaml`; image `Dockerfile_03`. Static checks: `tests_03/k8s/test_manifests_03.py`.
 
-Resources (requests/limits copied from `kubectl top` measurements): PENDING-HUMAN(F-T07).
-PVC persistence across pod restarts: PENDING-HUMAN(F-T09). Ingest Job, idempotent re-run, CronJob: PENDING-HUMAN(F-T10).
-Gate flip by ConfigMap only (verdict PASS to FAIL to PASS, same image id): PENDING-HUMAN(F-T11).
-Canary, bad release, `rollout undo` and revision map (R1 A02 manifest, R2 A03 app, R3 promoted candidate, R4 bad release,
-undo returns the R3 spec as R5), with the post-undo trace: PENDING-HUMAN(F-T12).
+<!-- src: docs/evidence_03/F-T07_kubectl_top_03.txt -->
+| Workload | measured peak (CPU / memory) | requests | limits |
+|---|---|---|---|
+| ingest Job / CronJob | 995m / 1254Mi | 500m / 1Gi | 2000m / 2Gi |
+| eval Job (single `kubectl top` reading during a smoke run, not in the file above) | - / 349Mi | 100m / 384Mi | 500m / 512Mi |
+| `api` (live patch) | 440m / 73Mi | 100m / 128Mi | 500m / 256Mi |
+| Chroma (live patch) | 7m / 282Mi | 100m / 384Mi | 1 / 1Gi |
+
+<!-- src: docs/evidence_03/F-T09_pvc_03.txt -->
+* **PVC:** 565 trace lines and 42 result files before and after deleting all three API pods.
+* **Jobs:** the ingest Job and a manual run of CronJob `ragops-ingest-cron-03` complete; unchanged corpus embeds 0
+  chunks. The eval Job's exit status is the gate's (Failed on a blocked candidate).
+* **Gate flip** by ConfigMap only, same image id (Part C).
+
+<!-- src: docs/evidence_03/F-T12_canary_03.txt -->
+Controlled release (`maxUnavailable: 0`, 3 replicas available throughout):
+
+| Step | trace `collection` | answer about attendance |
+|---|---|---|
+| before | `rahbar_ragops_03@v2` | up to 10 % condoned (current) |
+| bad release: `CHROMA_COLLECTION=rahbar` | `rahbar@unknown` | 20 % condoned (superseded) |
+| after `kubectl rollout undo` | `rahbar_ragops_03@v2` | up to 10 % condoned |
+
+`embedding_version` stayed `nomic-embed-text@768` in all three traces. The revision history moved the bad release to
+revision 33 and the undo created revision 34.
+
+Operational lessons from running it: Chroma's 1 s liveness probe killed it during ingest (relaxed by patch);
+multi-threaded Tesseract under a CPU limit ran for more than a day (limited to one thread); API probes restarted
+pods while the single node was stalled (relaxed); an orphaned host process starved the cluster.
 
 ## 9. Short answers (G.4)
 
@@ -158,11 +259,10 @@ and the end-to-end answer fact hit rate 0.55 to 0.63 (`summary_03_20261126T02464
 items that cite the superseded handbook, which an embedding test cannot see.
 
 **4(c) Did you archive or delete old versions, and what breaks if you delete?**
-We archive: a superseded version source is copied to `archive/<doc_id>/<version>/` with `meta_03.json`, and its chunks are
-deactivated (`is_active=False`, `superseded=True`), not deleted (`indexer/pipeline/incremental_store_03.py`). Deleting the
-archive copy breaks rollback once the chunks are pruned, because `indexer/rollback_03.py` re-embeds from the archived file.
-`delete_doc_03` removes the chunks of a document and archives its source; the orphan report must then show `orphans=0`.
-Measured outcome: PENDING-HUMAN(A2-T08).
+We archive: a superseded source is copied to `archive/<doc_id>/<version>/` with `meta_03.json`, and its chunks are
+deactivated, not deleted, which is why rollback to 2026-06 re-activated 312 chunks without re-embedding
+(`A2_cluster_03.txt`). Deleting the old chunks makes rollback re-embed from the archived file; deleting the archive too
+makes the old version unrecoverable, and old traces would cite chunk ids that no longer resolve.
 
 **4(d) Which metric in your suite do you trust least, and why?**
 LLM-judged faithfulness. The judge is the same 3B model that writes the answers: during setup its first prompt rejected
@@ -170,9 +270,11 @@ a plainly supported sanity sentence, and a wrong output schema made every answer
 0.926 between identical runs. Agreement with human labels is not yet measured: PENDING-HUMAN(B-T07).
 
 **4(e) Which of the paper's ideas was hardest to apply to your pipeline, and what did you change from the paper?**
-Draft for the partners to rewrite: the Assignment 02 API and indexer are existing code, so lifecycle stages such as live
-testing had to be added by wrapping them (proxies around the retriever and provider, `api/tracing_proxies_03.py`) rather
-than by redesigning the pipeline. What we changed from the paper, with evidence: PENDING-HUMAN(G-T04).
+The release gate. The idea assumes the offline metrics are stable enough to decide a release; on a small golden set
+with a local 3B model they are not (abstention moved 1.00 to 0.83 between identical baseline runs). We kept the gate but
+changed our process: thresholds are calibrated from a measured baseline and frozen before candidates run, request
+errors have a declared budget (5 %), and candidates run once because a run costs about an hour. Live testing was added
+by wrapping the Assignment 02 retriever and provider (`api/tracing_proxies_03.py`) instead of redesigning them.
 
 **4(f) Which Kubernetes object carries which RAGOps responsibility in your design (e.g. which object makes sure only one component writes to the vector store)?**
 Job `ragops-ingest-03` is the only writer to Chroma (`completions: 1`, no parallelism, plus a lock file on the PVC); CronJob
@@ -188,14 +290,16 @@ Chroma by the A02 policy, so "read only" is enforced by its code, not by the net
 <!-- src: CLAUDE_03.md -->
 | Member | Parts owned (self-reported by the partners) | Commits (`git shortlog -sne`) |
 |---|---|---|
-| Ibrahim Ahmed | PENDING-HUMAN(G-T05) | PENDING-HUMAN(G-T05) |
-| Talha Sami | PENDING-HUMAN(G-T05) | PENDING-HUMAN(G-T05) |
+| Ibrahim Ahmed | PENDING-HUMAN(G-T05) | co-author on every Assignment 03 commit |
+| Talha Sami | PENDING-HUMAN(G-T05) | co-author on every Assignment 03 commit |
 
 AI disclosure: Claude Code (Anthropic) drafted the harness, code, tests, golden questions and report text, and ran the
 cluster commands that produced the result files, under our direction. Numbers in this report come from files produced by
 those runs. Our own review, hand-written golden questions, faithfulness labels and screenshots: PENDING-HUMAN(G-T05).
 
-Limitations: queries for Part E are simulated; the embedding and judge models run on a laptop CPU; the evaluation set is small.
+Limitations: queries for Part E are simulated; models run on a laptop CPU; the evaluation set is small and not yet
+human-reviewed; the live API's semantic cache is not keyed by retrieval settings, so a candidate sharing Redis could
+serve baseline answers outside the evaluation's cache bypass.
 
 ## Appendix (does not count toward the 8 pages)
 

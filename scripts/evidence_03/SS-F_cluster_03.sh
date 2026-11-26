@@ -1,37 +1,34 @@
 #!/usr/bin/env bash
-# SS-F [HUMAN] screenshot script. Run in a MAXIMISED terminal and capture the WHOLE window
-# (window capture, not a region crop). Both banners BEGIN/END SS-F must be visible.
-# Text twin: docs/evidence_03/SS-F_cluster_03.txt   Image: docs/evidence_03/SS-F_cluster_03.png
+# Appendix screenshot F: F: cluster objects, Job logs, gate flip, rollout undo and the trace afterwards.
+# Run, then take one uncropped screenshot from the BEGIN banner to the END banner.
+# Needs the cluster up (minikube) with the Assignment 03 objects applied.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-L=F
-NS=rahbar
-OUT=docs/evidence_03/SS-${L}_cluster_03.txt
-mkdir -p docs/evidence_03
-PF_PID=""
-trap '[ -n "$PF_PID" ] && kill "$PF_PID" 2>/dev/null || true' EXIT
-# step CMD...: echo the command line, run it, print its exit code, never abort the capture
-step(){ echo; echo "\$ $*"; set +e; "$@"; local rc=$?; set -e; echo "exit=$rc"; return 0; }
+export MSYS_NO_PATHCONV=1
+K="kubectl -n rahbar"
+PY=.venv/Scripts/python; [ -x "$PY" ] || PY=.venv/bin/python
+export PYTHONPATH=".;api;indexer"; [ "$PY" = .venv/bin/python ] && export PYTHONPATH=".:api:indexer"
+OUT=docs/evidence_03/SS-F_cluster_03.txt
+helper() {   # a pod that mounts the PVC, so results can be read from our own cluster
+  if [ "$($K get pod ragops-helper-03 -o jsonpath='{.status.phase}' 2>/dev/null)" != Running ]; then
+    $K delete pod ragops-helper-03 --ignore-not-found >/dev/null
+    kubectl apply -f k8s/helper_pod_03.yaml >/dev/null
+    $K wait --for=condition=Ready pod/ragops-helper-03 --timeout=120s >/dev/null
+  fi
+}
+show() { echo; echo "\$ $*"; "$@" || true; }
 {
-  echo "=== BEGIN SS-$L ==="; date -u; git rev-parse --short HEAD; kubectl config current-context 2>&1 || echo "kubectl context: none"
-  echo "# (1) all A03 objects in namespace rahbar"
-  step kubectl -n "$NS" get pvc,jobs,cronjobs,cm,deploy,pods,svc
-  echo "# (2) revision history before the demo release"
-  step kubectl -n "$NS" rollout history deploy/api
-  echo "# (3) bad release then undo, then a NEW trace (needs collection rahbar_bad_03 from F-T12)"
-  step kubectl -n "$NS" annotate deploy/api kubernetes.io/change-cause="SS-F demo: bad release" --overwrite
-  step kubectl -n "$NS" set env deploy/api CHROMA_COLLECTION=rahbar_bad_03
-  step kubectl -n "$NS" rollout status deploy/api --timeout=600s
-  step kubectl -n "$NS" rollout history deploy/api
-  step kubectl -n "$NS" rollout undo deploy/api
-  step kubectl -n "$NS" rollout status deploy/api --timeout=600s
-  step kubectl -n "$NS" rollout history deploy/api
-  kubectl -n "$NS" port-forward svc/api 18092:8000 >/dev/null 2>&1 & PF_PID=$!
-  sleep 3
-  step bash -c "curl -s -D - -o /dev/null -X POST http://127.0.0.1:18092/api/ask -H 'Content-Type: application/json' -d '{\"question\": \"What is the attendance requirement?\"}' | grep -iE '^(HTTP|x-trace-id)'"
-  TRACE_ID="$(kubectl -n "$NS" logs deploy/api --since=10m | grep '"trace_id"' | tail -1 | sed -n 's/.*"trace_id": *"\([^"]*\)".*/\1/p')" || true
-  step python -m api.trace_tool_03 --kubectl --trace-id "$TRACE_ID"
-  echo "# (4) resources"
-  step kubectl -n "$NS" top pods
-  echo "=== END SS-$L ==="
+echo "=== BEGIN SS-F ==="; date -u; git rev-parse --short HEAD; kubectl config current-context
+show $K get all,pvc,configmap,cronjob,job
+echo "\$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1"; $K logs job/ragops-ingest-manual-03 | tail -1 | cut -c1-400
+export OUT_FILE=docs/evidence_03/SS-F_gate_flip_03.txt
+bash scripts/evidence_03/F-T11b_gate_flip_03.sh >/dev/null
+echo "# gate result changing after a ConfigMap edit"
+show grep -E "^## |abstention_correctness_min|RELEASE GATE|release_gate_exit|ragops-eval-03 |sha256" docs/evidence_03/SS-F_gate_flip_03.txt
+echo "# rollout, rollout undo and new traces (screenshot this section too if it scrolls)"
+export OUT_FILE=docs/evidence_03/SS-F_rollback_03.txt
+bash scripts/evidence_03/F-T12b_rollback_03.sh >/dev/null
+show grep -E "^### |REVISION|^[0-9]+ |successfully|rolled back|trace_id=|^collection:|^embedding:" docs/evidence_03/SS-F_rollback_03.txt
+show $K top pods
+echo "=== END SS-F ==="
 } 2>&1 | tee "$OUT"
