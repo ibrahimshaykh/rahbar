@@ -140,3 +140,26 @@ def test_http_ask_client_error_is_reported_not_swallowed():
                     retry_delay=0)
     out = ask("q")
     assert out["response"] is None and "422" in out["error"]
+
+
+def test_ollama_judge_uses_its_own_schema_not_the_answer_schema():  # T-E2E-JUDGE-LIVE
+    """Regression: the judge went through the A02 provider whose Ollama call forces the ANSWER
+    schema, so a {"supported": ...} reply was impossible and faithfulness was always 0."""
+    from eval.e2e_eval_03 import JUDGE_JSON_SCHEMA_03, ollama_complete_03
+
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["url"] = str(request.url)
+        seen["payload"] = json.loads(request.content)
+        return httpx.Response(200, json={"message": {"content":
+                                                     '{"supported": true, "unsupported_claims": []}'}})
+
+    complete = ollama_complete_03("http://ollama.test:11434", "llama3.2:3b", 30.0,
+                                  transport=httpx.MockTransport(handler))
+    judge = llm_judge(complete)
+    assert judge("Attendance is 80 percent.", ["Attendance must be 80 percent."]) == (True, True)
+    p = seen["payload"]
+    assert seen["url"] == "http://ollama.test:11434/api/chat"
+    assert p["format"] == JUDGE_JSON_SCHEMA_03 and "supported" in p["format"]["properties"]
+    assert p["options"]["temperature"] == 0 and p["stream"] is False and p["model"] == "llama3.2:3b"
