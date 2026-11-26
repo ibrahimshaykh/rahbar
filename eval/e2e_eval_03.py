@@ -74,6 +74,28 @@ class HttpAsk03:
                 "trace_id": self._last.get("x-trace-id"), "error": err}
 
 
+class HttpRetrieve03:
+    """POST /api/retrieve_03: retrieval only, same record contract as HttpAsk03 so the
+    component level can reuse `score_items` without paying an LLM call per question."""
+
+    def __init__(self, api: str, timeout: float = 60.0,
+                 transport: httpx.BaseTransport | None = None) -> None:
+        self.api = api.rstrip("/")
+        self._client = httpx.Client(timeout=timeout, transport=transport)
+
+    def __call__(self, question: str) -> dict:
+        t0 = perf_counter()
+        resp: dict | None
+        try:
+            r = self._client.post(f"{self.api}/api/retrieve_03", json={"question": question})
+            r.raise_for_status()
+            resp, err = r.json(), None
+        except (httpx.HTTPError, ValueError) as exc:
+            resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
+        return {"response": resp, "latency_ms": (perf_counter() - t0) * 1000.0,
+                "cache": None, "trace_id": None, "error": err}
+
+
 # ---------------------------------------------------------------- pure metrics
 
 def abstention_metrics(records: list[dict]) -> dict:

@@ -121,6 +121,16 @@ def ask_03(body: AskRequest, request: Request, response: Response) -> AskRespons
     return result
 
 
+@router.post("/api/retrieve_03")
+def retrieve_03(body: AskRequest, request: Request) -> dict[str, Any]:
+    """Retrieval only (no generation, no cache, no trace): lets the component-level eval score
+    the retriever in milliseconds instead of paying one LLM call per question."""
+    state = request.app.state
+    passages = state.retriever.retrieve(body.question, k=state.settings.top_k)
+    return {"retrieved": [{"chunk_id": p.chunk_id, "source": p.source, "section": p.section,
+                           "page": p.page, "score": p.score} for p in passages]}
+
+
 @router.get("/api/config_03")
 def config_03(request: Request) -> dict[str, object]:
     """Non-secret configuration subset (consumed by eval/run_suite_03)."""

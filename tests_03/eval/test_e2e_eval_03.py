@@ -171,3 +171,30 @@ def test_run_e2e_items_record_the_request_error_text():  # T-E2E-ERR
     err = lambda _q: {"response": None, "latency_ms": 1.0, "cache": None, "error": "ReadTimeout: x"}  # noqa: E731
     e2e, _, _ = run_e2e(items, err, rule_judge, lambda ids: {})
     assert e2e["items"][0]["error"] == "ReadTimeout: x"
+
+
+def test_http_retrieve_matches_the_ask_contract_for_the_component_level():  # T-RET-02
+    from eval.e2e_eval_03 import HttpRetrieve03
+
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["path"] = request.url.path
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(200, json={"retrieved": [{"chunk_id": "c1", "source": "a.md",
+                                                        "section": "s", "page": 1, "score": 0.9}]})
+
+    out = HttpRetrieve03("http://api", transport=httpx.MockTransport(handler))("what is x?")
+    assert seen["path"] == "/api/retrieve_03" and seen["body"] == {"question": "what is x?"}
+    assert out["response"]["retrieved"][0]["chunk_id"] == "c1"
+    assert out["error"] is None and out["latency_ms"] >= 0
+
+
+def test_http_retrieve_reports_errors_instead_of_raising():  # T-RET-03
+    from eval.e2e_eval_03 import HttpRetrieve03
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, text="boom")
+
+    out = HttpRetrieve03("http://api", transport=httpx.MockTransport(handler))("q")
+    assert out["response"] is None and "500" in out["error"]

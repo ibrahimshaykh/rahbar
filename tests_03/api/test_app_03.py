@@ -131,3 +131,21 @@ def test_provider_exception_still_writes_error_trace(monkeypatch, tmp_path):
     rec = trace_records(tmp_path)[0]
     assert rec["outcome"] == "error" and rec["response"] == {"error": "RuntimeError"}
     assert validate_trace_03(rec) == []
+
+
+def test_retrieve_endpoint_returns_chunks_without_calling_the_llm(monkeypatch, tmp_path):  # T-RET-01
+    """The component level scores retrieval alone; a full /api/ask costs an LLM call per
+    question (~40 s on the CPU-only model), the retrieval-only path costs milliseconds."""
+    passages = [passage("c1", "Attendance must be at least 80 percent.", 0.9, source="a.md", page=2),
+                passage("c2", "Fees are due in August.", 0.5, source="b.md", page=1)]
+    provider = FakeProvider()
+    with running_app(monkeypatch, tmp_path) as client:
+        _install(client, FakeRetriever(passages), provider)
+        r = client.post("/api/retrieve_03", json=BODY)
+    assert r.status_code == 200
+    body = r.json()
+    assert [x["chunk_id"] for x in body["retrieved"]] == ["c1", "c2"]
+    assert body["retrieved"][0] == {"chunk_id": "c1", "source": "a.md", "section": "1 Intro",
+                                    "page": 2, "score": 0.9}
+    assert "text" not in body["retrieved"][0]
+    assert provider.calls == 0

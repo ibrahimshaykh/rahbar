@@ -24,7 +24,7 @@ from time import perf_counter
 from eval import config_03
 from eval.component_eval_03 import run_component
 from eval.e2e_eval_03 import (
-    ColdRunError, HttpAsk03, PassageSourceError, make_live_judge_03, make_passage_lookup_03,
+    ColdRunError, HttpAsk03, HttpRetrieve03, PassageSourceError, make_live_judge_03, make_passage_lookup_03,
     rule_judge, run_e2e,
 )
 from eval.module_eval_03 import load_corpus_chunks, load_pairs, run_module
@@ -228,10 +228,13 @@ def build_context(args: argparse.Namespace, golden: list[dict]) -> dict:
     settings = get_settings()
     cfg = fetch_config(args.api)
     judge = rule_judge if args.judge == "rule" else make_live_judge_03()
-    return {"ask": HttpAsk03(args.api), "noise_ask": HttpAsk03(args.noise_api) if args.noise_api else None,
+    return {"ask": HttpAsk03(args.api),
+            # component level = retrieval only (no LLM call per question)
+            "retrieve": HttpRetrieve03(args.api),
+            "noise_retrieve": HttpRetrieve03(args.noise_api) if args.noise_api else None,
             "lookup": lookup, "judge": judge, "judge_name": args.judge,
             "embed": lambda texts: real_embed(texts, settings), "pairs": pairs, "human": human,
-            "timing": load_corpus_chunks(live_timing_docs_03(),int(cfg.get("chunk_size") or 400),
+            "timing": load_corpus_chunks(live_timing_docs_03(), int(cfg.get("chunk_size") or 400),
                                          int(cfg.get("chunk_overlap") or 50), 50),
             "config": {k: cfg.get(k) for k in ("top_k", "chunk_size", "chunk_overlap", "rerank",
                                                "prompt_template")},
@@ -245,8 +248,10 @@ def run_once(args: argparse.Namespace, golden: list[dict], ctx: dict, run_idx: i
     random.seed(args.seed)
     started = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     module = run_module(ctx["pairs"], ctx["embed"], ctx["timing"])
-    component, err_c = run_component(golden, ctx["ask"], args.seed, noise_ask=ctx["noise_ask"],
-                                     n_distractor_docs=ctx["n_distractors"])
+    component, err_c = run_component(
+        golden, ctx.get("retrieve") or ctx["ask"], args.seed,
+        noise_ask=ctx.get("noise_retrieve") or ctx.get("noise_ask"),
+        n_distractor_docs=ctx["n_distractors"])
     e2e, _, err_e = run_e2e(golden, ctx["ask"], ctx["judge"], ctx["lookup"], ctx["human"],
                             ctx["judge_name"], args.require_cold)
     suite = {"schema": "suite_03/1", "tag": args.tag, "run": run_idx, "mode": args.mode,
