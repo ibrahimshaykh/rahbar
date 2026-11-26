@@ -8,4 +8,6 @@ data:
   ALLOW_CACHE_BYPASS_03: "true"
   CHROMA_COLLECTION: "rahbar_ragops_03"
   GUARDRAIL_MODE: "block"
-  TOP_K: "1"
+  RERANK_ENABLED: "true"
+  RERANK_POOL: "8"
+  TOP_K: "5"

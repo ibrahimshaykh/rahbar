@@ -1,0 +1,14 @@
+# Part C/F: failing candidate (TOP_K=1) through the eval Job
+$ kubectl -n rahbar get job ragops-eval-03
+NAME             STATUS   COMPLETIONS   DURATION   AGE
+ragops-eval-03   Failed   0/1           39s        39s
+$ kubectl -n rahbar logs job/ragops-eval-03
+reusing stored baseline: /data/eval/results/suite_03_baseline_20261126T024641Z_run1.json
+reusing stored candidate: /data/eval/results/suite_03_candidate_fail_20261126T050743Z_run1.json
+/data/eval/results/experiment_03_candidate_fail_20261126T061318Z.json
+GATE recall@5 drop 6.2pp <= 2.0pp .................. FAIL
+GATE faithfulness 0.93 >= 0.80 ..................... PASS
+GATE p95 latency 57142ms <= 180000ms ............... PASS
+GATE abstention 1.00 >= 1.00 ....................... PASS
+RELEASE GATE: FAIL (1 check(s) failed: recall@5)
+release_gate_exit=1
