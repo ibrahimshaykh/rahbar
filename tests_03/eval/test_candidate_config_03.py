@@ -19,7 +19,8 @@ def test_rendered_configmap_is_valid_yaml_in_namespace_rahbar():
     doc = yaml.safe_load(render({"CHUNK_SIZE": "60"}))
     assert doc["kind"] == "ConfigMap" and doc["metadata"]["namespace"] == "rahbar"
     assert doc["metadata"]["name"] == "rahbar-config-candidate-03"
-    assert doc["data"] == {"CHROMA_COLLECTION": "rahbar_candidate_03", "CHUNK_SIZE": "60"}
+    assert doc["data"] == {"CHROMA_COLLECTION": "rahbar_candidate_03", "CHUNK_SIZE": "60",
+                           "ALLOW_CACHE_BYPASS_03": "true", "GUARDRAIL_MODE": "block"}
 
 
 def test_secret_looking_keys_and_bad_lines_rejected():
@@ -27,3 +28,11 @@ def test_secret_looking_keys_and_bad_lines_rejected():
         parse_env("LLM_API_KEY=abc")
     with pytest.raises(ValueError):
         parse_env("not a pair")
+
+
+def test_rendered_candidate_always_keeps_cache_bypass_and_guardrail():
+    """Regression: re-rendering a preset dropped ALLOW_CACHE_BYPASS_03, so the candidate served
+    cached answers and the cold-run suite aborted."""
+    data = yaml.safe_load(render({"TOP_K": "1"}))["data"]
+    assert data["ALLOW_CACHE_BYPASS_03"] == "true" and data["GUARDRAIL_MODE"] == "block"
+    assert yaml.safe_load(render({"GUARDRAIL_MODE": "flag"}))["data"]["GUARDRAIL_MODE"] == "flag"

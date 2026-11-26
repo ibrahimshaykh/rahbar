@@ -33,7 +33,10 @@ def parse_env(text: str) -> dict[str, str]:
 
 def render(env: dict[str, str], collection: str = "rahbar_candidate_03",
            name: str = "rahbar-config-candidate-03", namespace: str = "rahbar") -> str:
-    data = {"CHROMA_COLLECTION": collection, **env}
+    # Every candidate needs the eval cache bypass and the same guardrail as the live API,
+    # so a preset file cannot silently drop them; the preset may still override them.
+    data = {"CHROMA_COLLECTION": collection, "ALLOW_CACHE_BYPASS_03": "true",
+            "GUARDRAIL_MODE": "block", **env}
     lines = ["apiVersion: v1", "kind: ConfigMap", "metadata:", f"  name: {name}",
              f"  namespace: {namespace}",
              "  labels: {app.kubernetes.io/part-of: rahbar, ragops: \"03\"}", "data:"]
