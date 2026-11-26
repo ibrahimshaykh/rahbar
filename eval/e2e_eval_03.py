@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+import time
 from pathlib import Path
 from time import perf_counter
 from typing import Callable
@@ -47,10 +48,15 @@ class PassageSourceError(RuntimeError):
 class HttpAsk03:
     """POST /api/ask through A02's retrying `ask`, timing the call client-side."""
 
+    TRANSIENT = (httpx.ConnectError, httpx.RemoteProtocolError, httpx.ReadError)
+
     def __init__(self, api: str, bypass_cache: bool = True, timeout: float = 180.0,
-                 retry_delay: float = 2.0, transport: httpx.BaseTransport | None = None) -> None:
+                 retry_delay: float = 2.0, transport: httpx.BaseTransport | None = None,
+                 connect_retries: int = 8, connect_retry_wait: float = 15.0) -> None:
         self.api = api
         self.retry_delay = retry_delay
+        self.connect_retries = connect_retries
+        self.connect_retry_wait = connect_retry_wait
         self._last: dict = {}
         headers = {"X-Bypass-Cache-03": "1"} if bypass_cache else {}
         self._client = httpx.Client(
@@ -63,15 +69,25 @@ class HttpAsk03:
     def __call__(self, question: str) -> dict:
         from eval.run_eval import ask  # A02 retry rule, imported not copied
 
-        t0 = perf_counter()
-        try:
-            resp = ask(self._client, self.api, question, retry_delay=self.retry_delay)
-            err = None
-        except httpx.HTTPError as exc:
-            resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
+        retries = 0
+        while True:
+            t0 = perf_counter()           # latency = the attempt that succeeded, not the waits
+            try:
+                resp = ask(self._client, self.api, question, retry_delay=self.retry_delay)
+                err = None
+            except self.TRANSIENT as exc:
+                if retries < self.connect_retries:   # API/node dropped the connection: wait, retry
+                    retries += 1
+                    time.sleep(self.connect_retry_wait)
+                    continue
+                resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
+            except httpx.HTTPError as exc:
+                resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
+            break
         latency = (perf_counter() - t0) * 1000.0
         return {"response": resp, "latency_ms": latency, "cache": self._last.get("x-cache"),
-                "trace_id": self._last.get("x-trace-id"), "error": err}
+                "trace_id": self._last.get("x-trace-id"), "error": err,
+                "connect_retries": retries}
 
 
 class HttpRetrieve03:

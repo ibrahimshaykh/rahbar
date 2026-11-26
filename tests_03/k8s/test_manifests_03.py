@@ -283,3 +283,13 @@ def test_k8s_16c_job_entry_can_reuse_baseline_and_limit_candidate_runs():
     assert "REUSE_BASELINE" in text and "CANDIDATE_RUNS" in text
     assert '${CANDIDATE_RUNS:-2}' in text           # default stays 2 runs
     assert '${REUSE_BASELINE:-0}' in text           # default stays "run the baseline"
+
+
+def test_k8s_09b_patch_relaxes_api_probes_for_a_loaded_node():
+    """During evals the single-node cluster stalls for minutes; the base probes (5 s, 3 misses)
+    restarted every api pod mid-suite and 17 requests got 'connection refused'."""
+    (patch,) = load(K8S / "patch_api_rollout_03.yaml")
+    c = patch["spec"]["template"]["spec"]["containers"][0]
+    assert c["livenessProbe"]["timeoutSeconds"] >= 10 and c["livenessProbe"]["failureThreshold"] >= 6
+    assert c["readinessProbe"]["timeoutSeconds"] >= 10
+    assert c["startupProbe"]["failureThreshold"] >= 120

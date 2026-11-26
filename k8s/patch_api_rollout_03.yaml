@@ -19,6 +19,17 @@ spec:
             - {name: GUARDRAIL_MODE, value: block}
             - {name: RERANK_ENABLED, value: "false"}
             - {name: ALLOW_CACHE_BYPASS_03, value: "true"}
+          # A loaded single-node cluster stalls for minutes during evals; the A02 probes
+          # (5 s, 3 misses) restarted every api pod mid-suite. Relaxed here, base untouched.
+          startupProbe:
+            failureThreshold: 150
+            timeoutSeconds: 10
+          livenessProbe:
+            timeoutSeconds: 15
+            failureThreshold: 8
+          readinessProbe:
+            timeoutSeconds: 15
+            failureThreshold: 6
           volumeMounts:
             - {name: ragops-data, mountPath: /data}
       volumes:

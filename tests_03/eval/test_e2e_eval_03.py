@@ -198,3 +198,31 @@ def test_http_retrieve_reports_errors_instead_of_raising():  # T-RET-03
 
     out = HttpRetrieve03("http://api", transport=httpx.MockTransport(handler))("q")
     assert out["response"] is None and "500" in out["error"]
+
+
+def test_http_ask_retries_transient_connection_errors_and_times_the_good_attempt():  # T-E2E-RETRY
+    """The cluster node stalls under load and the API drops connections for a minute; the
+    suite must not turn that into 17 failed items, and must not bill the wait as latency."""
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise httpx.ConnectError("Connection refused")
+        return httpx.Response(200, json=resp(True), headers={"X-Cache": "miss"})
+
+    ask = HttpAsk03("http://api", transport=httpx.MockTransport(handler), retry_delay=0,
+                    connect_retries=5, connect_retry_wait=0)
+    out = ask("question here")
+    assert out["error"] is None and out["response"] is not None
+    assert calls["n"] == 3 and out["connect_retries"] == 2
+
+
+def test_http_ask_gives_up_after_the_retry_budget():  # T-E2E-RETRY-2
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("Connection refused")
+
+    ask = HttpAsk03("http://api", transport=httpx.MockTransport(handler), retry_delay=0,
+                    connect_retries=2, connect_retry_wait=0)
+    out = ask("q")
+    assert out["response"] is None and "ConnectError" in out["error"] and out["connect_retries"] == 2
