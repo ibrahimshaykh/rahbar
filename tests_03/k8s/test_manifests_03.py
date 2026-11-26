@@ -240,7 +240,9 @@ def test_k8s_17_candidate_configmap_rules():
     for key in cm["data"]:
         assert key != "EMBED_MODEL"
         assert "KEY" not in key.upper() and "TOKEN" not in key.upper()
-    assert cm["data"]["CHROMA_COLLECTION"] == "rahbar_candidate_03"
+    # candidates read an A03 collection (re-chunk presets use rahbar_candidate_03; the
+    # TOP_K and rerank presets reuse the baseline one) and never the A02 collection
+    assert cm["data"]["CHROMA_COLLECTION"] in {"rahbar_candidate_03", "rahbar_ragops_03"}
 
 
 def test_k8s_18_helper_pod_resources():

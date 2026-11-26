@@ -59,16 +59,17 @@ spec:
             failureThreshold: 60
             periodSeconds: 2
             timeoutSeconds: 3
+          # relaxed like the live patch: the loaded single-node cluster stalls during evals
           livenessProbe:
             httpGet: {path: /healthz, port: 8000}
             periodSeconds: 20
-            failureThreshold: 3
-            timeoutSeconds: 5
+            failureThreshold: 8
+            timeoutSeconds: 15
           readinessProbe:
             httpGet: {path: /readyz, port: 8000}
             periodSeconds: 10
-            failureThreshold: 3
-            timeoutSeconds: 5
+            failureThreshold: 6
+            timeoutSeconds: 15
           resources:                     # initial, not measured; A02 api values as the starting point
             requests: {cpu: 100m, memory: 256Mi}
             limits: {cpu: 500m, memory: 512Mi}
