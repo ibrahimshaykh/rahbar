@@ -1,0 +1,114 @@
+=== BEGIN A2-T09 (cluster) ===
+Thu, Nov 26, 2026  8:37:18 AM
+08f4703
+### before
+$ curl -X POST /api/retrieve_03  (attendance condonation)
+  academic-rules-handbook:2026-11:0000 0.761 academic_rules_handbook_v2026-11_03.md
+  academic-rules-handbook:2026-11:0001 0.707 academic_rules_handbook_v2026-11_03.md
+  exam-conduct:2026-09:0000 0.693 exam_conduct_03.md
+  academic-rules-handbook:2026-11:0005 0.668 academic_rules_handbook_v2026-11_03.md
+  student-handbook:2026-06:0117 0.62 student-handbook-jun-2026.pdf
+
+### 1. orphan report, delete library-policy, orphan report
+job.batch/ragops-delete-03 created
+$ kubectl -n rahbar logs job/ragops-delete-03
+{
+ "chunks_by_document": {
+  "academic-rules-handbook": 319,
+  "annual-report-2019-20": 69,
+  "annual-report-2023-24": 220,
+  "exam-conduct": 6,
+  "faculty-entrepreneurship-policy": 26,
+  "fee-structure": 13,
+  "grading-policy": 11,
+  "hostel-rules": 6,
+  "library-policy": 6,
+  "prospectus-academic-rules": 35,
+  "scholarship-rules": 6,
+  "student-handbook": 312,
+  "student-notice-injected": 4,
+  "transport-policy": 6,
+  "undergraduate-academic-rules": 121
+ },
+ "orphans": 0,
+ "orphan_ids": [],
+ "missing_from_chroma": []
+}
+{"ts": "2026-11-26T08:38:35Z", "logger": "rahbar.indexer.delete_03", "msg": "orphan report", "orphans": 0}
+orphans=0
+{"ts": "2026-11-26T08:38:40Z", "logger": "rahbar.indexer.delete_03", "msg": "delete finished", "doc_id": "library-policy", "deleted_chunks": 6, "archived_path": "archive/library-policy/2026-09/library_policy_03.md", "collection_version": 3}
+{
+ "chunks_by_document": {
+  "academic-rules-handbook": 319,
+  "annual-report-2019-20": 69,
+  "annual-report-2023-24": 220,
+  "exam-conduct": 6,
+  "faculty-entrepreneurship-policy": 26,
+  "fee-structure": 13,
+  "grading-policy": 11,
+  "hostel-rules": 6,
+  "prospectus-academic-rules": 35,
+  "scholarship-rules": 6,
+  "student-handbook": 312,
+  "student-notice-injected": 4,
+  "transport-policy": 6,
+  "undergraduate-academic-rules": 121
+ },
+ "orphans": 0,
+ "orphan_ids": [],
+ "missing_from_chroma": []
+}
+{"ts": "2026-11-26T08:38:44Z", "logger": "rahbar.indexer.delete_03", "msg": "orphan report", "orphans": 0}
+orphans=0
+NAME               STATUS     COMPLETIONS   DURATION   AGE
+ragops-delete-03   Complete   1/1           20s        23s
+
+### 2. rollback the handbook to 2026-06
+job.batch/ragops-rollback-03 created
+$ kubectl -n rahbar logs job/ragops-rollback-03
+{"ts": "2026-11-26T08:38:59Z", "logger": "rahbar.indexer.rollback_03", "msg": "rollback", "doc_id": "academic-rules-handbook", "from": "2026-11", "to": "2026-06", "reactivated_chunks": 312, "reembedded_chunks": 0, "collection_version": 4}
+NAME                 STATUS     COMPLETIONS   DURATION   AGE
+ragops-rollback-03   Complete   1/1           10s        12s
+$ curl -X POST /api/retrieve_03  (attendance condonation)
+  academic-rules-handbook:2026-06:0049 0.944 academic-rules-handbook-jun-2026.pdf
+  academic-rules-handbook:2026-06:0055 0.747 academic-rules-handbook-jun-2026.pdf
+  exam-conduct:2026-09:0000 0.693 exam_conduct_03.md
+  academic-rules-handbook:2026-06:0060 0.684 academic-rules-handbook-jun-2026.pdf
+  academic-rules-handbook:2026-06:0050 0.677 academic-rules-handbook-jun-2026.pdf
+
+### 3. roll forward to 2026-11
+job.batch/ragops-rollforward-03 created
+$ kubectl -n rahbar logs job/ragops-rollforward-03
+{"ts": "2026-11-26T08:40:18Z", "logger": "rahbar.indexer.rollback_03", "msg": "rollback", "doc_id": "academic-rules-handbook", "from": "2026-06", "to": "2026-11", "reactivated_chunks": 7, "reembedded_chunks": 0, "collection_version": 5}
+{
+ "chunks_by_document": {
+  "academic-rules-handbook": 319,
+  "annual-report-2019-20": 69,
+  "annual-report-2023-24": 220,
+  "exam-conduct": 6,
+  "faculty-entrepreneurship-policy": 26,
+  "fee-structure": 13,
+  "grading-policy": 11,
+  "hostel-rules": 6,
+  "prospectus-academic-rules": 35,
+  "scholarship-rules": 6,
+  "student-handbook": 312,
+  "student-notice-injected": 4,
+  "transport-policy": 6,
+  "undergraduate-academic-rules": 121
+ },
+ "orphans": 0,
+ "orphan_ids": [],
+ "missing_from_chroma": []
+}
+{"ts": "2026-11-26T08:40:23Z", "logger": "rahbar.indexer.delete_03", "msg": "orphan report", "orphans": 0}
+orphans=0
+NAME                    STATUS     COMPLETIONS   DURATION   AGE
+ragops-rollforward-03   Complete   1/1           15s        17s
+$ curl -X POST /api/retrieve_03  (attendance condonation)
+  academic-rules-handbook:2026-11:0000 0.761 academic_rules_handbook_v2026-11_03.md
+  academic-rules-handbook:2026-11:0001 0.707 academic_rules_handbook_v2026-11_03.md
+  exam-conduct:2026-09:0000 0.693 exam_conduct_03.md
+  academic-rules-handbook:2026-11:0005 0.668 academic_rules_handbook_v2026-11_03.md
+  student-handbook:2026-06:0109 0.62 student-handbook-jun-2026.pdf
+=== END A2-T09 ===
