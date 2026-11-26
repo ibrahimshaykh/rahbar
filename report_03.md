@@ -35,27 +35,75 @@ Results below are copied from files produced by our own runs; a cell reading `PE
 | Quality | What we measure | Our threshold | Evidence |
 |---|---|---|---|
 | Adaptability | Chunks re-embedded on an unchanged re-ingest; a version change touching only its own chunks; rollback restores the old version | `embedded_chunks=0` on an unchanged re-run; rollback restores the requested version | `docs/evidence_03/F-T10_jobs_03.txt` PENDING-HUMAN(F-T10) |
-| Monitorability | Five metrics from traces over a time window (latency per stage, abstention rate, cache hit rate, guardrail actions, error rate) | gate: `max_p95_latency_ms: 100000` | `eval/trace_metrics_summary_03.py` output PENDING-HUMAN(D-T07) |
+| Monitorability | Five metrics from traces over a time window (latency per stage, abstention rate, cache hit rate, guardrail actions, error rate) | gate: `max_p95_latency_ms: 180000` | `eval/trace_metrics_summary_03.py` output PENDING-HUMAN(D-T07) |
 | Observability | Every request writes one JSON line to stdout and to `/data/traces/traces_03.jsonl`; `/metrics` reachable by port-forward | one trace line per response | `docs/evidence_03/SS-D_trace_03.txt` PENDING-HUMAN(SS-D) |
 | Traceability | A trace id rebuilds the retrieved chunks, the full prompt, collection name/version and embedding version | trace completeness: every required field present | `api/trace_tool_03.py` output PENDING-HUMAN(D-T07) |
 | Reliability | PVC survives pod restarts; one writer (Job plus lock); abstention below the relevance floor; `rollout undo` restores the previous release | trace file line count never decreases after an API pod restart; `RELEVANCE_FLOOR=0.55` | `docs/evidence_03/F-T09_pvc_03.txt`, `docs/evidence_03/F-T12_canary_03.txt` PENDING-HUMAN(F-T09, F-T12) |
 
 ## 3. Part A - data management
 
-<!-- src: corpus/MANIFEST_batch_b_03.md -->
-Batch B verification matrix (per document x quality / completeness / recency / uniqueness, with reason codes) and totals:
-PENDING-HUMAN(A1-T10).
+<!-- src: eval/results/verification_report_03_cluster_phase2_20261125T200907Z.json -->
+Cluster ingest Job, real `nomic-embed-text` and Chroma. Batch B (14 files):
 
-A2 lifecycle (unchanged re-run `embedded_chunks`, replace counts added/deleted/kept, delete `orphans`, supersede to archive,
-rollback to version X): PENDING-HUMAN(A2-T08).
+| File | quality | completeness | recency | uniqueness | decision |
+|---|---|---|---|---|---|
+| `exam_conduct_03.md`, `library_policy_03.md`, `hostel_rules_03.md`, `scholarship_rules_03.md`, `transport_policy_03.md`, `student_notice_injected_03.md` | pass | pass | pass | pass | accept (6) |
+| `academic_rules_handbook_v2026-11_03.md` | pass | pass | `NEWER_VERSION` | pass | supersede |
+| `corrupt_scan_03.txt` | `GARBLED_NON_ASCII` | pass | pass | pass | quarantine |
+| `empty_stub_03.md` | `EMPTY` | pass | pass | pass | quarantine |
+| `no_metadata_circular_03.md` | pass | `MISSING_METADATA` | pass | pass | quarantine |
+| `attendance_notice_truncated_03.md` | pass | `TRUNCATED` | pass | pass | quarantine |
+| `exam_conduct_copy_03.md`, `library_policy_mirror_03.md` | pass | pass | pass | `DUPLICATE_EXACT` | quarantine (2) |
+| `hostel_rules_reworded_03.md` | pass | pass | pass | `DUPLICATE_NEAR` | quarantine |
+
+Across the whole run (9 Batch A + 14 Batch B): 23 documents, 15 accepted, 8 quarantined (the eighth is the old
+2026-06 handbook, `STALE_VERSION`). Rejected files are moved to `quarantine/<timestamp>/` with a `reason_03.json`.
+
+<!-- src: docs/evidence_03/F-T05_ingest_phase3_03.txt -->
+| Lifecycle step (cluster) | embedded | kept | deactivated | collection version | evidence |
+|---|---|---|---|---|---|
+| 1. Batch A only | 1119 | 0 | 0 | 1 | `F-T05_ingest_phase1_03.txt` |
+| 2. Batch A + B (handbook superseded, old PDF archived) | 41 | 807 | 312 | 2 | `F-T05_ingest_phase2_03.txt` |
+| 3. Unchanged re-run | **0** | 848 | 0 | 2 | `F-T05_ingest_phase3_03.txt` |
+
+<!-- src: docs/evidence_03/A2_lifecycle_03.txt -->
+Per-document replace, delete with orphan report (`orphans=0`) and rollback were run with the offline doubles
+(`A2_lifecycle_03.txt`: a one-chunk change gives `embedded_chunks=1`, `deleted_chunks=1`). On-cluster delete and
+rollback: PENDING-HUMAN(A2-T09).
+
+**Defects the live run exposed (fixed test-first, `tests_03/indexer`):** two versions of one document in the same
+batch were both accepted; HTML indentation diluted the letter ratio and quarantined the fee and grading pages; one
+stray NUL byte quarantined a 26-page PDF.
 
 ## 4. Part B - offline evaluation
 
-<!-- pending-src: eval/results/summary_03_<ts>.md -->
-Golden set composition (answerable / unanswerable / hard; human / synthetic / reviewed): PENDING-HUMAN(B-T01).
-Three-level results, both runs and absolute difference: PENDING-HUMAN(B-T10).
-Noise-test deltas and judge-versus-human agreement: PENDING-HUMAN(B-T10).
-Why latency and faithfulness vary between runs while retrieval metrics do not: PENDING-HUMAN(B-T10).
+<!-- src: eval/golden_03.jsonl -->
+Golden set: 38 items = 26 answerable, 6 unanswerable, 6 hard (2 paraphrase, 2 multi-chunk, 2 Batch B). **All 38 are
+agent-drafted (`origin: synthetic`) and none is human-reviewed yet**: PENDING-HUMAN(B-T01) (at least 8 human-written
+and 8 reviewed). Judge-versus-human agreement needs at least 8 human labels: PENDING-HUMAN(B-T07).
+
+<!-- src: eval/results/summary_03_20261126T024641Z.md -->
+Live cluster, `llama3.2:3b` on CPU, collection `rahbar_ragops_03`, seed 1337:
+
+| Level | Metric | Run 1 | Run 2 | abs diff |
+|---|---|---|---|---|
+| Module | separation gap (paraphrase minus unrelated cosine) | 0.345 | 0.345 | 0 |
+| Module | embedding determinism, max abs difference (10 texts) | 0 | 0 | 0 |
+| Component | recall@5 (= recall@3) | 0.781 | 0.781 | 0 |
+| Component | MRR / nDCG@5 | 0.750 / 0.758 | 0.750 / 0.758 | 0 |
+| Component | typo noise (8 %): delta recall@5 / MRR / nDCG | 0 / -0.023 / -0.018 | 0 / -0.023 / -0.018 | 0 |
+| End to end | faithfulness (LLM judge) | 0.960 | 0.926 | 0.034 |
+| End to end | abstention correctness (6 unanswerable) | 1.000 | 0.833 | 0.167 |
+| End to end | false abstention rate | 0.200 | 0.083 | 0.117 |
+| End to end | citation validity | 1.000 | 1.000 | 0 |
+| End to end | answer fact hit rate | 0.548 | 0.633 | 0.085 |
+| End to end | latency p50 / p95 (s) | 70.9 / 143.3 | 55.7 / 91.0 | 15.2 / 52.3 |
+| End to end | request errors (timeouts, one HTTP 500), of 38 | 1 | 2 | |
+
+Retrieval is deterministic for a fixed index and embedding model, so module and component numbers repeat exactly.
+Generation is not: the model samples, the judge is the same small model, and latency depends on a loaded laptop CPU.
+Four golden items (G03-014, -015, -020, -021) cite the 2026-06 handbook that Batch B supersedes, so their references
+can no longer be retrieved: the golden set went stale when the data changed.
 
 ## 5. Part C - experiment and release gate
 
@@ -63,8 +111,8 @@ Why latency and faithfulness vary between runs while retrieval metrics do not: P
 | Gate rule | Threshold | Rationale |
 |---|---|---|
 | Recall@5 may drop by at most | 2.0 percentage points vs baseline | one golden question must not decide a release |
-| Faithfulness at least | 0.80 | pre-calibration default; recalibrated after Part B |
-| p95 latency at most | 100000 ms | below the 120 s Ingress read timeout |
+| Faithfulness at least | 0.80 | measured baseline 0.96 / 0.926; margin for a small local judge |
+| p95 latency at most | 180000 ms | baseline run-1 p95 143.3 s x 1.25, rounded up; fixed before any candidate ran |
 | Abstention correctness vs baseline | candidate >= baseline + 0.0 | abstention must not regress |
 
 Experiment table (3 levels x baseline / candidate_fail / candidate_pass) and release decision:
@@ -98,12 +146,16 @@ undo returns the R3 spec as R5), with the post-undo trace: PENDING-HUMAN(F-T12).
 ## 9. Short answers (G.4)
 
 **4(a) Which verification check caught the most problems in Batch B, and which problem did you not catch? What would catch it?**
-The four checks are quality, completeness, recency and uniqueness (`indexer/pipeline/verify_03.py`); the planted defects
-and expected reason codes are listed in `corpus/MANIFEST_batch_b_03.md`. Which check fired most, and which defect slipped
-through: PENDING-HUMAN(A1-T10).
+Uniqueness caught the most (3 of 7 rejected Batch B files: two exact duplicates and one reworded near-duplicate);
+quality caught 2 and completeness 2. Every planted data defect received its expected code. The file with the injected
+instruction was not rejected: it is well formed, so no data check flags it and the query-time guardrail has to. A
+content scan at ingest would catch it earlier. The live run also showed errors in the other direction (three good
+documents rejected) until the gate was fixed.
 
 **4(b) Give an example from your results where a module-level metric looked fine but a component or end-to-end metric did not, or explain why you did not see one.**
-PENDING-HUMAN(B-T10) (needs the three-level suite output).
+The module level looked healthy (separation gap 0.345, deterministic embeddings) while component recall@5 was 0.781
+and the end-to-end answer fact hit rate 0.55 to 0.63 (`summary_03_20261126T024641Z.md`). Part of the miss is golden
+items that cite the superseded handbook, which an embedding test cannot see.
 
 **4(c) Did you archive or delete old versions, and what breaks if you delete?**
 We archive: a superseded version source is copied to `archive/<doc_id>/<version>/` with `meta_03.json`, and its chunks are
@@ -113,8 +165,9 @@ archive copy breaks rollback once the chunks are pruned, because `indexer/rollba
 Measured outcome: PENDING-HUMAN(A2-T08).
 
 **4(d) Which metric in your suite do you trust least, and why?**
-Candidate: the LLM-judged faithfulness, because the judge is a local model; its agreement with our human labels is the
-number that decides how far to trust it: PENDING-HUMAN(B-T10).
+LLM-judged faithfulness. The judge is the same 3B model that writes the answers: during setup its first prompt rejected
+a plainly supported sanity sentence, and a wrong output schema made every answer score 0. It moved from 0.96 to
+0.926 between identical runs. Agreement with human labels is not yet measured: PENDING-HUMAN(B-T07).
 
 **4(e) Which of the paper's ideas was hardest to apply to your pipeline, and what did you change from the paper?**
 Draft for the partners to rewrite: the Assignment 02 API and indexer are existing code, so lifecycle stages such as live
@@ -138,9 +191,9 @@ Chroma by the A02 policy, so "read only" is enforced by its code, not by the net
 | Ibrahim Ahmed | PENDING-HUMAN(G-T05) | PENDING-HUMAN(G-T05) |
 | Talha Sami | PENDING-HUMAN(G-T05) | PENDING-HUMAN(G-T05) |
 
-AI disclosure: Claude Code (Anthropic) was used to draft the harness, code, tests and report text under our direction; we
-ran all cluster commands, took the screenshots, wrote the golden questions and the human faithfulness labels, and reviewed
-all results. Numbers in this report come from files produced by our runs. (Partners: edit only to keep this true.)
+AI disclosure: Claude Code (Anthropic) drafted the harness, code, tests, golden questions and report text, and ran the
+cluster commands that produced the result files, under our direction. Numbers in this report come from files produced by
+those runs. Our own review, hand-written golden questions, faithfulness labels and screenshots: PENDING-HUMAN(G-T05).
 
 Limitations: queries for Part E are simulated; the embedding and judge models run on a laptop CPU; the evaluation set is small.
 
