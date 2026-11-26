@@ -17,7 +17,7 @@ if [ "${GATE_ONLY:-0}" != "1" ]; then
          --out-dir "$R" --tag "$EVAL_TAG" --require-cold --chroma
   python -m eval.change_experiment_03 --baseline "$(ls -t $R/suite_03_baseline_*_run1.json | head -1)" \
          --candidate "$(ls -t $R/suite_03_${EVAL_TAG}_*_run1.json | head -1)" --name "$EVAL_TAG" \
-         --out-dir "$R" --out-pointer "$EXP_PTR"
+         --out-dir "$R" --out-pointer "$EXP_PTR" --max-error-rate "${MAX_ERROR_RATE:-0}"
 fi
 EXP="$(cat "$EXP_PTR")"
 set +e

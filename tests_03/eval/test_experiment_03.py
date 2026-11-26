@@ -69,3 +69,19 @@ def test_change_detected_and_files_written(tmp_path):  # T-EXP-05 + T-EXP-06
 
 def test_bad_input_exit_2(tmp_path):
     assert main(["--baseline", str(tmp_path / "nope.json"), "--candidate", "x", "--name", "n"]) == 2
+
+
+def test_error_rate_budget_is_explicit_and_recorded():  # T-EXP-07
+    """The CPU host yields a few transient request errors; a declared budget (default 0) lets a
+    run be used, and the experiment file must say how many errors each side had."""
+    items = [{"id": f"G{i}"} for i in range(40)]
+    base = suite(errors=1)
+    base["e2e"]["items"] = items
+    cand = suite(errors=2)
+    cand["e2e"]["items"] = items
+    with pytest.raises(ExperimentError):
+        build_experiment(base, cand, "c")                      # default budget is zero
+    with pytest.raises(ExperimentError):
+        build_experiment(base, cand, "c", max_error_rate=0.03)  # 2/40 = 5% > 3%
+    exp = build_experiment(base, cand, "c", max_error_rate=0.05)
+    assert exp["request_errors"] == {"baseline": 1, "candidate": 2, "max_error_rate": 0.05}

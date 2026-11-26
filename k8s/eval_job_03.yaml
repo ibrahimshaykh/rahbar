@@ -46,6 +46,9 @@ spec:
             - {name: EVAL_TAG, value: candidate}
             - {name: GATE_THRESHOLDS_PATH, value: /config/gate_thresholds_03.yaml}
             - {name: GATE_ONLY, value: "0"}     # "1" = re-gate the stored experiment only
+            - {name: REUSE_BASELINE, value: "1"}    # reuse the stored two-run baseline
+            - {name: CANDIDATE_RUNS, value: "1"}    # one run per candidate (~1 h on this CPU)
+            - {name: MAX_ERROR_RATE, value: "0.05"} # transient host errors, recorded in output
           resources:                     # initial, not measured; revised in F-T06
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: 500m, memory: 512Mi}

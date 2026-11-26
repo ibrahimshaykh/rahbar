@@ -166,7 +166,7 @@ def test_k8s_11_gate_configmap_matches_repo_yaml():
     cm = by_name("ConfigMap", "rahbar-gate-03")
     embedded = yaml.safe_load(cm["data"]["gate_thresholds_03.yaml"])
     expected = {"recall_at_5_max_drop_pp": 2.0, "min_faithfulness": 0.80,
-                "max_p95_latency_ms": 100000, "abstention_correctness_min_vs_baseline": 0.0}
+                "max_p95_latency_ms": 180000, "abstention_correctness_min_vs_baseline": 0.0}
     assert embedded == expected
     repo = ROOT / "config" / "gate_thresholds_03.yaml"
     assert repo.exists(), "config/gate_thresholds_03.yaml missing (Builder-2 artefact)"

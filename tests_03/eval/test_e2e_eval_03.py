@@ -226,3 +226,31 @@ def test_http_ask_gives_up_after_the_retry_budget():  # T-E2E-RETRY-2
                     connect_retries=2, connect_retry_wait=0)
     out = ask("q")
     assert out["response"] is None and "ConnectError" in out["error"] and out["connect_retries"] == 2
+
+
+def test_http_ask_retries_5xx_and_connect_timeout():  # T-E2E-RETRY-3
+    seq = [httpx.Response(500, text="boom"), None,
+           httpx.Response(200, json=resp(True), headers={"X-Cache": "miss"})]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        item = seq.pop(0)
+        if item is None:
+            raise httpx.ConnectTimeout("timed out")
+        return item
+
+    out = HttpAsk03("http://api", transport=httpx.MockTransport(handler), retry_delay=0,
+                    connect_retries=5, connect_retry_wait=0)("q")
+    assert out["error"] is None and out["response"] is not None
+
+
+def test_http_ask_retries_a_read_timeout_only_once():  # T-E2E-RETRY-4
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        raise httpx.ReadTimeout("timed out")
+
+    out = HttpAsk03("http://api", transport=httpx.MockTransport(handler), retry_delay=0,
+                    connect_retries=8, connect_retry_wait=0)("q")
+    assert out["response"] is None and "ReadTimeout" in out["error"]
+    assert calls["n"] <= 4      # at most one extra attempt (A02's own retry may double each)

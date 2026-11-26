@@ -12,5 +12,5 @@ data:
   gate_thresholds_03.yaml: |
     recall_at_5_max_drop_pp: 2.0
     min_faithfulness: 0.80
-    max_p95_latency_ms: 100000
+    max_p95_latency_ms: 180000
     abstention_correctness_min_vs_baseline: 0.0

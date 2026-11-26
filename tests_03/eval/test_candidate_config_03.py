@@ -6,12 +6,13 @@ from scripts.make_candidate_config_03 import parse_env, render
 
 def test_fail_preset_values():
     env = parse_env(open("config/candidate_fail_03.env", encoding="utf-8").read())
-    assert env == {"CHUNK_SIZE": "60", "CHUNK_OVERLAP": "10", "TOP_K": "5"}
+    assert env == {"CHROMA_COLLECTION": "rahbar_ragops_03", "TOP_K": "1"}
 
 
 def test_pass_preset_values():
     env = parse_env(open("config/candidate_pass_03.env", encoding="utf-8").read())
-    assert env == {"RERANK_ENABLED": "true", "RERANK_POOL": "8", "TOP_K": "5"}
+    assert env == {"CHROMA_COLLECTION": "rahbar_ragops_03", "RERANK_ENABLED": "true",
+                   "RERANK_POOL": "8", "TOP_K": "5"}
 
 
 def test_rendered_configmap_is_valid_yaml_in_namespace_rahbar():

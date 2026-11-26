@@ -48,7 +48,8 @@ class PassageSourceError(RuntimeError):
 class HttpAsk03:
     """POST /api/ask through A02's retrying `ask`, timing the call client-side."""
 
-    TRANSIENT = (httpx.ConnectError, httpx.RemoteProtocolError, httpx.ReadError)
+    TRANSIENT = (httpx.ConnectError, httpx.ConnectTimeout, httpx.RemoteProtocolError,
+                 httpx.ReadError)
 
     def __init__(self, api: str, bypass_cache: bool = True, timeout: float = 180.0,
                  retry_delay: float = 2.0, transport: httpx.BaseTransport | None = None,
@@ -66,6 +67,17 @@ class HttpAsk03:
     def _capture(self, response: httpx.Response) -> None:
         self._last = dict(response.headers)
 
+    def _retry_budget(self, exc: httpx.HTTPError) -> int:
+        """Connection drops and 5xx (after A02's own retries) get the full budget; a slow
+        generation that hit the read timeout gets one more try; client errors get none."""
+        if isinstance(exc, self.TRANSIENT):
+            return self.connect_retries
+        if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code >= 500:
+            return self.connect_retries
+        if isinstance(exc, httpx.ReadTimeout):
+            return min(1, self.connect_retries)
+        return 0
+
     def __call__(self, question: str) -> dict:
         from eval.run_eval import ask  # A02 retry rule, imported not copied
 
@@ -75,13 +87,11 @@ class HttpAsk03:
             try:
                 resp = ask(self._client, self.api, question, retry_delay=self.retry_delay)
                 err = None
-            except self.TRANSIENT as exc:
-                if retries < self.connect_retries:   # API/node dropped the connection: wait, retry
+            except httpx.HTTPError as exc:
+                if retries < self._retry_budget(exc):   # transient: wait, then retry
                     retries += 1
                     time.sleep(self.connect_retry_wait)
                     continue
-                resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
-            except httpx.HTTPError as exc:
                 resp, err = None, f"{type(exc).__name__}: {exc}"[:200]
             break
         latency = (perf_counter() - t0) * 1000.0

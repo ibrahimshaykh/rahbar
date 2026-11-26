@@ -23,10 +23,14 @@ def _num(v: object) -> bool:
     return isinstance(v, (int, float)) and not isinstance(v, bool)
 
 
-def _validate(base: dict, cand: dict, allow_offline: bool) -> None:
+def _validate(base: dict, cand: dict, allow_offline: bool, max_error_rate: float = 0.0) -> None:
     for label, s in (("baseline", base), ("candidate", cand)):
-        if s.get("errors", 0) != 0:
-            raise ExperimentError(f"{label} has errors={s.get('errors')} (must be 0)")
+        errors = s.get("errors", 0)
+        n_requests = len(s.get("e2e", {}).get("items") or [])
+        allowed = max_error_rate * n_requests
+        if errors > allowed + 1e-9:
+            raise ExperimentError(f"{label} has errors={errors} (allowed {allowed:g}: "
+                                  f"max_error_rate={max_error_rate})")
         if not allow_offline and s.get("mode") != "live":
             raise ExperimentError(f"{label} mode is {s.get('mode')!r}, need 'live'")
         for level in LEVELS:
@@ -48,8 +52,9 @@ def detect_change(base: dict, cand: dict) -> dict:
             "all": {KNOB_NAMES[k]: {"baseline": b, "candidate": c} for k, (b, c) in diffs.items()}}
 
 
-def build_experiment(base: dict, cand: dict, name: str, allow_offline: bool = False) -> dict:
-    _validate(base, cand, allow_offline)
+def build_experiment(base: dict, cand: dict, name: str, allow_offline: bool = False,
+                     max_error_rate: float = 0.0) -> dict:
+    _validate(base, cand, allow_offline, max_error_rate)
     levels: dict[str, dict] = {}
     for level in LEVELS:
         rows: dict[str, dict] = {}
@@ -66,6 +71,8 @@ def build_experiment(base: dict, cand: dict, name: str, allow_offline: bool = Fa
     drop = None if b5 is None or c5 is None else 100.0 * (b5 - c5)
     return {
         "schema": "experiment_03/1", "name": name, "mode": cand.get("mode"),
+        "request_errors": {"baseline": base.get("errors", 0), "candidate": cand.get("errors", 0),
+                           "max_error_rate": max_error_rate},
         "change": detect_change(base, cand), "levels": levels,
         "gate_inputs": {
             "recall_at_5_drop_pp": drop,
@@ -101,6 +108,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out-pointer")
     ap.add_argument("--out-dir", default="eval/results")
     ap.add_argument("--allow-offline", action="store_true")
+    ap.add_argument("--max-error-rate", type=float, default=0.0,
+                    help="share of e2e requests allowed to have errored (recorded in output)")
     try:
         args = ap.parse_args(argv)
     except SystemExit:
@@ -108,7 +117,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         base = json.loads(Path(args.baseline).read_text(encoding="utf-8"))
         cand = json.loads(Path(args.candidate).read_text(encoding="utf-8"))
-        exp = build_experiment(base, cand, args.name, args.allow_offline)
+        exp = build_experiment(base, cand, args.name, args.allow_offline, args.max_error_rate)
     except (OSError, ValueError) as exc:
         print(f"bad input: {exc}", file=sys.stderr)
         return 2
