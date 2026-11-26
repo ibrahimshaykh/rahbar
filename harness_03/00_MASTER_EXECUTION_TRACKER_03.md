@@ -60,7 +60,7 @@ Order is strict top-to-bottom except where `Dep:` says otherwise.
 - [x] **B-T06** `component_eval_03.py` incl. noise test + tests `T-CMP-01..06`.
 - [x] **B-T07** `e2e_eval_03.py` incl. judge agreement + tests `T-E2E-01..06`.
 - [x] **B-T08** `run_suite_03.py` (seed, 2 runs, diff + explanation) + tests `T-SUITE-01..04`.
-- [x] **B-T09** Offline run against `make dev` stubs for plumbing only (label output `stub`, never cited as a result).
+- [ ] **B-T09** (not run separately; superseded by the live cluster runs) Offline run against `make dev` stubs for plumbing only (label output `stub`, never cited as a result).
 - [x] **B-T10** `[H]` Real run against cluster `rahbar_ragops_03`: two runs. Evidence `B_suite_03.txt`; results JSON in `eval/results/`.
 
 ## Part C — Experiment & gate (Spec: 08)
@@ -121,7 +121,7 @@ Order is strict top-to-bottom except where `Dep:` says otherwise.
 
 ## Tier suites & final audit
 
-- [x] **T1/T2** offline suites green (313) · [x] **T3** cluster evidence (Run Log) · [~] **T4** audit passes except the human-only items; demo rehearsal is human.
+- [~] **T1/T2** offline test suites green (313), but the tier 17-19 checklists were not walked item by item · · [x] **T3** cluster evidence (Run Log) · [~] **T4** audit passes except the human-only items; demo rehearsal is human.
 
 ---
 
