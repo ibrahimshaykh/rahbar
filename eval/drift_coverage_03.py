@@ -230,8 +230,11 @@ def component_evaluator(ask) -> Callable[[list[dict]], dict]:
         un = [i for i in subset if i["category"] == "unanswerable"]
         if un:
             resp = [ask(i["question"])["response"] for i in un]
-            m["abstention_correctness"] = mean([0.0 if r["answered_from_context"] else 1.0
-                                                for r in resp if r])
+            # a retrieval-only response has no answer: report no abstention figure at all
+            judged = [r for r in resp if r and "answered_from_context" in r]
+            if judged:
+                m["abstention_correctness"] = mean([0.0 if r["answered_from_context"] else 1.0
+                                                    for r in judged])
         return m
     return ev
 
@@ -278,7 +281,7 @@ def write_reports(rep: dict, out_dir: Path, ts: str) -> list[Path]:
 # ---------------------------------------------------------------- CLI
 
 def run_data_drift(args: argparse.Namespace, golden: list[dict], live: list[dict]) -> int:
-    from eval.e2e_eval_03 import HttpAsk03
+    from eval.e2e_eval_03 import HttpRetrieve03
 
     try:
         if args.mode == "offline":
@@ -289,7 +292,9 @@ def run_data_drift(args: argparse.Namespace, golden: list[dict], live: list[dict
         else:
             if not (args.before_api and args.after_api):
                 raise DriftInputError("--before-api and --after-api are required in live mode")
-            before, after = HttpAsk03(args.before_api), HttpAsk03(args.after_api)
+            # data drift compares retrieval only: no LLM answer per golden item
+            before = HttpRetrieve03(args.before_api)
+            after = HttpRetrieve03(args.after_api)
         res = data_drift(golden, component_evaluator(before), component_evaluator(after))
         shift = {"top1_mean_before": top1_mean(before, live), "top1_mean_after": top1_mean(after, live)}
     except (ConnectionError, OSError) as exc:

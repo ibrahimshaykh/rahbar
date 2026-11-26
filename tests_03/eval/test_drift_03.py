@@ -141,3 +141,25 @@ def test_data_drift_offline_twin_runs(tmp_path):
     assert rc == 0
     rep = json.loads(next(tmp_path.glob("drift_data_03_*.json")).read_text())
     assert rep["mode"] == "offline" and set(rep["buckets"]) == {"non_batch_b", "needs_batch_b"}
+
+
+def test_live_data_drift_scores_retrieval_only(monkeypatch, tmp_path):  # T-DRIFT-LIVE
+    """Data drift compares retrieval before/after a data change: it must not pay (or depend
+    on) an LLM answer per golden item."""
+    import eval.drift_coverage_03 as dc
+    import eval.e2e_eval_03 as e2e
+
+    used = []
+
+    class FakeRetrieve:
+        def __init__(self, api):
+            used.append(api)
+
+        def __call__(self, q):
+            return {"response": {"retrieved": []}, "latency_ms": 1.0, "error": None,
+                    "cache": None, "trace_id": None}
+
+    monkeypatch.setattr(e2e, "HttpRetrieve03", FakeRetrieve)
+    rc = dc.main(["--data-drift", "--mode", "live", "--before-api", "http://a",
+                  "--after-api", "http://b", "--out-dir", str(tmp_path)])
+    assert rc == 0 and used == ["http://a", "http://b"]

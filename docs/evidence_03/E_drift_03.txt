@@ -1,0 +1,15 @@
+# E-T05 real-embedding drift/coverage, 2026-11-26T08:30:12Z, git ac2772f
+## BEFORE (pre-expansion golden)
+coverage before: 0.6250 (sim threshold 0.7, embed real)
+  uncovered topic 'library fine late' size 5 queries ['LQ-030', 'LQ-032', 'LQ-033', 'LQ-034', 'LQ-037']
+  uncovered topic 'assignments cgpa chatgpt' size 3 queries ['LQ-011', 'LQ-019', 'LQ-028']
+  uncovered topic 'ask based cost' size 3 queries ['LQ-018', 'LQ-029', 'LQ-039']
+  uncovered topic 'bus fee route' size 2 queries ['LQ-035', 'LQ-036']
+  uncovered topic 'scholarship merit gpa' size 2 queries ['LQ-038', 'LQ-040']
+GAP: coverage 0.62 < 0.85
+exit=1
+## AFTER (merged golden)
+coverage before: 0.8250 (sim threshold 0.7, embed real)
+  uncovered topic 'scholarship ask assignments' size 7 queries ['LQ-011', 'LQ-018', 'LQ-019', 'LQ-028', 'LQ-034', 'LQ-035', 'LQ-040']
+GAP: coverage 0.82 < 0.85
+exit=1
