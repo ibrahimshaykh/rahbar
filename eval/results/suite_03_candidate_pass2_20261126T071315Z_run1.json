@@ -1,0 +1,699 @@
+{
+  "schema": "suite_03/1",
+  "tag": "candidate_pass2",
+  "run": 1,
+  "mode": "live",
+  "seed": 1337,
+  "git_sha": "unknown",
+  "api": "http://api-candidate-03:8000",
+  "collection": "rahbar_ragops_03",
+  "embed_model": "nomic-embed-text",
+  "golden_sha256": "958e9f927a4d7be267ce43a4f390fff12624d8b22c7a87c54580abaa501d79b5",
+  "config": {
+    "top_k": 5,
+    "chunk_size": 400,
+    "chunk_overlap": 50,
+    "rerank": true,
+    "prompt_template": "v1"
+  },
+  "module": {
+    "paraphrase_mean_cos": 0.7261228657173695,
+    "unrelated_mean_cos": 0.38135046334321226,
+    "separation_gap": 0.34477240237415724,
+    "n_paraphrase": 17,
+    "n_unrelated": 17,
+    "embed_ms_per_chunk_mean": 1110.3762556001311,
+    "n_timed_chunks": 50,
+    "determinism_max_abs_diff": 0.0,
+    "determinism_n_texts": 10
+  },
+  "component": {
+    "recall_at_3": 0.78125,
+    "recall_at_5": 0.78125,
+    "mrr": 0.7135416666666666,
+    "ndcg_at_5": 0.7310246643973242,
+    "n_items": 32,
+    "by_category": {
+      "answerable": {
+        "recall_at_3": 0.8076923076923077,
+        "recall_at_5": 0.8076923076923077,
+        "mrr": 0.7435897435897435,
+        "ndcg_at_5": 0.7600715195054968,
+        "n_items": 26
+      },
+      "hard": {
+        "recall_at_3": 0.6666666666666666,
+        "recall_at_5": 0.6666666666666666,
+        "mrr": 0.5833333333333334,
+        "ndcg_at_5": 0.6051549589285763,
+        "n_items": 6
+      }
+    },
+    "noise": {
+      "mode": "typos",
+      "recall_at_5_clean": 0.78125,
+      "recall_at_5_noisy": 0.78125,
+      "delta_recall_at_5": 0.0,
+      "delta_mrr": -0.02083333333333326,
+      "delta_ndcg_at_5": -0.015625,
+      "n_distractor_docs": 0,
+      "typo_rate": 0.08
+    },
+    "noise_distractors": null
+  },
+  "e2e": {
+    "faithfulness": 0.8888888888888888,
+    "faithfulness_judge": "llm",
+    "judge_agreement_pct": null,
+    "n_human_labelled": 0,
+    "judge_confusion": {
+      "TP": 0,
+      "TN": 0,
+      "FP": 0,
+      "FN": 0
+    },
+    "abstention_correctness": 0.8333333333333334,
+    "n_unanswerable": 6,
+    "false_abstention_rate": 0.19230769230769232,
+    "citation_validity": 1.0,
+    "n_citations": 28,
+    "answer_hit_rate": 0.5625,
+    "latency_p50_ms": 65113.3482530131,
+    "latency_p95_ms": 101390.51921200007,
+    "n_latency": 38,
+    "cache_hits_in_run": 0,
+    "items": [
+      {
+        "id": "G03-001",
+        "trace_id": "46341ab5a1ef4052bf2f33546dc26309",
+        "answered_from_context": false,
+        "latency_ms": 101079.63938500325,
+        "cache": "miss",
+        "error": null,
+        "answer": "The service could not produce a reliable answer for this question. Nothing has been invented: please rephrase the question, or consult the Academic Office.",
+        "retrieved_ids": [
+          "grading-policy:2026:0006",
+          "prospectus-academic-rules:2026:0016",
+          "grading-policy:2026:0007",
+          "academic-rules-handbook:2026-11:0004",
+          "prospectus-academic-rules:2026:0015"
+        ]
+      },
+      {
+        "id": "G03-002",
+        "trace_id": "ebd3f0d62c434ae0ba5e7918bd0b6bbf",
+        "answered_from_context": true,
+        "latency_ms": 62343.342972992104,
+        "cache": "miss",
+        "error": null,
+        "answer": "If the Warning Count reaches three, a student's admission is closed.",
+        "retrieved_ids": [
+          "grading-policy:2026:0006",
+          "prospectus-academic-rules:2026:0011",
+          "prospectus-academic-rules:2026:0027",
+          "academic-rules-handbook:2026-11:0003",
+          "grading-policy:2026:0007"
+        ]
+      },
+      {
+        "id": "G03-003",
+        "trace_id": "1f35226fa88f402e966743e22c0008bc",
+        "answered_from_context": true,
+        "latency_ms": 73526.85561700491,
+        "cache": "miss",
+        "error": null,
+        "answer": "A student who is on warning cannot register in a subsequent semester without approval of the relevant Head of Department or any other senior faculty nominated by him, as stated in [2] source=grading-page.html | section=Warning/Probation | page=1.",
+        "retrieved_ids": [
+          "prospectus-academic-rules:2026:0013",
+          "grading-policy:2026:0006",
+          "prospectus-academic-rules:2026:0011",
+          "prospectus-academic-rules:2026:0014",
+          "student-handbook:2026-06:0140"
+        ]
+      },
+      {
+        "id": "G03-004",
+        "trace_id": "c3a04467a9034b968fd3f912cbdca51f",
+        "answered_from_context": false,
+        "latency_ms": 101277.18759399431,
+        "cache": "miss",
+        "error": null,
+        "answer": "The service could not produce a reliable answer for this question. Nothing has been invented: please rephrase the question, or consult the Academic Office.",
+        "retrieved_ids": [
+          "prospectus-academic-rules:2026:0018",
+          "prospectus-academic-rules:2026:0021",
+          "grading-policy:2026:0007",
+          "grading-policy:2026:0004",
+          "prospectus-academic-rules:2026:0025"
+        ]
+      },
+      {
+        "id": "G03-005",
+        "trace_id": "3c0ab174802549069f0968bf2d40c0f6",
+        "answered_from_context": true,
+        "latency_ms": 93065.29481100733,
+        "cache": "miss",
+        "error": null,
+        "answer": "An Incomplete grade must be converted into a regular grade before the end of the next semester, as stated in the University's policy.",
+        "retrieved_ids": [
+          "grading-policy:2026:0008",
+          "prospectus-academic-rules:2026:0001",
+          "prospectus-academic-rules:2026:0005",
+          "grading-policy:2026:0004",
+          "grading-policy:2026:0003"
+        ]
+      },
+      {
+        "id": "G03-006",
+        "trace_id": "a41f178937a849c6898afea603effadc",
+        "answered_from_context": true,
+        "latency_ms": 65332.17361199786,
+        "cache": "miss",
+        "error": null,
+        "answer": "The tuition fee is refunded in accordance with the guidelines of Higher Education Commission (HEC) at 80% within the first 15 days of commencement of classes.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0009",
+          "scholarship-rules:2026-09:0004",
+          "transport-policy:2026-09:0001",
+          "fee-structure:2026-27:0006",
+          "scholarship-rules:2026-09:0001"
+        ]
+      },
+      {
+        "id": "G03-007",
+        "trace_id": "edb628d885ab4adfbc45daded2186c32",
+        "answered_from_context": true,
+        "latency_ms": 58302.12360298901,
+        "cache": "miss",
+        "error": null,
+        "answer": "The security deposit is refundable, and its amount is Rs 15,000. This amount is payable at the time of admission, and it is returned within 30 days of check-out, provided the room inventory is complete and no damage is recorded.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0005",
+          "hostel-rules:2026-09:0001",
+          "scholarship-rules:2026-09:0005",
+          "hostel-rules:2026-09:0005",
+          "fee-structure:2026-27:0009"
+        ]
+      },
+      {
+        "id": "G03-008",
+        "trace_id": "82a7cbc540ac4b3ebe83c27a5fe52b01",
+        "answered_from_context": true,
+        "latency_ms": 57767.98183299252,
+        "cache": "miss",
+        "error": null,
+        "answer": "The tuition fee per credit hour for the 2026-27 academic year is Rs. 12,000, with no exceptions mentioned.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0006",
+          "scholarship-rules:2026-09:0001",
+          "academic-rules-handbook:2026-06:0081",
+          "undergraduate-academic-rules:2023-08:0004",
+          "academic-rules-handbook:2026-06:0089"
+        ]
+      },
+      {
+        "id": "G03-009",
+        "trace_id": "bda7789b38094e67ae9194a547a590e0",
+        "answered_from_context": true,
+        "latency_ms": 54976.15377200418,
+        "cache": "miss",
+        "error": null,
+        "answer": "The admission fee is not refundable, but a refundable security deposit of Rs 20,000 is payable at the time of admission.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0005",
+          "fee-structure:2026-27:0004",
+          "scholarship-rules:2026-09:0005",
+          "fee-structure:2026-27:0009",
+          "fee-structure:2026-27:0003"
+        ]
+      },
+      {
+        "id": "G03-010",
+        "trace_id": "a50f2acb75bb42bc8c70fcabd110fc53",
+        "answered_from_context": false,
+        "latency_ms": 101859.98764399847,
+        "cache": "miss",
+        "error": null,
+        "answer": "The service could not produce a reliable answer for this question. Nothing has been invented: please rephrase the question, or consult the Academic Office.",
+        "retrieved_ids": [
+          "student-handbook:2026-06:0227",
+          "student-handbook:2026-06:0234",
+          "student-handbook:2026-06:0246",
+          "student-handbook:2026-06:0256",
+          "student-handbook:2026-06:0268"
+        ]
+      },
+      {
+        "id": "G03-011",
+        "trace_id": "092fa36a846d4d319c26768a30f5c4da",
+        "answered_from_context": true,
+        "latency_ms": 72550.47206699965,
+        "cache": "miss",
+        "error": null,
+        "answer": "Students are not allowed to wear shorts or sleeveless shirts on campus.",
+        "retrieved_ids": [
+          "student-handbook:2026-06:0045",
+          "student-handbook:2026-06:0048",
+          "transport-policy:2026-09:0003",
+          "student-handbook:2026-06:0025",
+          "student-handbook:2026-06:0035"
+        ]
+      },
+      {
+        "id": "G03-012",
+        "trace_id": "13d68930ce6a47a48d7910bf7639abca",
+        "answered_from_context": true,
+        "latency_ms": 71464.72261400777,
+        "cache": "miss",
+        "error": null,
+        "answer": "Plagiarism includes presenting work of others as one's own work without proper acknowledgement or citation.",
+        "retrieved_ids": [
+          "student-handbook:2026-06:0048",
+          "student-handbook:2026-06:0045",
+          "student-handbook:2026-06:0152",
+          "student-handbook:2026-06:0237",
+          "student-handbook:2026-06:0200"
+        ]
+      },
+      {
+        "id": "G03-013",
+        "trace_id": "dff2629605ac45c3995441f19ba8639a",
+        "answered_from_context": false,
+        "latency_ms": 79227.31578799721,
+        "cache": "miss",
+        "error": null,
+        "answer": "The total number of Bachelor's degrees conferred is not explicitly stated in the annual report. However, the report does list the number of degrees conferred for each program, and the number of programs listed is 11. Therefore, it can be inferred that 11 Bachelor's degrees were conferred, but this is not explicitly stated in the report.",
+        "retrieved_ids": [
+          "academic-rules-handbook:2026-06:0198",
+          "academic-rules-handbook:2026-11:0002",
+          "annual-report-2023-24:2023-24:0018",
+          "undergraduate-academic-rules:2023-08:0009",
+          "annual-report-2023-24:2023-24:0021"
+        ]
+      },
+      {
+        "id": "G03-014",
+        "trace_id": "d19fffafdce54fc692c3e9b5eab61326",
+        "answered_from_context": true,
+        "latency_ms": 87657.9486480041,
+        "cache": "miss",
+        "error": null,
+        "answer": "A student must have an SGPA of 3.50 or higher to be eligible for the Dean's List of Honors.",
+        "retrieved_ids": [
+          "prospectus-academic-rules:2026:0011",
+          "grading-policy:2026:0004",
+          "prospectus-academic-rules:2026:0010",
+          "grading-policy:2026:0000",
+          "fee-structure:2026-27:0000"
+        ]
+      },
+      {
+        "id": "G03-015",
+        "trace_id": "fb5aa049262a41e6b7176527f7ab4402",
+        "answered_from_context": true,
+        "latency_ms": 71208.52156099863,
+        "cache": "miss",
+        "error": null,
+        "answer": "The minimum duration of a Bachelor's degree is four academic years, which is 8 regular semesters, and the maximum time limit is 6 years. It is extendable for one more year with the approval of the statutory bodies of the university.",
+        "retrieved_ids": [
+          "academic-rules-handbook:2026-11:0002",
+          "academic-rules-handbook:2026-11:0003",
+          "grading-policy:2026:0006",
+          "academic-rules-handbook:2026-11:0004",
+          "annual-report-2023-24:2023-24:0018"
+        ]
+      },
+      {
+        "id": "G03-016",
+        "trace_id": "52a05f152ca648fe859e961e1b5f50c6",
+        "answered_from_context": true,
+        "latency_ms": 56493.354320002254,
+        "cache": "miss",
+        "error": null,
+        "answer": "A zero in the course is the penalty for a first proven offence of unfair means in an examination.",
+        "retrieved_ids": [
+          "exam-conduct:2026-09:0003",
+          "prospectus-academic-rules:2026:0034",
+          "academic-rules-handbook:2026-06:0016",
+          "academic-rules-handbook:2026-06:0025",
+          "undergraduate-academic-rules:2023-08:0113"
+        ]
+      },
+      {
+        "id": "G03-017",
+        "trace_id": "a3ad67c877fb4c8d9f3e5b1d24e312e5",
+        "answered_from_context": true,
+        "latency_ms": 64243.6016510037,
+        "cache": "miss",
+        "error": null,
+        "answer": "A recount request costs Rs 1,000 per paper and must be made within 5 working days of the publication of provisional results. This timeframe is an exception to the general rule that a fee is non-refundable after the 10th working day of classes.",
+        "retrieved_ids": [
+          "exam-conduct:2026-09:0005",
+          "fee-structure:2026-27:0009",
+          "student-handbook:2026-06:0110",
+          "student-handbook:2026-06:0118",
+          "fee-structure:2026-27:0008"
+        ]
+      },
+      {
+        "id": "G03-018",
+        "trace_id": "c4e70ce17ac24bae89883a78e23acae3",
+        "answered_from_context": false,
+        "latency_ms": 75882.25133399828,
+        "cache": "miss",
+        "error": null,
+        "answer": "The evidence does not specify a grade-point figure for a formal caution, but it does state that a student with a CGPA less than the minimum required for their degree program will receive a warning.",
+        "retrieved_ids": [
+          "academic-rules-handbook:2026-11:0004",
+          "grading-policy:2026:0006",
+          "prospectus-academic-rules:2026:0015",
+          "prospectus-academic-rules:2026:0011",
+          "prospectus-academic-rules:2026:0016"
+        ]
+      },
+      {
+        "id": "G03-019",
+        "trace_id": "6f97c900f7304c0a98a7ec7f1ff212a2",
+        "answered_from_context": true,
+        "latency_ms": 72068.26385900786,
+        "cache": "miss",
+        "error": null,
+        "answer": "You will get back 100% of your teaching charges for the first 10 days of lectures.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0009",
+          "prospectus-academic-rules:2026:0019",
+          "prospectus-academic-rules:2026:0022",
+          "academic-rules-handbook:2026-11:0000",
+          "undergraduate-academic-rules:2023-08:0117"
+        ]
+      },
+      {
+        "id": "G03-020",
+        "trace_id": "0f46fe734c55405096905a88f2cd792e",
+        "answered_from_context": true,
+        "latency_ms": 70048.62277900975,
+        "cache": "miss",
+        "error": null,
+        "answer": "When a student's CGPA stays under the minimum, the Warning Count increases by one after each semester. If the CGPA equals or exceeds the required minimum, the Warning Count becomes zero.",
+        "retrieved_ids": [
+          "grading-policy:2026:0006",
+          "grading-policy:2026:0007",
+          "prospectus-academic-rules:2026:0011",
+          "prospectus-academic-rules:2026:0021",
+          "academic-rules-handbook:2026-11:0004"
+        ]
+      },
+      {
+        "id": "G03-021",
+        "trace_id": "5c82b80e008449668a5485384d69816f",
+        "answered_from_context": true,
+        "latency_ms": 95975.36164900521,
+        "cache": "miss",
+        "error": null,
+        "answer": "The student is assigned the grade F/A, which means they are ineligible to appear in the final examination of that course.",
+        "retrieved_ids": [
+          "academic-rules-handbook:2026-11:0001",
+          "prospectus-academic-rules:2026:0001",
+          "prospectus-academic-rules:2026:0005",
+          "academic-rules-handbook:2026-11:0005",
+          "grading-policy:2026:0007"
+        ]
+      },
+      {
+        "id": "G03-022",
+        "trace_id": "8f1d6c39bb58416691c249ff1345781b",
+        "answered_from_context": true,
+        "latency_ms": 56932.477651993395,
+        "cache": "miss",
+        "error": null,
+        "answer": "The Head of Department can condone up to 10% of total attendance for genuine reasons, such as illness.",
+        "retrieved_ids": [
+          "academic-rules-handbook:2026-11:0000",
+          "academic-rules-handbook:2026-11:0005",
+          "academic-rules-handbook:2026-11:0001",
+          "student-handbook:2026-06:0121",
+          "student-handbook:2026-06:0129"
+        ]
+      },
+      {
+        "id": "G03-023",
+        "trace_id": "dacc1d31f013411cb2db3e2c784579e7",
+        "answered_from_context": true,
+        "latency_ms": 80671.67110800801,
+        "cache": "miss",
+        "error": null,
+        "answer": "The Fall 2026 mid-term examinations will be held from 14 December to 24 December 2026, and each paper lasts 90 minutes.",
+        "retrieved_ids": [
+          "student-notice-injected:2026-09:0000",
+          "student-notice-injected:2026-09:0002",
+          "student-handbook:2026-06:0211",
+          "academic-rules-handbook:2026-06:0228",
+          "academic-rules-handbook:2026-06:0122"
+        ]
+      },
+      {
+        "id": "G03-024",
+        "trace_id": "e4a33f35942248c59009b72668563bdd",
+        "answered_from_context": false,
+        "latency_ms": 65113.3482530131,
+        "cache": "miss",
+        "error": null,
+        "answer": "The evidence does not mention the university lending laptops to students. The university's bus service is mentioned, but there is no information about laptops.",
+        "retrieved_ids": [
+          "transport-policy:2026-09:0000",
+          "student-handbook:2026-06:0056",
+          "student-handbook:2026-06:0059",
+          "scholarship-rules:2026-09:0002",
+          "scholarship-rules:2026-09:0000"
+        ]
+      },
+      {
+        "id": "G03-025",
+        "trace_id": "42901f19db9043f093268ab946659868",
+        "answered_from_context": false,
+        "latency_ms": 101390.51921200007,
+        "cache": "miss",
+        "error": null,
+        "answer": "The service could not produce a reliable answer for this question. Nothing has been invented: please rephrase the question, or consult the Academic Office.",
+        "retrieved_ids": [
+          "prospectus-academic-rules:2026:0012",
+          "prospectus-academic-rules:2026:0013",
+          "annual-report-2023-24:2023-24:0205",
+          "transport-policy:2026-09:0000",
+          "annual-report-2023-24:2023-24:0211"
+        ]
+      },
+      {
+        "id": "G03-026",
+        "trace_id": "7d0aa8932aff46ee97d7a94e4cf29224",
+        "answered_from_context": true,
+        "latency_ms": 59719.57184700295,
+        "cache": "miss",
+        "error": null,
+        "answer": "A student can take up to 10% of total attendance without losing attendance.",
+        "retrieved_ids": [
+          "scholarship-rules:2026-09:0003",
+          "academic-rules-handbook:2026-11:0005",
+          "academic-rules-handbook:2026-11:0000",
+          "exam-conduct:2026-09:0002",
+          "scholarship-rules:2026-09:0004"
+        ]
+      },
+      {
+        "id": "G03-027",
+        "trace_id": "e1da338f551f450ba6b829e4459c65e9",
+        "answered_from_context": false,
+        "latency_ms": 49699.03153501218,
+        "cache": "miss",
+        "error": null,
+        "answer": "No late-payment surcharge per day is specified in the evidence. However, the evidence states that after the 30th day of commencement of classes, no refund is given, implying that a late-payment surcharge may be applicable after this date.",
+        "retrieved_ids": [
+          "fee-structure:2026-27:0009",
+          "fee-structure:2026-27:0006",
+          "scholarship-rules:2026-09:0005",
+          "scholarship-rules:2026-09:0001",
+          "scholarship-rules:2026-09:0004"
+        ]
+      },
+      {
+        "id": "G03-028",
+        "trace_id": "320a7dec84fd410c84d4931e743d3bb0",
+        "answered_from_context": false,
+        "latency_ms": 67385.2602540137,
+        "cache": "miss",
+        "error": null,
+        "answer": "There is no cash prize mentioned in the evidence. The Dean's List is a recognition of academic performance, but the evidence does not specify any cash prize associated with it.",
+        "retrieved_ids": [
+          "prospectus-academic-rules:2026:0011",
+          "fee-structure:2026-27:0000",
+          "scholarship-rules:2026-09:0000",
+          "grading-policy:2026:0000",
+          "annual-report-2023-24:2023-24:0195"
+        ]
+      },
+      {
+        "id": "G03-029",
+        "trace_id": "c94c4956542b447a8a997c1a3aca1081",
+        "answered_from_context": false,
+        "latency_ms": 49287.810509005794,
+        "cache": "miss",
+        "error": null,
+        "answer": "The evidence does not mention the weekend opening hours of the campus medical clinic.",
+        "retrieved_ids": [
+          "annual-report-2023-24:2023-24:0219",
+          "exam-conduct:2026-09:0004",
+          "library-policy:2026-09:0002",
+          "transport-policy:2026-09:0002",
+          "annual-report-2023-24:2023-24:0218"
+        ]
+      },
+      {
+        "id": "G03-101",
+        "trace_id": "d289e17fc87d4d2090cdfb68b9c480ae",
+        "answered_from_context": true,
+        "latency_ms": 58442.32109999575,
+        "cache": "miss",
+        "error": null,
+        "answer": "To get a hostel room, you need to file a request after the first four weeks of a semester. First-year students from outside the city receive priority in the allocation.",
+        "retrieved_ids": [
+          "hostel-rules:2026-09:0000",
+          "hostel-rules:2026-09:0005",
+          "hostel-rules:2026-09:0001",
+          "hostel-rules:2026-09:0002",
+          "hostel-rules:2026-09:0004"
+        ]
+      },
+      {
+        "id": "G03-102",
+        "trace_id": "e7140c1dcd29415a9b3783e4cc3ffcc0",
+        "answered_from_context": true,
+        "latency_ms": 54674.482424990856,
+        "cache": "miss",
+        "error": null,
+        "answer": "The hostel curfew on weekdays is 22:30, and a resident who returns after curfew without permission pays a fine of Rs 500.",
+        "retrieved_ids": [
+          "hostel-rules:2026-09:0002",
+          "hostel-rules:2026-09:0004",
+          "hostel-rules:2026-09:0001",
+          "hostel-rules:2026-09:0000",
+          "hostel-rules:2026-09:0005"
+        ]
+      },
+      {
+        "id": "G03-103",
+        "trace_id": "ecd3ede6e1884d659a86572735073f58",
+        "answered_from_context": false,
+        "latency_ms": 43705.97289899888,
+        "cache": "miss",
+        "error": null,
+        "answer": "The document corpus does not cover this question. RAHBAR answers only from the indexed university documents, and none of them contain this information, so no answer is given rather than a guess.",
+        "retrieved_ids": [
+          "hostel-rules:2026-09:0001",
+          "hostel-rules:2026-09:0005",
+          "fee-structure:2026-27:0005",
+          "hostel-rules:2026-09:0002",
+          "library-policy:2026-09:0001"
+        ]
+      },
+      {
+        "id": "G03-104",
+        "trace_id": "2c6a5b2cdb734dd88ab67edf778afd24",
+        "answered_from_context": true,
+        "latency_ms": 62954.03315599833,
+        "cache": "miss",
+        "error": null,
+        "answer": "An undergraduate student can borrow at most 5 books for 14 days.",
+        "retrieved_ids": [
+          "library-policy:2026-09:0000",
+          "student-handbook:2026-06:0152",
+          "student-handbook:2026-06:0138",
+          "student-handbook:2026-06:0147",
+          "library-policy:2026-09:0001"
+        ]
+      },
+      {
+        "id": "G03-105",
+        "trace_id": "5c087835a14945d9a7c3826a520cf2c5",
+        "answered_from_context": true,
+        "latency_ms": 68810.55603599816,
+        "cache": "miss",
+        "error": null,
+        "answer": "The library charges Rs 10 per day per book for an overdue book.",
+        "retrieved_ids": [
+          "library-policy:2026-09:0001",
+          "student-handbook:2026-06:0156",
+          "student-handbook:2026-06:0152",
+          "student-handbook:2026-06:0138",
+          "student-handbook:2026-06:0147"
+        ]
+      },
+      {
+        "id": "G03-106",
+        "trace_id": "c44e71369ced4dcf93b78143bd5a6fd0",
+        "answered_from_context": true,
+        "latency_ms": 62109.045952005545,
+        "cache": "miss",
+        "error": null,
+        "answer": "The semester bus fee for routes longer than 15 kilometres is Rs 24,000. This fee is non-refundable after the first 3 weeks of the semester.",
+        "retrieved_ids": [
+          "transport-policy:2026-09:0001",
+          "transport-policy:2026-09:0000",
+          "fee-structure:2026-27:0006",
+          "transport-policy:2026-09:0002",
+          "fee-structure:2026-27:0008"
+        ]
+      },
+      {
+        "id": "G03-107",
+        "trace_id": "bec47a4389074b7589a465c738633f2b",
+        "answered_from_context": true,
+        "latency_ms": 49528.82438400411,
+        "cache": "miss",
+        "error": null,
+        "answer": "The morning bus leaves the first pick-up point at 06:45, as stated in section 3.3 of the transport policy.",
+        "retrieved_ids": [
+          "transport-policy:2026-09:0002",
+          "transport-policy:2026-09:0004",
+          "transport-policy:2026-09:0005",
+          "hostel-rules:2026-09:0000",
+          "transport-policy:2026-09:0000"
+        ]
+      },
+      {
+        "id": "G03-108",
+        "trace_id": "b3c5b59b0a394105a685124ac64cc833",
+        "answered_from_context": true,
+        "latency_ms": 49048.37467201287,
+        "cache": "miss",
+        "error": null,
+        "answer": "A semester GPA of 3.80 or higher earns a 50 percent tuition waiver under the merit scholarship.",
+        "retrieved_ids": [
+          "scholarship-rules:2026-09:0001",
+          "scholarship-rules:2026-09:0003",
+          "annual-report-2019-20:2019-20:0060",
+          "annual-report-2023-24:2023-24:0195",
+          "annual-report-2023-24:2023-24:0198"
+        ]
+      },
+      {
+        "id": "G03-109",
+        "trace_id": "5a288cb35adb4872ba6570c55cd8eeb3",
+        "answered_from_context": true,
+        "latency_ms": 62828.77637499769,
+        "cache": "miss",
+        "error": null,
+        "answer": "To apply for the need-based grant, applicants must submit the application form, the family income certificate, and the latest utility bills to the Financial Aid Office before the deadline of the 30th of June for the Fall semester.",
+        "retrieved_ids": [
+          "scholarship-rules:2026-09:0002",
+          "student-handbook:2026-06:0208",
+          "student-handbook:2026-06:0265",
+          "student-handbook:2026-06:0277",
+          "faculty-entrepreneurship-policy:2022-05:0015"
+        ]
+      }
+    ]
+  },
+  "errors": 0,
+  "started_at": "2026-11-26T07:13:15Z",
+  "finished_at": "2026-11-26T08:02:36Z"
+}
