@@ -9,5 +9,5 @@ data:
   CHROMA_COLLECTION: "rahbar_ragops_03"
   GUARDRAIL_MODE: "block"
   RERANK_ENABLED: "true"
-  RERANK_POOL: "8"
+  RERANK_POOL: "5"
   TOP_K: "5"

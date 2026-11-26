@@ -1,0 +1,70 @@
+# Part C/F: candidate_pass (rerank, pool 8) through the eval Job
+$ kubectl -n rahbar get job ragops-eval-03
+NAME             STATUS   COMPLETIONS   DURATION   AGE
+ragops-eval-03   Failed   0/1           54m        54m
+$ kubectl -n rahbar logs job/ragops-eval-03
+reusing stored baseline: /data/eval/results/suite_03_baseline_20261126T024641Z_run1.json
+# Suite summary (candidate_pass, mode live)
+
+| metric | run1 | abs delta |
+| --- | ---: | ---: |
+| component.by_category.answerable.mrr | 0.74359 | 0 |
+| component.by_category.answerable.n_items | 26 | 0 |
+| component.by_category.answerable.ndcg_at_5 | 0.760072 | 0 |
+| component.by_category.answerable.recall_at_3 | 0.807692 | 0 |
+| component.by_category.answerable.recall_at_5 | 0.807692 | 0 |
+| component.by_category.hard.mrr | 0.583333 | 0 |
+| component.by_category.hard.n_items | 6 | 0 |
+| component.by_category.hard.ndcg_at_5 | 0.605155 | 0 |
+| component.by_category.hard.recall_at_3 | 0.666667 | 0 |
+| component.by_category.hard.recall_at_5 | 0.666667 | 0 |
+| component.mrr | 0.713542 | 0 |
+| component.n_items | 32 | 0 |
+| component.ndcg_at_5 | 0.731025 | 0 |
+| component.noise.delta_mrr | -0.0208333 | 0 |
+| component.noise.delta_ndcg_at_5 | -0.015625 | 0 |
+| component.noise.delta_recall_at_5 | 0 | 0 |
+| component.noise.n_distractor_docs | 0 | 0 |
+| component.noise.recall_at_5_clean | 0.78125 | 0 |
+| component.noise.recall_at_5_noisy | 0.78125 | 0 |
+| component.noise.typo_rate | 0.08 | 0 |
+| component.recall_at_3 | 0.78125 | 0 |
+| component.recall_at_5 | 0.78125 | 0 |
+| e2e.abstention_correctness | 0.5 | 0 |
+| e2e.answer_hit_rate | 0.53125 | 0 |
+| e2e.cache_hits_in_run | 0 | 0 |
+| e2e.citation_validity | 1 | 0 |
+| e2e.faithfulness | 0.833333 | 0 |
+| e2e.false_abstention_rate | 0.384615 | 0 |
+| e2e.judge_confusion.FN | 0 | 0 |
+| e2e.judge_confusion.FP | 0 | 0 |
+| e2e.judge_confusion.TN | 0 | 0 |
+| e2e.judge_confusion.TP | 0 | 0 |
+| e2e.latency_p50_ms | 65609 | 0 |
+| e2e.latency_p95_ms | 102381 | 0 |
+| e2e.n_citations | 25 | 0 |
+| e2e.n_human_labelled | 0 | 0 |
+| e2e.n_latency | 38 | 0 |
+| e2e.n_unanswerable | 6 | 0 |
+| module.determinism_max_abs_diff | 0 | 0 |
+| module.determinism_n_texts | 10 | 0 |
+| module.embed_ms_per_chunk_mean | 1156.97 | 0 |
+| module.n_paraphrase | 17 | 0 |
+| module.n_timed_chunks | 50 | 0 |
+| module.n_unrelated | 17 | 0 |
+| module.paraphrase_mean_cos | 0.726123 | 0 |
+| module.separation_gap | 0.344772 | 0 |
+| module.unrelated_mean_cos | 0.38135 | 0 |
+
+## Differences and explanation
+
+All metrics identical between runs.
+- recall_*, mrr, ndcg: identical between runs; retrieval is deterministic given a fixed index and embeddings, so delta = 0 is expected.
+
+/data/eval/results/experiment_03_candidate_pass_20261126T070742Z.json
+GATE recall@5 drop 0.0pp <= 2.0pp .................. PASS
+GATE faithfulness 0.83 >= 0.80 ..................... PASS
+GATE p95 latency 102381ms <= 180000ms .............. PASS
+GATE abstention 0.50 >= 1.00 ....................... FAIL
+RELEASE GATE: FAIL (1 check(s) failed: abstention)
+release_gate_exit=1
