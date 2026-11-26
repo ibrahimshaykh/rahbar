@@ -1,11 +1,11 @@
 === BEGIN F-T12 ===
-Thu, Nov 26, 2026  9:09:23 AM
-90cdf0d
+Thu Nov 26 11:08:30 UTC 2026
+06a8381
 
 ### 1. Release decision: candidates blocked by the gate, live api unchanged
 eval/results/gate_03_candidate_fail_20261126T061321Z.json FAIL ['recall@5']
-eval/results/gate_03_candidate_pass_20261126T070744Z.json FAIL ['abstention']
 eval/results/gate_03_candidate_pass2_20261126T080239Z.json FAIL ['abstention']
+eval/results/gate_03_candidate_pass_20261126T070744Z.json FAIL ['abstention']
 $ kubectl -n rahbar get deploy api -o jsonpath={.spec.strategy}
 {"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}
 $ kubectl -n rahbar get deploy api -o jsonpath={.spec.template.spec.containers[0].env}
@@ -17,17 +17,17 @@ REVISION  CHANGE-CAUSE
 31        <none>
 33        bad release: CHROMA_COLLECTION=rahbar
 34        <none>
-36        bad release: CHROMA_COLLECTION=rahbar
-37        <none>
+42        bad release: CHROMA_COLLECTION=rahbar
+43        <none>
 
 
 ### 2. Good state (before)
 $ curl -X POST /api/ask  (What is the attendance requirement?)
-{"request_id":"8c3c1301ae4d41b48092d365131d20fa","answer":"Students are required to maintain full attendance in all scheduled classes, with a maximum of 10% absence condoned by the Head of Department for genuine reasons.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","pa
-trace_id=8c3c1301ae4d41b48092d365131d20fa
-$ python -m api.trace_tool_03 --kubectl --trace-id 8c3c1301ae4d41b48092d365131d20fa
-trace_id: 8c3c1301ae4d41b48092d365131d20fa
-timestamp: 2026-11-26T09:10:39.883Z
+{"request_id":"0231b7fdc3204cac9e47991e5339bfc6","answer":"The service could not produce a reliable answer for this question. Nothing has been invented: please rephrase the question, or consult the Academic Office.","citations":[],"answered_from_context":false,"confidence":"low","retrieved":[{"chunk_id":"academic-rules-handbook:
+trace_id=0231b7fdc3204cac9e47991e5339bfc6
+$ python -m api.trace_tool_03 --kubectl --trace-id 0231b7fdc3204cac9e47991e5339bfc6
+trace_id: 0231b7fdc3204cac9e47991e5339bfc6
+timestamp: 2026-11-26T11:11:17.585Z
 model: llama3.2:3b
 collection: rahbar_ragops_03@v6
 embedding: nomic-embed-text (nomic-embed-text@768)
@@ -47,17 +47,41 @@ Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have bee
   availableReplicas=3 updated=1
   availableReplicas=3 updated=1
   availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+  availableReplicas=4 updated=1
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
   availableReplicas=3 updated=2
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
   availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=4 updated=2
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
   availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
   availableReplicas=3 updated=3
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
 deployment "api" successfully rolled out
@@ -68,15 +92,15 @@ REVISION  CHANGE-CAUSE
 31        <none>
 33        bad release: CHROMA_COLLECTION=rahbar
 34        <none>
-37        <none>
-38        bad release: CHROMA_COLLECTION=rahbar
+43        <none>
+44        bad release: CHROMA_COLLECTION=rahbar
 
 $ curl -X POST /api/ask  (What is the attendance requirement?)
-{"request_id":"2a0a9b2ae04d4ec8bb199a078e2b86ca","answer":"The attendance requirement is 100% attendance in all required classes, with a maximum of 20% absence condoned by the HoD for genuine reasons.","citations":[{"source":"academic-rules-handbook-jun-2026.pdf","section":"1.21","page":10}],"answered_from_context":true,"confide
-trace_id=2a0a9b2ae04d4ec8bb199a078e2b86ca
-$ python -m api.trace_tool_03 --kubectl --trace-id 2a0a9b2ae04d4ec8bb199a078e2b86ca
-trace_id: 2a0a9b2ae04d4ec8bb199a078e2b86ca
-timestamp: 2026-11-26T09:13:07.229Z
+{"request_id":"e1637c8a341c4912a8becdae69d9acd3","answer":"The university requires 100% attendance in all scheduled classes, with a maximum of 20% absence condoned for genuine reasons.","citations":[{"source":"academic-rules-handbook-jun-2026.pdf","section":"1.21","page":10}],"answered_from_context":true,"confidence":"high","ret
+trace_id=e1637c8a341c4912a8becdae69d9acd3
+$ python -m api.trace_tool_03 --kubectl --trace-id e1637c8a341c4912a8becdae69d9acd3
+trace_id: e1637c8a341c4912a8becdae69d9acd3
+timestamp: 2026-11-26T11:19:56.554Z
 model: llama3.2:3b
 collection: rahbar@unknown
 embedding: nomic-embed-text (nomic-embed-text@768)
@@ -92,7 +116,13 @@ What is the attendance requirement?
 $ kubectl -n rahbar rollout undo deploy/api
 Warning: resource deployments/api was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
 deployment.apps/api rolled back
+Waiting for deployment spec update to be observed...
+Waiting for deployment "api" rollout to finish: 0 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
   availableReplicas=3 updated=1
   availableReplicas=3 updated=1
   availableReplicas=3 updated=1
@@ -100,13 +130,20 @@ Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have bee
 Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
   availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
   availableReplicas=3 updated=2
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
   availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
   availableReplicas=3 updated=3
   availableReplicas=3 updated=3
 Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
@@ -118,19 +155,19 @@ REVISION  CHANGE-CAUSE
 31        <none>
 33        bad release: CHROMA_COLLECTION=rahbar
 34        <none>
-38        bad release: CHROMA_COLLECTION=rahbar
-39        <none>
+44        bad release: CHROMA_COLLECTION=rahbar
+45        <none>
 
 $ kubectl -n rahbar get deploy api -o jsonpath={.spec.template.spec.containers[0].env}
 [{"name":"CHROMA_COLLECTION","value":"rahbar_ragops_03"},{"name":"RAGOPS_ROOT","value":"/data"},{"name":"GUARDRAIL_MODE","value":"block"},{"name":"RERANK_ENABLED","value":"false"},{"name":"ALLOW_CACHE_BYPASS_03","value":"true"}]
 
 ### 5. New trace after the undo
 $ curl -X POST /api/ask  (What is the attendance requirement?)
-{"request_id":"8fa63d2fb196409ca188777af32a0010","answer":"Students are required to maintain full attendance in all scheduled classes, with a maximum of 10% absence condoned by the Head of Department for genuine reasons.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","pa
-trace_id=8fa63d2fb196409ca188777af32a0010
-$ python -m api.trace_tool_03 --kubectl --trace-id 8fa63d2fb196409ca188777af32a0010
-trace_id: 8fa63d2fb196409ca188777af32a0010
-timestamp: 2026-11-26T09:15:36.379Z
+{"request_id":"09e5cb790221408e9f8794bfe3c1a0bb","answer":"Students are required to maintain full attendance in all scheduled classes, with an exception for up to 10% of total attendance for genuine reasons such as illness.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements",
+trace_id=09e5cb790221408e9f8794bfe3c1a0bb
+$ python -m api.trace_tool_03 --kubectl --trace-id 09e5cb790221408e9f8794bfe3c1a0bb
+trace_id: 09e5cb790221408e9f8794bfe3c1a0bb
+timestamp: 2026-11-26T11:25:18.193Z
 model: llama3.2:3b
 collection: rahbar_ragops_03@v6
 embedding: nomic-embed-text (nomic-embed-text@768)
@@ -143,7 +180,7 @@ What is the attendance requirement?
 == RETRIEVED CONTEXT ==
 $ kubectl -n rahbar get pods -l app=api
 NAME                   READY   STATUS    RESTARTS   AGE
-api-76df6f8749-hkjxk   1/1     Running   0          2m16s
-api-76df6f8749-jp524   1/1     Running   0          2m30s
-api-76df6f8749-jqj7p   1/1     Running   0          2m2s
+api-76df6f8749-hnkfn   1/1     Running   0          3m50s
+api-76df6f8749-j6snn   1/1     Running   0          5m3s
+api-76df6f8749-xqttm   1/1     Running   0          4m24s
 === END F-T12 ===

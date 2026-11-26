@@ -226,6 +226,7 @@ Manifests (all namespace `rahbar`, ClusterIP only): `k8s/pvc_03.yaml`, `k8s/serv
 * **PVC:** 565 trace lines and 42 result files before and after deleting all three API pods.
 * **Jobs:** the ingest Job and a manual run of CronJob `ragops-ingest-cron-03` complete; unchanged corpus embeds 0
   chunks. The eval Job's exit status is the gate's (Failed on a blocked candidate).
+* **Single writer:** an ingest started while another was running exited 75 (`T3_cluster_checks_03.txt`).
 * **Gate flip** by ConfigMap only, same image id (Part C).
 
 <!-- src: docs/evidence_03/F-T12_canary_03.txt -->
@@ -241,7 +242,8 @@ Controlled release (`maxUnavailable: 0`, 3 replicas available throughout):
 revision 33 and the undo created revision 34.
 
 Operational lessons from running it: Chroma's 1 s liveness probe killed it during ingest (relaxed by patch);
-multi-threaded Tesseract under a CPU limit ran for more than a day (limited to one thread); API probes restarted
+multi-threaded Tesseract under a CPU limit ran for more than a day (limited to one thread); metrics-server
+crash-looped on 1 s probes (relaxed); a Windows clone needed CRLF handling and a corpus check in the image; API probes restarted
 pods while the single node was stalled (relaxed); an orphaned host process starved the cluster.
 
 ## 9. Short answers (G.4)
@@ -295,7 +297,8 @@ Chroma by the A02 policy, so "read only" is enforced by its code, not by the net
 
 AI disclosure: Claude Code (Anthropic) drafted the harness, code, tests, golden questions and report text, and ran the
 cluster commands that produced the result files, under our direction. Numbers in this report come from files produced by
-those runs. Our own review, hand-written golden questions, faithfulness labels and screenshots: PENDING-HUMAN(G-T05).
+those runs. The appendix captures were also taken by Claude Code, with `scripts/evidence_03/capture_screens_03.ps1`.
+Our own review, hand-written golden questions and faithfulness labels: PENDING-HUMAN(G-T05).
 
 Limitations: queries for Part E are simulated; models run on a laptop CPU; the evaluation set is small and not yet
 human-reviewed; the live API's semantic cache is not keyed by retrieval settings, so a candidate sharing Redis could
@@ -303,22 +306,50 @@ serve baseline answers outside the evaluation's cache bypass.
 
 ## Appendix (does not count toward the 8 pages)
 
-Each screenshot is uncropped and shows the `=== BEGIN SS-X ===` and `=== END SS-X ===` banners.
+Window captures of each script run live on our minikube cluster, from the typed command to the `=== END SS-X ===` banner. Long outputs continue over several captures (consecutive screenfuls overlap by two lines).
 
-![SS-A](docs/evidence_03/SS-A_data_lifecycle_03.png)
-**A** - `bash scripts/evidence_03/SS-A_data_lifecycle_03.sh`: Batch B verification report, second unchanged ingest (0 chunks), delete and orphan report, rollback.
+**A** - `bash scripts/evidence_03/SS-A_data_lifecycle_03.sh`: Batch B verification report from the first Batch B ingest, and a second unchanged ingest (0 chunks). Delete and rollback: `docs/evidence_03/A2_cluster_03.txt`.
 
-![SS-B](docs/evidence_03/SS-B_suite_03.png)
-**B** - `bash scripts/evidence_03/SS-B_suite_03.sh`: the three-level evaluation summary with both runs and the results on the PVC.
+![SS-A 1](docs/evidence_03/SS-A_data_lifecycle_03.png)
 
-![SS-C](docs/evidence_03/SS-C_gate_03.png)
-**C** - `bash scripts/evidence_03/SS-C_gate_03.sh`: gate FAIL for the failing candidate and PASS for the passing one.
+![SS-A 2](docs/evidence_03/SS-A_data_lifecycle_03_p2.png)
 
-![SS-D](docs/evidence_03/SS-D_trace_03.png)
-**D** - `bash scripts/evidence_03/SS-D_trace_03.sh`: one full trace record and the trace tool rebuilding context and prompt.
+**B** - `bash scripts/evidence_03/SS-B_suite_03.sh`: Result files on the PVC and the three-level summary of both baseline runs.
 
-![SS-E](docs/evidence_03/SS-E_drift_03.png)
-**E** - `bash scripts/evidence_03/SS-E_drift_03.sh`: query coverage before and after expansion.
+![SS-B 1](docs/evidence_03/SS-B_suite_03.png)
 
-![SS-F](docs/evidence_03/SS-F_cluster_03.png)
-**F** - `bash scripts/evidence_03/SS-F_cluster_03.sh`: cluster objects, rollout history, `rollout undo` and the trace afterwards, `kubectl top pods`.
+![SS-B 2](docs/evidence_03/SS-B_suite_03_p2.png)
+
+**C** - `bash scripts/evidence_03/SS-C_gate_03.sh`: Gate FAIL for the failing candidate; FAIL, PASS, FAIL by ConfigMap only on one stored experiment; the last PASS is a synthetic unit-test fixture, not a result.
+
+![SS-C 1](docs/evidence_03/SS-C_gate_03.png)
+
+![SS-C 2](docs/evidence_03/SS-C_gate_03_p2.png)
+
+**D** - `bash scripts/evidence_03/SS-D_trace_03.sh`: One full trace record and the trace tool rebuilding context and prompt.
+
+![SS-D 1](docs/evidence_03/SS-D_trace_03.png)
+
+![SS-D 2](docs/evidence_03/SS-D_trace_03_p2.png)
+
+![SS-D 3](docs/evidence_03/SS-D_trace_03_p3.png)
+
+![SS-D 4](docs/evidence_03/SS-D_trace_03_p4.png)
+
+![SS-D 5](docs/evidence_03/SS-D_trace_03_p5.png)
+
+**E** - `bash scripts/evidence_03/SS-E_drift_03.sh`: Query coverage before and after adding golden questions (both below 85 %).
+
+![SS-E 1](docs/evidence_03/SS-E_drift_03.png)
+
+**F** - `bash scripts/evidence_03/SS-F_cluster_03.sh`: Cluster objects, Job log, gate result changing after a ConfigMap edit, bad release, `rollout undo`, traces afterwards. Its final `kubectl top` failed while metrics-server was crash-looping; the last capture (`SS-F_resources_03.sh`, after fixing that probe) shows usage, requests and limits.
+
+![SS-F 1](docs/evidence_03/SS-F_cluster_03.png)
+
+![SS-F 2](docs/evidence_03/SS-F_cluster_03_p2.png)
+
+![SS-F 3](docs/evidence_03/SS-F_cluster_03_p3.png)
+
+![SS-F 4](docs/evidence_03/SS-F_cluster_03_p4.png)
+
+![SS-F 5](docs/evidence_03/SS-F_resources_03.png)

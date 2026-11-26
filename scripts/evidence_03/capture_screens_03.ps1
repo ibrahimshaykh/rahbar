@@ -44,6 +44,7 @@ $top = 0
 while ($true) {
     $maxTop = [Math]::Max(0, $last - $h + 1)
     $y = [Math]::Min($top, $maxTop)
+    [void][Win03]::ShowWindow($hwnd, 9)   # restore if it was minimised
     $ui.WindowPosition = New-Object System.Management.Automation.Host.Coordinates(0, $y)
     Start-Sleep -Milliseconds 900
     $r = New-Object Win03+RECT

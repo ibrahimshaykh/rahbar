@@ -82,6 +82,9 @@ Jobs are immutable: to re-run one, `kubectl -n rahbar delete job <name> --ignore
 `patch_api_resources_03.yaml` and `patch_chroma_resources_03.yaml` (and the Job requests/limits) come from the
 `kubectl top` measurement in `docs/evidence_03/F-T07_kubectl_top_03.txt`. `patch_chroma_probe_03.yaml` relaxes
 the Chroma probes: with the 1 s default the kubelet killed Chroma during ingest.
+`patch_metrics_server_probe_03.yaml` does the same for the minikube metrics-server addon, which crash-looped here
+(apply with `kubectl -n kube-system patch deployment metrics-server --patch-file ...`); without it `kubectl top`
+and the HPA can go blind on a loaded machine.
 
 ## 3. Useful runtime commands
 

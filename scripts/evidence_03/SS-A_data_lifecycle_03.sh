@@ -22,7 +22,9 @@ echo "=== BEGIN SS-A ==="; date -u; git rev-parse --short HEAD; kubectl config c
 helper
 R=$($K exec ragops-helper-03 -- sh -c 'ls /data/eval/results/verification_report_03_20261125T200907Z.md')
 echo "# A1 verification report from the cluster run that first ingested Batch B"
-show $K exec ragops-helper-03 -- cat "$R"
+# the console font cannot draw the report's tick and cross marks, so they are spelled out
+echo; echo "\$ $K exec ragops-helper-03 -- cat $R | sed 's/✔/pass/g; s/✘/FAIL/g'"
+$K exec ragops-helper-03 -- cat "$R" | sed 's/✔/pass/g; s/✘/FAIL/g' || true
 echo "# A2 second, unchanged ingest (CronJob run by hand): expect embedded_chunks=0"
 echo "\$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1"
 $K logs job/ragops-ingest-manual-03 | tail -1 || cat docs/evidence_03/F-T05_ingest_phase3_03.txt | tail -1

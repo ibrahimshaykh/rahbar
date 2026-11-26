@@ -8,61 +8,61 @@ recall_at_5_max_drop_pp: 2.0
 min_faithfulness: 0.80
 max_p95_latency_ms: 180000
 abstention_correctness_min_vs_baseline: 0.0
-job.batch "ragops-eval-03" deleted from rahbar namespace
-job.batch/ragops-eval-03 created
+error: the path "/tmp/eval_gate_only.yaml" does not exist
 $ kubectl -n rahbar logs job/ragops-eval-03
-GATE recall@5 drop 0.0pp <= 2.0pp .................. PASS
-GATE faithfulness 0.89 >= 0.80 ..................... PASS
-GATE p95 latency 101391ms <= 180000ms .............. PASS
-GATE abstention 0.83 >= 1.00 ....................... FAIL
-RELEASE GATE: FAIL (1 check(s) failed: abstention)
-release_gate_exit=1
+error: error from server (NotFound): jobs.batch "ragops-eval-03" not found in namespace "rahbar"
 $ kubectl -n rahbar get job ragops-eval-03
-NAME             STATUS   COMPLETIONS   DURATION   AGE
-ragops-eval-03   Failed   0/1           8s         8s
+Error from server (NotFound): jobs.batch "ragops-eval-03" not found
 image id of the gate pod:
-sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+error: error executing jsonpath "{.items[0].status.containerStatuses[0].imageID}": Error executing template: array index out of bounds: index 0, length 0. Printing more information for debugging the template:
+	template was:
+		{.items[0].status.containerStatuses[0].imageID}
+	object given to jsonpath engine was:
+		map[string]interface {}{"apiVersion":"v1", "items":[]interface {}{}, "kind":"List", "metadata":map[string]interface {}{"resourceVersion":""}}
+
+
+
 
 ## 2. ConfigMap edited: abstention may drop by 0.17 (one question of six)
-configmap/rahbar-gate-03 configured
-$ kubectl -n rahbar get configmap rahbar-gate-03 -o jsonpath='{.data.gate_thresholds_03\.yaml}'
-recall_at_5_max_drop_pp: 2.0
-min_faithfulness: 0.80
-max_p95_latency_ms: 180000
-abstention_correctness_min_vs_baseline: -0.17
-job.batch "ragops-eval-03" deleted from rahbar namespace
-job.batch/ragops-eval-03 created
-$ kubectl -n rahbar logs job/ragops-eval-03
-GATE recall@5 drop 0.0pp <= 2.0pp .................. PASS
-GATE faithfulness 0.89 >= 0.80 ..................... PASS
-GATE p95 latency 101391ms <= 180000ms .............. PASS
-GATE abstention 0.83 >= 0.83 ....................... PASS
-RELEASE GATE: PASS
-release_gate_exit=0
-$ kubectl -n rahbar get job ragops-eval-03
-NAME             STATUS     COMPLETIONS   DURATION   AGE
-ragops-eval-03   Complete   1/1           6s         8s
-image id of the gate pod:
-sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
-
-## 3. ConfigMap reverted to the committed file
-configmap/rahbar-gate-03 configured
+error: the path "/tmp/gate_relaxed.yaml" does not exist
 $ kubectl -n rahbar get configmap rahbar-gate-03 -o jsonpath='{.data.gate_thresholds_03\.yaml}'
 recall_at_5_max_drop_pp: 2.0
 min_faithfulness: 0.80
 max_p95_latency_ms: 180000
 abstention_correctness_min_vs_baseline: 0.0
-job.batch "ragops-eval-03" deleted from rahbar namespace
-job.batch/ragops-eval-03 created
+error: the path "/tmp/eval_gate_only.yaml" does not exist
 $ kubectl -n rahbar logs job/ragops-eval-03
-GATE recall@5 drop 0.0pp <= 2.0pp .................. PASS
-GATE faithfulness 0.89 >= 0.80 ..................... PASS
-GATE p95 latency 101391ms <= 180000ms .............. PASS
-GATE abstention 0.83 >= 1.00 ....................... FAIL
-RELEASE GATE: FAIL (1 check(s) failed: abstention)
-release_gate_exit=1
+error: error from server (NotFound): jobs.batch "ragops-eval-03" not found in namespace "rahbar"
 $ kubectl -n rahbar get job ragops-eval-03
-NAME             STATUS   COMPLETIONS   DURATION   AGE
-ragops-eval-03   Failed   0/1           13s        13s
+Error from server (NotFound): jobs.batch "ragops-eval-03" not found
 image id of the gate pod:
-sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+error: error executing jsonpath "{.items[0].status.containerStatuses[0].imageID}": Error executing template: array index out of bounds: index 0, length 0. Printing more information for debugging the template:
+	template was:
+		{.items[0].status.containerStatuses[0].imageID}
+	object given to jsonpath engine was:
+		map[string]interface {}{"apiVersion":"v1", "items":[]interface {}{}, "kind":"List", "metadata":map[string]interface {}{"resourceVersion":""}}
+
+
+
+
+## 3. ConfigMap reverted to the committed file
+configmap/rahbar-gate-03 unchanged
+$ kubectl -n rahbar get configmap rahbar-gate-03 -o jsonpath='{.data.gate_thresholds_03\.yaml}'
+recall_at_5_max_drop_pp: 2.0
+min_faithfulness: 0.80
+max_p95_latency_ms: 180000
+abstention_correctness_min_vs_baseline: 0.0
+error: the path "/tmp/eval_gate_only.yaml" does not exist
+$ kubectl -n rahbar logs job/ragops-eval-03
+error: error from server (NotFound): jobs.batch "ragops-eval-03" not found in namespace "rahbar"
+$ kubectl -n rahbar get job ragops-eval-03
+Error from server (NotFound): jobs.batch "ragops-eval-03" not found
+image id of the gate pod:
+error: error executing jsonpath "{.items[0].status.containerStatuses[0].imageID}": Error executing template: array index out of bounds: index 0, length 0. Printing more information for debugging the template:
+	template was:
+		{.items[0].status.containerStatuses[0].imageID}
+	object given to jsonpath engine was:
+		map[string]interface {}{"apiVersion":"v1", "items":[]interface {}{}, "kind":"List", "metadata":map[string]interface {}{"resourceVersion":""}}
+
+
+

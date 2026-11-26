@@ -121,7 +121,7 @@ Order is strict top-to-bottom except where `Dep:` says otherwise.
 
 ## Tier suites & final audit
 
-- [~] **T1/T2** offline test suites green (313), but the tier 17-19 checklists were not walked item by item · · [x] **T3** cluster evidence (Run Log) · [~] **T4** audit passes except the human-only items; demo rehearsal is human.
+- [~] **T1/T2** walked item by item: 65 pass, 2 fail (no candidate passed; coverage 0.825 < 0.85), 2 human, 2 notes (`docs/evidence_03/TIERS_1_2_results_03.md`) · [x] **T3** live checks (`T3_cluster_checks_03.txt`); rows needing a promoted candidate not possible · [~] **T4** audit passes except the human-only items; demo rehearsal is human.
 
 ---
 
@@ -131,10 +131,10 @@ Order is strict top-to-bottom except where `Dep:` says otherwise.
 | P00-T02 | both roll numbers | `report_03.md` header, `CLAUDE_03.md` section 0 | open |
 | B-T01 | write >= 8 golden questions, review >= 8 others | `eval/human_questions_todo_03.md`; `python -m eval.golden_validate_03 eval/golden_03.jsonl --strict` | open |
 | B-T02 | label >= 8 answers (>= 2 false), then compute agreement | `eval/human_faithfulness_sheet_03.md`; save `eval/human_faithfulness_03.json` | open |
-| SS-A..F | six uncropped PNG screenshots | `bash scripts/evidence_03/SS-<X>_*_03.sh`; save `docs/evidence_03/SS-<X>_*_03.png` | open |
+| SS-A..F | check the captures; retake any you prefer to take yourselves | report appendix | captured by agent |
 | G-T05 | contribution ownership; keep the AI statement true | `report_03.md` section 10 | open |
-| G-T06 | re-render the PDF after the edits above; check <= 8 body pages | print `report_03.md` to `report_03.pdf` | agent draft committed (6 body pages) |
-| F-T13 | follow `k8s/README_03.md` from a fresh clone | `scripts/evidence_03/F-T13_clean_clone_03.sh` | open |
+| G-T06 | re-render the PDF after the edits above; check <= 8 body pages | print `report_03.md` to `report_03.pdf` | agent version committed (6 body pages + 9 appendix) |
+| F-T13 | full from-zero cluster run of `k8s/README_03.md` | fresh cluster | partial done by agent (`F-T13_clean_clone_03.txt`) |
 | demo | rehearse twice on the cluster; prepare an unseen document | `harness_03/20_EVAL_TIER_4_RUBRIC_AND_DEMO_PREP_03.md` section 3 | open |
 | submit | review, push `dev`, open the PR to `main` | never push `main` directly | open |
 
@@ -166,7 +166,7 @@ _(empty)_
 | final audit 2026-11-26 | compliance script silent; no A02 file deleted or modified; A02 tests 199 + 58 and A03 313 passed; ruff and mypy clean; checker no mechanical failures |
 
 ## Handover (4 lines, rewritten at every session end)
-1. Done: Parts A-F run on the cluster with committed evidence; report draft and PDF; audit.
+1. Done: Parts A-F on the cluster, tiers 1-3 walked, fresh-clone fixes, appendix captures, PDF.
 2. Next: Pending-Human register above, top to bottom.
 3. Blocked: nothing.
 4. First command next session: `git status --short && git log --oneline -5`

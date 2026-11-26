@@ -1,6 +1,6 @@
 === BEGIN SS-B ===
-Thu, Nov 26, 2026  8:50:10 AM
-90cdf0d
+Thu Nov 26 10:06:38 UTC 2026
+06a8381
 minikube
 
 $ kubectl -n rahbar exec ragops-helper-03 -- sh -c ls /data/eval/results | grep -E "suite_03|summary_03"

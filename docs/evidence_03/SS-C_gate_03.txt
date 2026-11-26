@@ -1,6 +1,6 @@
 === BEGIN SS-C ===
-Thu, Nov 26, 2026  8:50:17 AM
-90cdf0d
+Thu Nov 26 10:05:52 UTC 2026
+06a8381
 minikube
 # FAILING: candidate TOP_K=1 on the committed result files (thresholds from the repo)
 
