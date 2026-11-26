@@ -2,7 +2,8 @@
 
 Assignment 03 wraps the Assignment 02 system with RAGOps layers (verification, incremental ingest and rollback,
 three-level evaluation, release gate, traces and metrics, drift and coverage, Kubernetes operation). Every new file
-ends in `_03`; no Assignment 02 file was changed. `README.md` still describes Assignment 02.
+ends in `_03`; the only Assignment 02 file changed is
+`ui/Dockerfile` (security fix for nginx, see below). `README.md` still describes Assignment 02.
 
 Run commands from the repository root in Git Bash / WSL. `PY` below is `.venv/Scripts/python` on Windows Git Bash and
 `.venv/bin/python` on Linux/WSL. Local commands need no cluster, no network and no model.
@@ -19,7 +20,7 @@ export RAGOPS_ROOT=./.ragops_03                 # lake/ quarantine/ archive/ sta
 bash scripts/test03_03.sh                       # all Assignment 03 tests (tests_03/)
 bash scripts/test03_03.sh tests_03/k8s          # only the static Kubernetes manifest tests
 make -f Makefile_03.mk lint03 test03            # lint + tests
-bash scripts/compliance_check_03.sh             # no A02 file changed, every new file ends in _03, no secrets
+bash scripts/compliance_check_03.sh             # only the listed A02 exceptions changed, new files end in _03, no secrets
 make lint test                                  # the Assignment 02 gate must stay green
 ```
 
@@ -97,3 +98,10 @@ Controlled release: `bash scripts/evidence_03/F-T12_canary_03.sh` (candidate blo
 `report_03.md` is the source; print it to `report_03.pdf` (A4, margins 15 mm, at most 8 pages plus the six
 screenshots `docs/evidence_03/SS-A..F_*_03.png`). Screenshot scripts: `scripts/evidence_03/SS-<A..F>_*_03.sh`.
 Pipeline description: `docs/PIPELINE_03.md`. Demo plan: `docs/demo_plan_03.md`.
+
+## One change to an Assignment 02 file
+
+CI's `scan (ui)` job failed on 26 November 2026: nginx 1.30.6 in the base image had 6 fixable HIGH/CRITICAL
+vulnerabilities. The base image pins nginx in `/etc/apk/world`, so `apk upgrade` skipped it. `ui/Dockerfile` now
+drops those pins and upgrades from nginx.org's repository (nginx 1.30.8, Trivy: 0 findings).
+

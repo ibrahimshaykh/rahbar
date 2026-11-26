@@ -152,6 +152,7 @@ _(empty)_
 | D3-16 | Candidates: `TOP_K=1`, rerank pool 8, rerank pool 5, one run each, baseline collection | a re-chunk candidate needed > 1 h of CPU embedding |
 | D3-17 | All three candidates blocked; thresholds not relaxed; PASS shown only as a ConfigMap-flip demonstration | no post-hoc tuning |
 | D3-18 | Judge calls Ollama with its own schema and a reworded prompt (checked on 3 hand-written cases) | the A02 provider forced the answer schema |
+| D3-19 | Edit A02 `ui/Dockerfile` (the owner asked to fix the pipeline) | base image pins nginx, so `apk upgrade` skipped fixed CVEs and `scan (ui)` failed |
 
 ## Run Log (raw outputs are the committed files)
 | Run | Evidence |

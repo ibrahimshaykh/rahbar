@@ -326,3 +326,13 @@ def test_k8s_15b_image_survives_crlf_checkouts_and_empty_corpus():
     text = (ROOT / "Dockerfile_03").read_text(encoding="utf-8")
     assert r"sed -i 's/\r$//'" in text and "/app/eval/job_entry_03.sh" in text
     assert "corpus-baked is empty" in text
+
+
+def test_ui_image_unpins_nginx_so_security_fixes_install():
+    """The base image pins nginx=X in /etc/apk/world, so a plain `apk upgrade` silently skips it
+    and CI's Trivy gate failed on fixed nginx CVEs. The pins must be dropped before upgrading."""
+    text = (ROOT / "ui" / "Dockerfile").read_text(encoding="utf-8")
+    unpin = text.index("/etc/apk/world")
+    upgrade = text.index("apk upgrade --no-cache --repository")
+    assert unpin < upgrade and "nginx.org/packages/alpine" in text
+    assert text.rstrip().splitlines()[-1].startswith("CMD") and "USER 101" in text

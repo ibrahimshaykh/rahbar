@@ -1,7 +1,7 @@
 # RAGOps pipeline (Assignment 03)
 
 This document describes the Assignment 03 layers added around the Assignment 02 system (`docs/PIPELINE.md` still describes
-A02). Every A03 file ends in `_03`; no A02 file was edited. A03 modules import and wrap A02 functions.
+A02). Every A03 file ends in `_03`; the one edited A02 file is `ui/Dockerfile` (nginx security fix). A03 modules import and wrap A02 functions.
 
 ## Lifecycle
 
