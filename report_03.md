@@ -4,8 +4,8 @@
 
 | Member | Roll number |
 |---|---|
-| Ibrahim Ahmed | PENDING-HUMAN(P00-T02) |
-| Talha Sami | PENDING-HUMAN(P00-T02) |
+| Ibrahim Ahmed | 3093 |
+| Talha Sami | 3015 |
 
 Repository: https://github.com/ibrahimshaykh/rahbar (branch `dev`; `main` only through pull request).
 

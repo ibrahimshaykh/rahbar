@@ -21,13 +21,12 @@ Assignment_03.pdf  >  this file  >  harness_03/*  >  CLAUDE.md  >  your judgemen
 ## 0. HUMAN-INPUT BLOCK
 
 ```yaml
-partner_a: { name: "Ibrahim Ahmed", email: "ibrahimshaykh05@gmail.com", roll_no: "PENDING-HUMAN(P00-T02)" }
-partner_b: { name: "Talha Sami",    email: "tlhaasami@gmail.com",      roll_no: "PENDING-HUMAN(P00-T02)" }
+partner_a: { name: "Ibrahim Ahmed", email: "ibrahimshaykh05@gmail.com", roll_no: "3093" }
+partner_b: { name: "Talha Sami",    email: "tlhaasami@gmail.com",      roll_no: "3015" }
 ```
 
-Names/emails are inherited from `CLAUDE.md` §0. **Roll numbers are not in the repo.**
-Never invent them. `report_03.pdf` page 1 needs them; until the human supplies them
-the token `PENDING-HUMAN(P00-T02)` stays in the report source.
+Names/emails are inherited from `CLAUDE.md` §0. Roll numbers supplied by the human
+partners on 2026-11-27 (`report_03.pdf` page 1).
 
 ---
 
