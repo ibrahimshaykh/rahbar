@@ -1,0 +1,27 @@
+=== F-T09: files on the PVC survive deleting every api pod ===
+Thu, Nov 26, 2026  8:15:41 AM
+$ helper: trace lines, result files, archive (before)
+565
+42
+academic-rules-handbook
+$ kubectl -n rahbar delete pod -l app=api
+pod "api-7b7899bc87-9jcdk" deleted from rahbar namespace
+pod "api-7b7899bc87-kcfzp" deleted from rahbar namespace
+pod "api-7b7899bc87-mvdkc" deleted from rahbar namespace
+Waiting for deployment "api" rollout to finish: 0 of 3 updated replicas are available...
+Waiting for deployment "api" rollout to finish: 1 of 3 updated replicas are available...
+Waiting for deployment "api" rollout to finish: 2 of 3 updated replicas are available...
+deployment "api" successfully rolled out
+$ same query (after)
+565
+42
+academic-rules-handbook
+$ kubectl -n rahbar get pvc
+NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+data-chroma-0          Bound    pvc-e6b4cb96-0278-45bf-aa4a-d4cd382ef067   2Gi        RWO            standard       <unset>                 21d
+rahbar-ragops-pvc-03   Bound    pvc-f252fd28-f0ec-42b1-8b62-cf1645ee0a4b   2Gi        RWO            standard       <unset>                 47h
+redis-data             Bound    pvc-020fe131-b57e-43bd-a6ca-673a650081f0   1Gi        RWO            standard       <unset>                 21d
+NAME                   READY   STATUS    RESTARTS   AGE
+api-7b7899bc87-58zqx   1/1     Running   0          33s
+api-7b7899bc87-jk2s4   1/1     Running   0          35s
+api-7b7899bc87-w8drg   1/1     Running   0          36s

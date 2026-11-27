@@ -1,0 +1,130 @@
+{
+ "generated_at": "20261123T165337Z",
+ "corpus": "eval/fixtures",
+ "embedding": "dummy-256",
+ "totals": {
+  "documents": 3,
+  "accepted": 3,
+  "superseded_accepted": 0,
+  "quarantined": 0,
+  "unchanged": 0
+ },
+ "by_reason": {},
+ "documents": [
+  {
+   "file": "academic-rules-2023.md",
+   "doc_id": "fixture-academic-rules-2023",
+   "sha256": "5f8ff6ecab88e9c1cc0f27e424af497e5146d42e5f8f30681288ed3eba83a318",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.743",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.0000",
+     "value": 0.0
+    }
+   ]
+  },
+  {
+   "file": "academic-rules-2026.md",
+   "doc_id": "fixture-academic-rules-2026",
+   "sha256": "c559eca8064d1e5305c003c7ade350ce071b918543a0239b6dccbbddad2f22e9",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.760",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.9248",
+     "value": 0.9248058072036653
+    }
+   ]
+  },
+  {
+   "file": "fees-2026.md",
+   "doc_id": "fixture-fees-2026",
+   "sha256": "abb3f40fcc2bfa948f4222628e87b8b0deee905925afcf7f250d43b18d86ddfb",
+   "decision": "accept",
+   "supersedes": null,
+   "unchanged": false,
+   "checks": [
+    {
+     "check": "quality",
+     "passed": true,
+     "reason_code": null,
+     "detail": "non_ascii_ratio=0.000 alpha_ratio=0.571",
+     "value": 0.0
+    },
+    {
+     "check": "completeness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "pages=1 declared=1",
+     "value": null
+    },
+    {
+     "check": "recency",
+     "passed": true,
+     "reason_code": null,
+     "detail": "new doc_id",
+     "value": null
+    },
+    {
+     "check": "uniqueness",
+     "passed": true,
+     "reason_code": null,
+     "detail": "max_cosine=0.3977",
+     "value": 0.3977034581809059
+    }
+   ]
+  }
+ ],
+ "quarantined_paths": []
+}

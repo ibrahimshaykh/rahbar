@@ -1,0 +1,55 @@
+=== BEGIN SS-A ===
+Thu Nov 26 10:10:45 UTC 2026
+06a8381
+minikube
+# A1 verification report from the cluster run that first ingested Batch B
+
+$ kubectl -n rahbar exec ragops-helper-03 -- cat /data/eval/results/verification_report_03_20261125T200907Z.md | sed 's/✔/pass/g; s/✘/FAIL/g'
+# Verification report 20261125T200907Z
+
+Corpus: `/corpus-baked,/app/corpus/batch_b_03` - embedding: `nomic-embed-text`
+
+| documents | accepted | superseded_accepted | quarantined | unchanged |
+|---|---|---|---|---|
+| 23 | 15 | 1 | 8 | 8 |
+
+| file | quality | completeness | recency | uniqueness | decision |
+|---|---|---|---|---|---|
+| no_metadata_circular_03.md | pass | FAIL MISSING_METADATA | pass | pass | quarantine |
+| annual-report-2019-20.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| faculty-entrepreneurship-and-technical-start-ups-policy.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| undergraduate-academic-rules-aug-2023.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| annual-report-2023-24.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| grading-page.html | pass | pass | pass | pass UNCHANGED | accept |
+| prospectus-2026-academic-rules-and-regulations.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| academic-rules-handbook-jun-2026.pdf | pass | pass | FAIL STALE_VERSION | pass UNCHANGED | quarantine |
+| student-handbook-jun-2026.pdf | pass | pass | pass | pass UNCHANGED | accept |
+| attendance_notice_truncated_03.md | pass | FAIL TRUNCATED | pass | pass | quarantine |
+| corrupt_scan_03.txt | FAIL GARBLED_NON_ASCII | pass | pass | pass | quarantine |
+| empty_stub_03.md | FAIL EMPTY | pass | pass | pass | quarantine |
+| exam_conduct_03.md | pass | pass | pass | pass | accept |
+| exam_conduct_copy_03.md | pass | pass | pass | FAIL DUPLICATE_EXACT | quarantine |
+| hostel_rules_03.md | pass | pass | pass | pass | accept |
+| hostel_rules_reworded_03.md | pass | pass | pass | FAIL DUPLICATE_NEAR | quarantine |
+| library_policy_03.md | pass | pass | pass | pass | accept |
+| library_policy_mirror_03.md | pass | pass | pass | FAIL DUPLICATE_EXACT | quarantine |
+| scholarship_rules_03.md | pass | pass | pass | pass | accept |
+| student_notice_injected_03.md | pass | pass | pass | pass | accept |
+| transport_policy_03.md | pass | pass | pass | pass | accept |
+| academic_rules_handbook_v2026-11_03.md | pass | pass | pass NEWER_VERSION | pass | supersede |
+| fee-structure-page.html | pass | pass | pass | pass UNCHANGED | accept |
+
+## Quarantined
+
+- `/data/quarantine/20261125T200907Z/no_metadata_circular_03.md`
+- `/data/quarantine/20261125T200907Z/academic-rules-handbook-jun-2026.pdf`
+- `/data/quarantine/20261125T200907Z/attendance_notice_truncated_03.md`
+- `/data/quarantine/20261125T200907Z/corrupt_scan_03.txt`
+- `/data/quarantine/20261125T200907Z/empty_stub_03.md`
+- `/data/quarantine/20261125T200907Z/exam_conduct_copy_03.md`
+- `/data/quarantine/20261125T200907Z/hostel_rules_reworded_03.md`
+- `/data/quarantine/20261125T200907Z/library_policy_mirror_03.md`
+# A2 second, unchanged ingest (CronJob run by hand): expect embedded_chunks=0
+$ kubectl -n rahbar logs job/ragops-ingest-manual-03 | tail -1
+embedded_chunks=0 kept_chunks=848 deleted_chunks=0 deactivated_chunks=0 collection_version=6
+=== END SS-A ===

@@ -1,0 +1,38 @@
+# Strategic-merge patch for the LIVE Deployment `api` (creates revision 2).
+#   kubectl -n rahbar patch deployment api --patch-file k8s/patch_api_rollout_03.yaml
+# k8s/base/api-deployment.yaml stays byte-identical. containers/env/volumes merge by name.
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    spec:
+      containers:
+        - name: api
+          image: rahbar-ragops-03:dev
+          command: ["uvicorn", "app_03:app", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "/app/api"]
+          env:
+            - {name: CHROMA_COLLECTION, value: rahbar_ragops_03}
+            - {name: RAGOPS_ROOT, value: /data}
+            - {name: GUARDRAIL_MODE, value: block}
+            - {name: RERANK_ENABLED, value: "false"}
+            - {name: ALLOW_CACHE_BYPASS_03, value: "true"}
+          # A loaded single-node cluster stalls for minutes during evals; the A02 probes
+          # (5 s, 3 misses) restarted every api pod mid-suite. Relaxed here, base untouched.
+          startupProbe:
+            failureThreshold: 150
+            timeoutSeconds: 10
+          livenessProbe:
+            timeoutSeconds: 15
+            failureThreshold: 8
+          readinessProbe:
+            timeoutSeconds: 15
+            failureThreshold: 6
+          volumeMounts:
+            - {name: ragops-data, mountPath: /data}
+      volumes:
+        - name: ragops-data
+          persistentVolumeClaim:
+            claimName: rahbar-ragops-pvc-03

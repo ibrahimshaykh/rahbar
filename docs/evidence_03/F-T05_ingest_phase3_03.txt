@@ -1,0 +1,4 @@
+# F-T05 phase 3: unchanged re-run (idempotence) - expect embedded_chunks=0
+{"ts": "2026-11-25T20:20:00Z", "logger": "rahbar.indexer.ingest_03", "msg": "optional corpus skipped", "corpus": "/data/incoming"}
+{"ts": "2026-11-25T20:25:03Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 23, "accepted": 15, "quarantined": 8, "unchanged_docs": 15, "embedded_chunks": 0, "kept_chunks": 848, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": "/data/eval/results/verification_report_03_20261125T202000Z.json", "md": "/data/eval/results/verification_report_03_20261125T202000Z.md"}, "collection_version": 2, "seconds": 303.4}
+embedded_chunks=0 kept_chunks=848 deleted_chunks=0 deactivated_chunks=0 collection_version=2

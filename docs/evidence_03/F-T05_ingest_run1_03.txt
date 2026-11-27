@@ -1,0 +1,11 @@
+# F-T05 ingest run 1 (real Ollama nomic-embed-text, real Chroma, cluster)
+$ kubectl -n rahbar get job,pods -l app=ragops-ingest-03
+NAME                         STATUS     COMPLETIONS   DURATION   AGE
+job.batch/ragops-ingest-03   Complete   1/1           15m        15m
+
+NAME                         READY   STATUS      RESTARTS   AGE
+pod/ragops-ingest-03-55vw8   0/1     Completed   0          15m
+$ kubectl -n rahbar logs job/ragops-ingest-03
+{"ts": "2026-11-25T18:48:28Z", "logger": "rahbar.indexer.ingest_03", "msg": "optional corpus skipped", "corpus": "/data/incoming"}
+{"ts": "2026-11-25T19:02:33Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 23, "accepted": 13, "quarantined": 10, "unchanged_docs": 0, "embedded_chunks": 703, "kept_chunks": 0, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": "/data/eval/results/verification_report_03_20261125T184828Z.json", "md": "/data/eval/results/verification_report_03_20261125T184828Z.md"}, "collection_version": 1, "seconds": 850.66}
+embedded_chunks=703 kept_chunks=0 deleted_chunks=0 deactivated_chunks=0 collection_version=1

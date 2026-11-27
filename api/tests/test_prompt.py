@@ -72,3 +72,32 @@ def test_a_chunk_cannot_close_the_evidence_block() -> None:            # T-INJ-0
     _system, user = build_prompt("q", poisoned, 1200)
     assert user.count(EVIDENCE_CLOSE) == 1, \
         "_sanitise must strip the delimiter out of retrieved text"
+
+
+def test_system_prompt_rules_out_answering_an_unrelated_question() -> None:  # T-PRM-08
+    # Live demo: an unrelated message got a random cited fact marked as grounded.
+    # The model must judge whether the evidence answers THIS question, not
+    # whether the evidence is about the university.
+    from app.services.prompt import SYSTEM_PROMPT
+    lowered = SYSTEM_PROMPT.lower()
+    assert "not about" in lowered and "answered_from_context to false" in lowered
+    assert "do not pick a passage" in lowered
+
+
+def test_system_prompt_asks_for_a_complete_answer_not_a_bare_number() -> None:  # T-PRM-09
+    # Live demo: "What is the current minimum attendance requirement?" came back
+    # as "20%" (the condonable absence) when clause 1.21 says 100% attendance
+    # with up to 20% absence condoned. A sentence that restates the rule with its
+    # conditions makes that kind of extraction error visible and less likely.
+    from app.services.prompt import SYSTEM_PROMPT
+    lowered = SYSTEM_PROMPT.lower()
+    assert "never a bare number" in lowered
+    assert "conditions" in lowered
+
+
+def test_system_prompt_keeps_the_discarded_reasoning_short() -> None:  # T-PRM-10
+    # reasoning is stripped before the user sees it, but on a CPU-only host
+    # every output token costs latency: one live answer used 122 output tokens
+    # and took 93 s, against a 100 s provider timeout.
+    from app.services.prompt import SYSTEM_PROMPT
+    assert "at most one short sentence" in SYSTEM_PROMPT.lower()

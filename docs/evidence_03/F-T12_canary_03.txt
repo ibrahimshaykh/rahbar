@@ -1,0 +1,154 @@
+=== BEGIN F-T12 ===
+Thu, Nov 26, 2026  8:07:32 AM
+5a4cc8d
+
+### 1. Release decision: candidates blocked by the gate, live api unchanged
+eval/results/gate_03_candidate_fail_20261126T061321Z.json FAIL ['recall@5']
+eval/results/gate_03_candidate_pass_20261126T070744Z.json FAIL ['abstention']
+eval/results/gate_03_candidate_pass2_20261126T080239Z.json FAIL ['abstention']
+$ kubectl -n rahbar get deploy api -o jsonpath={.spec.strategy}
+{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}
+$ kubectl -n rahbar get deploy api -o jsonpath={.spec.template.spec.containers[0].env}
+[{"name":"CHROMA_COLLECTION","value":"rahbar_ragops_03"},{"name":"RAGOPS_ROOT","value":"/data"},{"name":"GUARDRAIL_MODE","value":"block"},{"name":"RERANK_ENABLED","value":"false"},{"name":"ALLOW_CACHE_BYPASS_03","value":"true"}]
+$ kubectl -n rahbar rollout history deploy/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+27        <none>
+28        <none>
+29        <none>
+30        <none>
+31        <none>
+32        <none>
+
+
+### 2. Good state (before)
+$ curl -X POST /api/ask  (What is the attendance requirement?)
+{"request_id":"6f543bc2548e4d48b819905a3b6b5902","answer":"Students are required to maintain full attendance in all scheduled classes, with a maximum of 10% absence condoned by the Head of Department for genuine reasons.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","pa
+trace_id=6f543bc2548e4d48b819905a3b6b5902
+$ python -m api.trace_tool_03 --kubectl --trace-id 6f543bc2548e4d48b819905a3b6b5902
+trace_id: 6f543bc2548e4d48b819905a3b6b5902
+timestamp: 2026-11-26T08:08:40.789Z
+model: llama3.2:3b
+collection: rahbar_ragops_03@v2
+embedding: nomic-embed-text (nomic-embed-text@768)
+cache_hit: False
+outcome: answered
+
+== USER QUERY ==
+What is the attendance requirement?
+
+== RETRIEVED CONTEXT ==
+
+### 3. Bad release: point the live api at the stale Assignment 02 collection
+$ kubectl -n rahbar set env deploy/api CHROMA_COLLECTION=rahbar
+deployment.apps/api env updated
+deployment.apps/api annotated
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=1
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+$ kubectl -n rahbar rollout history deploy/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+28        <none>
+29        <none>
+30        <none>
+31        <none>
+32        <none>
+33        bad release: CHROMA_COLLECTION=rahbar
+
+$ curl -X POST /api/ask  (What is the attendance requirement?)
+{"request_id":"0b708d80f844460e8de76ca3745552e0","answer":"The university requires 100% attendance in all classes to be considered, with a maximum of 20% absence condoned for genuine reasons.","citations":[{"source":"academic-rules-handbook-jun-2026.pdf","section":"1.21","page":10}],"answered_from_context":true,"confidence":"hig
+trace_id=0b708d80f844460e8de76ca3745552e0
+$ python -m api.trace_tool_03 --kubectl --trace-id 0b708d80f844460e8de76ca3745552e0
+trace_id: 0b708d80f844460e8de76ca3745552e0
+timestamp: 2026-11-26T08:11:28.806Z
+model: llama3.2:3b
+collection: rahbar@unknown
+embedding: nomic-embed-text (nomic-embed-text@768)
+cache_hit: False
+outcome: answered
+
+== USER QUERY ==
+What is the attendance requirement?
+
+== RETRIEVED CONTEXT ==
+
+### 4. Revert: kubectl rollout undo
+$ kubectl -n rahbar rollout undo deploy/api
+Warning: resource deployments/api was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/api rolled back
+Waiting for deployment spec update to be observed...
+Waiting for deployment "api" rollout to finish: 0 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+  availableReplicas=3 updated=1
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=2
+  availableReplicas=3 updated=2
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+  availableReplicas=3 updated=2
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+  availableReplicas=3 updated=3
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+  availableReplicas=3 updated=3
+deployment "api" successfully rolled out
+$ kubectl -n rahbar rollout history deploy/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+28        <none>
+29        <none>
+30        <none>
+31        <none>
+33        bad release: CHROMA_COLLECTION=rahbar
+34        <none>
+
+$ kubectl -n rahbar get deploy api -o jsonpath={.spec.template.spec.containers[0].env}
+[{"name":"CHROMA_COLLECTION","value":"rahbar_ragops_03"},{"name":"RAGOPS_ROOT","value":"/data"},{"name":"GUARDRAIL_MODE","value":"block"},{"name":"RERANK_ENABLED","value":"false"},{"name":"ALLOW_CACHE_BYPASS_03","value":"true"}]
+
+### 5. New trace after the undo
+$ curl -X POST /api/ask  (What is the attendance requirement?)
+{"request_id":"96d2f46ee1d44d549f3548726b32d564","answer":"Students are required to maintain full attendance in all scheduled classes, with a maximum of 10% absence condoned by the Head of Department for genuine reasons.","citations":[{"source":"academic_rules_handbook_v2026-11_03.md","section":"1.21 Attendance Requirements","pa
+trace_id=96d2f46ee1d44d549f3548726b32d564
+$ python -m api.trace_tool_03 --kubectl --trace-id 96d2f46ee1d44d549f3548726b32d564
+trace_id: 96d2f46ee1d44d549f3548726b32d564
+timestamp: 2026-11-26T08:14:14.950Z
+model: llama3.2:3b
+collection: rahbar_ragops_03@v2
+embedding: nomic-embed-text (nomic-embed-text@768)
+cache_hit: False
+outcome: answered
+
+== USER QUERY ==
+What is the attendance requirement?
+
+== RETRIEVED CONTEXT ==
+$ kubectl -n rahbar get pods -l app=api
+NAME                   READY   STATUS    RESTARTS   AGE
+api-7b7899bc87-9jcdk   1/1     Running   0          116s
+api-7b7899bc87-kcfzp   1/1     Running   0          2m12s
+api-7b7899bc87-mvdkc   1/1     Running   0          2m29s
+=== END F-T12 ===

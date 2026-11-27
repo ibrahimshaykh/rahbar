@@ -1,0 +1,304 @@
+{
+  "n_live": 40,
+  "n_golden": 29,
+  "sim_threshold": 0.7,
+  "coverage_threshold": 0.85,
+  "coverage": 0.625,
+  "gap": true,
+  "n_uncovered": 15,
+  "clusters": [
+    {
+      "topic": "library fine late",
+      "size": 5,
+      "queries": [
+        "LQ-030",
+        "LQ-032",
+        "LQ-033",
+        "LQ-034",
+        "LQ-037"
+      ],
+      "mean_max_sim": 0.5922610188587303
+    },
+    {
+      "topic": "assignments cgpa chatgpt",
+      "size": 3,
+      "queries": [
+        "LQ-011",
+        "LQ-019",
+        "LQ-028"
+      ],
+      "mean_max_sim": 0.6499744280439194
+    },
+    {
+      "topic": "ask based cost",
+      "size": 3,
+      "queries": [
+        "LQ-018",
+        "LQ-029",
+        "LQ-039"
+      ],
+      "mean_max_sim": 0.6179920690734583
+    },
+    {
+      "topic": "bus fee route",
+      "size": 2,
+      "queries": [
+        "LQ-035",
+        "LQ-036"
+      ],
+      "mean_max_sim": 0.6625326707293684
+    },
+    {
+      "topic": "scholarship merit gpa",
+      "size": 2,
+      "queries": [
+        "LQ-038",
+        "LQ-040"
+      ],
+      "mean_max_sim": 0.5745339793099836
+    }
+  ],
+  "per_query": [
+    {
+      "id": "LQ-001",
+      "group": "in_domain",
+      "max_sim": 0.7815782089494073,
+      "nearest_golden": "G03-001"
+    },
+    {
+      "id": "LQ-002",
+      "group": "in_domain",
+      "max_sim": 0.7976204107090364,
+      "nearest_golden": "G03-020"
+    },
+    {
+      "id": "LQ-003",
+      "group": "in_domain",
+      "max_sim": 0.8489309712350177,
+      "nearest_golden": "G03-002"
+    },
+    {
+      "id": "LQ-004",
+      "group": "in_domain",
+      "max_sim": 0.7562415427858601,
+      "nearest_golden": "G03-003"
+    },
+    {
+      "id": "LQ-005",
+      "group": "in_domain",
+      "max_sim": 0.7826761472663631,
+      "nearest_golden": "G03-004"
+    },
+    {
+      "id": "LQ-006",
+      "group": "in_domain",
+      "max_sim": 0.7651188507300062,
+      "nearest_golden": "G03-005"
+    },
+    {
+      "id": "LQ-007",
+      "group": "in_domain",
+      "max_sim": 0.7241469314403481,
+      "nearest_golden": "G03-019"
+    },
+    {
+      "id": "LQ-008",
+      "group": "in_domain",
+      "max_sim": 0.702980510902957,
+      "nearest_golden": "G03-007"
+    },
+    {
+      "id": "LQ-009",
+      "group": "in_domain",
+      "max_sim": 0.8243193424805797,
+      "nearest_golden": "G03-008"
+    },
+    {
+      "id": "LQ-010",
+      "group": "in_domain",
+      "max_sim": 0.8294027372767306,
+      "nearest_golden": "G03-009"
+    },
+    {
+      "id": "LQ-011",
+      "group": "in_domain",
+      "max_sim": 0.6724487799481259,
+      "nearest_golden": "G03-010"
+    },
+    {
+      "id": "LQ-012",
+      "group": "in_domain",
+      "max_sim": 0.7138354507614536,
+      "nearest_golden": "G03-011"
+    },
+    {
+      "id": "LQ-013",
+      "group": "in_domain",
+      "max_sim": 0.7585945865126484,
+      "nearest_golden": "G03-012"
+    },
+    {
+      "id": "LQ-014",
+      "group": "in_domain",
+      "max_sim": 0.8038824340958031,
+      "nearest_golden": "G03-013"
+    },
+    {
+      "id": "LQ-015",
+      "group": "in_domain",
+      "max_sim": 0.7531887951961801,
+      "nearest_golden": "G03-014"
+    },
+    {
+      "id": "LQ-016",
+      "group": "in_domain",
+      "max_sim": 0.8048940932148065,
+      "nearest_golden": "G03-015"
+    },
+    {
+      "id": "LQ-017",
+      "group": "in_domain",
+      "max_sim": 0.708141722397403,
+      "nearest_golden": "G03-016"
+    },
+    {
+      "id": "LQ-018",
+      "group": "in_domain",
+      "max_sim": 0.6976155923384977,
+      "nearest_golden": "G03-017"
+    },
+    {
+      "id": "LQ-019",
+      "group": "in_domain",
+      "max_sim": 0.6899957196494931,
+      "nearest_golden": "G03-020"
+    },
+    {
+      "id": "LQ-020",
+      "group": "in_domain",
+      "max_sim": 0.819322114608749,
+      "nearest_golden": "G03-019"
+    },
+    {
+      "id": "LQ-021",
+      "group": "in_domain",
+      "max_sim": 0.7980692105297063,
+      "nearest_golden": "G03-020"
+    },
+    {
+      "id": "LQ-022",
+      "group": "in_domain",
+      "max_sim": 0.7305429760025355,
+      "nearest_golden": "G03-021"
+    },
+    {
+      "id": "LQ-023",
+      "group": "in_domain",
+      "max_sim": 0.7938418075833792,
+      "nearest_golden": "G03-022"
+    },
+    {
+      "id": "LQ-024",
+      "group": "in_domain",
+      "max_sim": 0.7809433605574452,
+      "nearest_golden": "G03-023"
+    },
+    {
+      "id": "LQ-025",
+      "group": "in_domain",
+      "max_sim": 0.7880548765879435,
+      "nearest_golden": "G03-006"
+    },
+    {
+      "id": "LQ-026",
+      "group": "in_domain",
+      "max_sim": 0.7661667318997292,
+      "nearest_golden": "G03-010"
+    },
+    {
+      "id": "LQ-027",
+      "group": "in_domain",
+      "max_sim": 0.727251361931287,
+      "nearest_golden": "G03-015"
+    },
+    {
+      "id": "LQ-028",
+      "group": "in_domain",
+      "max_sim": 0.5874787845341392,
+      "nearest_golden": "G03-021"
+    },
+    {
+      "id": "LQ-029",
+      "group": "uncovered",
+      "max_sim": 0.5828849778191424,
+      "nearest_golden": "G03-024"
+    },
+    {
+      "id": "LQ-030",
+      "group": "uncovered",
+      "max_sim": 0.601176509003733,
+      "nearest_golden": "G03-027"
+    },
+    {
+      "id": "LQ-031",
+      "group": "uncovered",
+      "max_sim": 0.7393897472270383,
+      "nearest_golden": "G03-007"
+    },
+    {
+      "id": "LQ-032",
+      "group": "uncovered",
+      "max_sim": 0.5548465892259161,
+      "nearest_golden": "G03-012"
+    },
+    {
+      "id": "LQ-033",
+      "group": "uncovered",
+      "max_sim": 0.6142442057179689,
+      "nearest_golden": "G03-027"
+    },
+    {
+      "id": "LQ-034",
+      "group": "uncovered",
+      "max_sim": 0.684561824726486,
+      "nearest_golden": "G03-029"
+    },
+    {
+      "id": "LQ-035",
+      "group": "uncovered",
+      "max_sim": 0.6857490786843693,
+      "nearest_golden": "G03-024"
+    },
+    {
+      "id": "LQ-036",
+      "group": "uncovered",
+      "max_sim": 0.6393162627743675,
+      "nearest_golden": "G03-008"
+    },
+    {
+      "id": "LQ-037",
+      "group": "uncovered",
+      "max_sim": 0.5064759656195476,
+      "nearest_golden": "G03-029"
+    },
+    {
+      "id": "LQ-038",
+      "group": "uncovered",
+      "max_sim": 0.6107726956419547,
+      "nearest_golden": "G03-024"
+    },
+    {
+      "id": "LQ-039",
+      "group": "uncovered",
+      "max_sim": 0.5734756370627349,
+      "nearest_golden": "G03-024"
+    },
+    {
+      "id": "LQ-040",
+      "group": "uncovered",
+      "max_sim": 0.5382952629780126,
+      "nearest_golden": "G03-028"
+    }
+  ],
+  "embed": "real"
+}

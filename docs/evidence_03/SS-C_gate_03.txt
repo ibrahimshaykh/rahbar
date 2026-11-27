@@ -1,0 +1,39 @@
+=== BEGIN SS-C ===
+Thu Nov 26 10:05:52 UTC 2026
+06a8381
+minikube
+# FAILING: candidate TOP_K=1 on the committed result files (thresholds from the repo)
+
+$ .venv/Scripts/python -m eval.release_gate_03 --experiment eval/results/experiment_03_candidate_fail_20261126T061318Z.json --out-dir .ragops_03/ss
+GATE recall@5 drop 6.2pp <= 2.0pp .................. FAIL
+GATE faithfulness 0.93 >= 0.80 ..................... PASS
+GATE p95 latency 57142ms <= 180000ms ............... PASS
+GATE abstention 1.00 >= 1.00 ....................... PASS
+RELEASE GATE: FAIL (1 check(s) failed: recall@5)
+# the same gate on the cluster, PASS and FAIL by ConfigMap only (rerank pool-5 experiment)
+
+$ grep -E ^## |abstention_correctness_min|GATE abstention|RELEASE GATE|sha256 docs/evidence_03/F-T11_gate_flip_03.txt
+## 1. committed thresholds
+abstention_correctness_min_vs_baseline: 0.0
+GATE abstention 0.83 >= 1.00 ....................... FAIL
+RELEASE GATE: FAIL (1 check(s) failed: abstention)
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+## 2. ConfigMap edited: abstention may drop by 0.17 (one question of six)
+abstention_correctness_min_vs_baseline: -0.17
+GATE abstention 0.83 >= 0.83 ....................... PASS
+RELEASE GATE: PASS
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+## 3. ConfigMap reverted to the committed file
+abstention_correctness_min_vs_baseline: 0.0
+GATE abstention 0.83 >= 1.00 ....................... FAIL
+RELEASE GATE: FAIL (1 check(s) failed: abstention)
+sha256:a74a949abeb0149da39b1938f082a98bb116b295e6f12b10089b58cef664a4fc
+# PASSING gate logic on a labelled synthetic unit-test fixture (not a result)
+
+$ .venv/Scripts/python -m eval.release_gate_03 --experiment tests_03/fixtures/experiment_pass_03.json --out-dir .ragops_03/ss
+GATE recall@5 drop 1.0pp <= 2.0pp .................. PASS
+GATE faithfulness 0.90 >= 0.80 ..................... PASS
+GATE p95 latency 40000ms <= 180000ms ............... PASS
+GATE abstention 1.00 >= 1.00 ....................... PASS
+RELEASE GATE: PASS
+=== END SS-C ===

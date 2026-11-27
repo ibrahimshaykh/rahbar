@@ -1,0 +1,166 @@
+{
+  "schema": "experiment_03/1",
+  "name": "candidate_fail",
+  "mode": "live",
+  "request_errors": {
+    "baseline": 1,
+    "candidate": 0,
+    "max_error_rate": 0.05
+  },
+  "change": {
+    "knob": "TOP_K",
+    "baseline": 5,
+    "candidate": 1,
+    "all": {
+      "TOP_K": {
+        "baseline": 5,
+        "candidate": 1
+      }
+    }
+  },
+  "levels": {
+    "module": {
+      "paraphrase_mean_cos": {
+        "baseline": 0.7261228657173695,
+        "candidate": 0.7261228657173695,
+        "delta": 0.0
+      },
+      "unrelated_mean_cos": {
+        "baseline": 0.38135046334321226,
+        "candidate": 0.38135046334321226,
+        "delta": 0.0
+      },
+      "separation_gap": {
+        "baseline": 0.34477240237415724,
+        "candidate": 0.34477240237415724,
+        "delta": 0.0
+      },
+      "n_paraphrase": {
+        "baseline": 17,
+        "candidate": 17,
+        "delta": 0
+      },
+      "n_unrelated": {
+        "baseline": 17,
+        "candidate": 17,
+        "delta": 0
+      },
+      "embed_ms_per_chunk_mean": {
+        "baseline": 1148.2775126205524,
+        "candidate": 1094.2114478599979,
+        "delta": -54.06606476055458
+      },
+      "n_timed_chunks": {
+        "baseline": 50,
+        "candidate": 50,
+        "delta": 0
+      },
+      "determinism_max_abs_diff": {
+        "baseline": 0.0,
+        "candidate": 0.0,
+        "delta": 0.0
+      },
+      "determinism_n_texts": {
+        "baseline": 10,
+        "candidate": 10,
+        "delta": 0
+      }
+    },
+    "component": {
+      "recall_at_3": {
+        "baseline": 0.78125,
+        "candidate": 0.71875,
+        "delta": -0.0625
+      },
+      "recall_at_5": {
+        "baseline": 0.78125,
+        "candidate": 0.71875,
+        "delta": -0.0625
+      },
+      "mrr": {
+        "baseline": 0.75,
+        "candidate": 0.71875,
+        "delta": -0.03125
+      },
+      "ndcg_at_5": {
+        "baseline": 0.7581831095982161,
+        "candidate": 0.71875,
+        "delta": -0.03943310959821611
+      },
+      "n_items": {
+        "baseline": 32,
+        "candidate": 32,
+        "delta": 0
+      }
+    },
+    "e2e": {
+      "faithfulness": {
+        "baseline": 0.96,
+        "candidate": 0.9259259259259259,
+        "delta": -0.034074074074074034
+      },
+      "n_human_labelled": {
+        "baseline": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "abstention_correctness": {
+        "baseline": 1.0,
+        "candidate": 1.0,
+        "delta": 0.0
+      },
+      "n_unanswerable": {
+        "baseline": 6,
+        "candidate": 6,
+        "delta": 0
+      },
+      "false_abstention_rate": {
+        "baseline": 0.2,
+        "candidate": 0.15384615384615385,
+        "delta": -0.046153846153846156
+      },
+      "citation_validity": {
+        "baseline": 1.0,
+        "candidate": 1.0,
+        "delta": 0.0
+      },
+      "n_citations": {
+        "baseline": 27,
+        "candidate": 27,
+        "delta": 0
+      },
+      "answer_hit_rate": {
+        "baseline": 0.5483870967741935,
+        "candidate": 0.59375,
+        "delta": 0.045362903225806495
+      },
+      "latency_p50_ms": {
+        "baseline": 70879.65841899859,
+        "candidate": 31819.187457003864,
+        "delta": -39060.470961994724
+      },
+      "latency_p95_ms": {
+        "baseline": 143321.0148260041,
+        "candidate": 57141.6119600035,
+        "delta": -86179.4028660006
+      },
+      "n_latency": {
+        "baseline": 37,
+        "candidate": 38,
+        "delta": 1
+      },
+      "cache_hits_in_run": {
+        "baseline": 0,
+        "candidate": 0,
+        "delta": 0
+      }
+    }
+  },
+  "gate_inputs": {
+    "recall_at_5_drop_pp": 6.25,
+    "faithfulness": 0.9259259259259259,
+    "latency_p95_ms": 57141.6119600035,
+    "abstention_correctness": 1.0,
+    "abstention_baseline": 1.0
+  }
+}

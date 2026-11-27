@@ -1,0 +1,73 @@
+# Part B+C evaluation Job. Exit status == release gate exit status (backoffLimit 0).
+# Gate flip without a rebuild: edit ConfigMap rahbar-gate-03 and re-run (see F-T11).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ragops-eval-03
+  namespace: rahbar
+  labels:
+    app: ragops-eval-03
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  completions: 1
+  backoffLimit: 0                   # a gate FAIL must not be retried into a PASS
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: ragops-eval-03
+        app.kubernetes.io/part-of: rahbar
+        ragops: "03"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: rahbar-ragops-03
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: eval
+          image: rahbar-ragops-03:dev
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "/app/eval/job_entry_03.sh"]
+          envFrom:
+            - configMapRef:
+                name: rahbar-config
+          env:
+            - {name: RAGOPS_ROOT, value: /data}
+            - {name: TIMING_CORPUS_DIR, value: /corpus-baked}   # raw corpus files live here in the image
+            - {name: EVAL_TARGET_URL, value: "http://api-candidate-03:8000"}
+            - {name: EVAL_BASELINE_URL, value: "http://api:8000"}
+            - {name: EVAL_TAG, value: candidate}
+            - {name: GATE_THRESHOLDS_PATH, value: /config/gate_thresholds_03.yaml}
+            - {name: GATE_ONLY, value: "0"}     # "1" = re-gate the stored experiment only
+            - {name: REUSE_BASELINE, value: "1"}    # reuse the stored two-run baseline
+            - {name: REUSE_CANDIDATE, value: "0"}   # "1" = reuse the stored candidate run
+            - {name: CANDIDATE_RUNS, value: "1"}    # one run per candidate (~1 h on this CPU)
+            - {name: MAX_ERROR_RATE, value: "0.05"} # transient host errors, recorded in output
+          resources:                     # observed up to 349Mi in the eval pod (kubectl top)
+            requests: {cpu: 100m, memory: 384Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: ragops-data, mountPath: /data}
+            - {name: gate, mountPath: /config, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: ragops-data
+          persistentVolumeClaim:
+            claimName: rahbar-ragops-pvc-03
+        - name: gate
+          configMap:
+            name: rahbar-gate-03
+        - {name: tmp, emptyDir: {}}

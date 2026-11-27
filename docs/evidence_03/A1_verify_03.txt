@@ -1,0 +1,38 @@
+# A1-T10 verification gate evidence (generated 2026-11-23T16:53:33Z)
+## 1. regenerate Batch B deterministically
+wrote 14 documents + EXPECTED_03.json; near-dup cosine 0.9860; substituted 22 words
+## 2. verify Batch B (standalone, empty state) with quarantine moves
+{"ts": "2026-11-23T16:53:36Z", "logger": "rahbar.indexer.verify_03", "msg": "verification finished", "totals": {"documents": 14, "accepted": 7, "superseded_accepted": 0, "quarantined": 7, "unchanged": 0}, "by_reason": {"DUPLICATE_EXACT": 2, "DUPLICATE_NEAR": 1, "EMPTY": 1, "GARBLED_NON_ASCII": 1, "MISSING_METADATA": 1, "TRUNCATED": 1}, "json": "eval\\results\\verification_report_03_20261123T165336Z.json", "md": "eval\\results\\verification_report_03_20261123T165336Z.md"}
+## 3. quarantine contents (expect 7 files + 7 sidecars)
+attendance_notice_truncated_03.md
+attendance_notice_truncated_03.md.reason_03.json
+corrupt_scan_03.txt
+corrupt_scan_03.txt.reason_03.json
+empty_stub_03.md
+empty_stub_03.md.reason_03.json
+exam_conduct_copy_03.md
+exam_conduct_copy_03.md.reason_03.json
+hostel_rules_reworded_03.md
+hostel_rules_reworded_03.md.reason_03.json
+library_policy_mirror_03.md
+library_policy_mirror_03.md.reason_03.json
+no_metadata_circular_03.md
+no_metadata_circular_03.md.reason_03.json
+OK: duplicate copy absent from lake
+OK: original still in lake
+## 4. report consistency (T1-A1-04) and planted categories (T1-A1-07)
+report: eval/results/verification_report_03_20261123T165336Z.json
+OK {'documents': 14, 'accepted': 7, 'superseded_accepted': 0, 'quarantined': 7, 'unchanged': 0}
+by_reason {'DUPLICATE_EXACT': 2, 'DUPLICATE_NEAR': 1, 'EMPTY': 1, 'GARBLED_NON_ASCII': 1, 'MISSING_METADATA': 1, 'TRUNCATED': 1}
+expected-vs-actual mismatches: []
+## 5. Batch A through A1: eval/fixtures (dry, --no-move)
+{"ts": "2026-11-23T16:53:37Z", "logger": "rahbar.indexer.verify_03", "msg": "verification finished", "totals": {"documents": 3, "accepted": 3, "superseded_accepted": 0, "quarantined": 0, "unchanged": 0}, "by_reason": {}, "json": "eval\\results\\verification_report_03_20261123T165337Z.json", "md": "eval\\results\\verification_report_03_20261123T165337Z.md"}
+## 6. Batch A through A1: corpus/raw (real PDFs/HTML, --no-move, OCR_ENABLED=false)
+{"ts": "2026-11-23T16:59:07Z", "logger": "rahbar.indexer.verify_03", "msg": "verification finished", "totals": {"documents": 9, "accepted": 5, "superseded_accepted": 0, "quarantined": 4, "unchanged": 0}, "by_reason": {"EMPTY": 2, "GARBLED_SYMBOLS": 2}, "json": "eval\\results\\verification_report_03_20261123T165907Z.json", "md": "eval\\results\\verification_report_03_20261123T165907Z.md"}
+## 7. reports written
+eval/results/verification_report_03_20261123T165336Z.json
+eval/results/verification_report_03_20261123T165336Z.md
+eval/results/verification_report_03_20261123T165337Z.json
+eval/results/verification_report_03_20261123T165337Z.md
+eval/results/verification_report_03_20261123T165907Z.json
+eval/results/verification_report_03_20261123T165907Z.md

@@ -1,0 +1,11 @@
+# Live patch from measurement (docs/evidence_03/F-T07_kubectl_top_03.txt): api pods peaked at 440m CPU and 73Mi
+# (candidate 87Mi). CPU request/limit unchanged so the A02 HPA behaves the same.
+#   kubectl -n rahbar patch deployment api --patch-file k8s/patch_api_resources_03.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: api
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}

@@ -1,0 +1,33 @@
+=== BEGIN SS-F resources ===
+Thu Nov 26 11:28:58 UTC 2026
+06a8381
+minikube
+
+$ kubectl -n rahbar top pods
+NAME                                CPU(cores)   MEMORY(bytes)   
+api-76df6f8749-hnkfn                9m           76Mi            
+api-76df6f8749-j6snn                8m           71Mi            
+api-76df6f8749-xqttm                8m           68Mi            
+api-candidate-03-779dd85785-qvgvv   9m           70Mi            
+chroma-0                            5m           171Mi           
+ragops-helper-03                    0m           1Mi             
+redis-5db6cb7bdf-n9qsm              38m          18Mi            
+ui-7ff8c5f7b5-mkxh5                 1m           2Mi             
+ui-7ff8c5f7b5-sfc7w                 1m           2Mi             
+
+$ kubectl -n rahbar get pods --field-selector=status.phase=Running -o custom-columns=POD:.metadata.name,CPU_REQ:.spec.containers[0].resources.requests.cpu,CPU_LIM:.spec.containers[0].resources.limits.cpu,MEM_REQ:.spec.containers[0].resources.requests.memory,MEM_LIM:.spec.containers[0].resources.limits.memory
+POD                                 CPU_REQ   CPU_LIM   MEM_REQ   MEM_LIM
+api-76df6f8749-hnkfn                100m      500m      128Mi     256Mi
+api-76df6f8749-j6snn                100m      500m      128Mi     256Mi
+api-76df6f8749-xqttm                100m      500m      128Mi     256Mi
+api-candidate-03-779dd85785-qvgvv   100m      500m      256Mi     512Mi
+chroma-0                            100m      1         384Mi     1Gi
+ragops-helper-03                    10m       100m      16Mi      64Mi
+redis-5db6cb7bdf-n9qsm              50m       300m      64Mi      256Mi
+ui-7ff8c5f7b5-mkxh5                 10m       100m      16Mi      64Mi
+ui-7ff8c5f7b5-sfc7w                 10m       100m      16Mi      64Mi
+
+$ kubectl -n rahbar get hpa
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+api    Deployment/api   cpu: 8%/70%   3         8         3          21d
+=== END SS-F resources ===

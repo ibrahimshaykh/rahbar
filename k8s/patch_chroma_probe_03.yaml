@@ -1,0 +1,14 @@
+# A03 live patch (A02 base manifest untouched). During heavy ingest Chroma answers the 1s
+# liveness probe too slowly, the kubelet SIGTERMs it (exit 143) and the ingest Job gets
+# "connection refused". Apply: kubectl -n rahbar patch statefulset chroma --patch-file k8s/patch_chroma_probe_03.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: chroma
+          livenessProbe:
+            timeoutSeconds: 10
+            failureThreshold: 6
+          readinessProbe:
+            timeoutSeconds: 10
+            failureThreshold: 6

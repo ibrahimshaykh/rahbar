@@ -1,0 +1,55 @@
+# file name -> stable doc_id and metadata (harness_03/03 section 3.2, decision D3-02).
+# Batch A (corpus/raw, eval/fixtures). Batch B carries doc_id in its own front matter.
+# Fixture .md files are single-page by construction, hence page_count: 1.
+# Dates are deliberately absent where the source does not state one (L1: never invent).
+academic-rules-handbook-jun-2026.pdf:
+  doc_id: academic-rules-handbook
+  title: Academic Rules Handbook (Jun 2026)
+  version: "2026-06"
+undergraduate-academic-rules-aug-2023.pdf:
+  doc_id: undergraduate-academic-rules
+  title: Undergraduate Academic Rules (Aug 2023)
+  version: "2023-08"
+prospectus-2026-academic-rules-and-regulations.pdf:
+  doc_id: prospectus-academic-rules
+  title: Prospectus 2026 - Academic Rules and Regulations
+  version: "2026"
+student-handbook-jun-2026.pdf:
+  doc_id: student-handbook
+  title: Student Handbook (Jun 2026)
+  version: "2026-06"
+annual-report-2019-20.pdf:
+  doc_id: annual-report-2019-20
+  title: Annual Report 2019-20
+  version: "2019-20"
+annual-report-2023-24.pdf:
+  doc_id: annual-report-2023-24
+  title: Annual Report 2023-24
+  version: "2023-24"
+fee-structure-page.html:
+  doc_id: fee-structure
+  title: Fee Structure page
+  version: "2026-27"
+grading-page.html:
+  doc_id: grading-policy
+  title: Grading page
+  version: "2026"
+faculty-entrepreneurship-and-technical-start-ups-policy.pdf:
+  doc_id: faculty-entrepreneurship-policy
+  title: Faculty Entrepreneurship and Technical Start-ups Policy
+  version: "2022-05"
+academic-rules-2023.md:
+  doc_id: fixture-academic-rules-2023
+  title: Academic Rules (2023 edition, fixture)
+  version: "2023"
+  page_count: 1
+academic-rules-2026.md:
+  doc_id: fixture-academic-rules-2026
+  title: Academic Rules (2026 edition, fixture)
+  version: "2026"
+  page_count: 1
+fees-2026.md:
+  doc_id: fixture-fees-2026
+  title: Fees (2026, fixture)
+  version: "2026"
+  page_count: 1

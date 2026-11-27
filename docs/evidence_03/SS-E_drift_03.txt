@@ -1,0 +1,27 @@
+=== BEGIN SS-E ===
+Thu Nov 26 10:09:00 UTC 2026
+06a8381
+minikube
+# before: 29 golden questions
+
+$ .venv/Scripts/python -m eval.drift_coverage_03 --live eval/live_queries_03.jsonl --golden tests_03/fixtures/golden_pre_expansion_03.jsonl --embed real --check-only
+coverage before: 0.6250 (sim threshold 0.7, embed real)
+  uncovered topic 'library fine late' size 5 queries ['LQ-030', 'LQ-032', 'LQ-033', 'LQ-034', 'LQ-037']
+  uncovered topic 'assignments cgpa chatgpt' size 3 queries ['LQ-011', 'LQ-019', 'LQ-028']
+  uncovered topic 'ask based cost' size 3 queries ['LQ-018', 'LQ-029', 'LQ-039']
+  uncovered topic 'bus fee route' size 2 queries ['LQ-035', 'LQ-036']
+  uncovered topic 'scholarship merit gpa' size 2 queries ['LQ-038', 'LQ-040']
+GAP: coverage 0.62 < 0.85
+# after: 38 golden questions (9 added from uncovered clusters)
+
+$ .venv/Scripts/python -m eval.drift_coverage_03 --live eval/live_queries_03.jsonl --golden eval/golden_03.jsonl --embed real --check-only
+coverage before: 0.8250 (sim threshold 0.7, embed real)
+  uncovered topic 'scholarship ask assignments' size 7 queries ['LQ-011', 'LQ-018', 'LQ-019', 'LQ-028', 'LQ-034', 'LQ-035', 'LQ-040']
+GAP: coverage 0.82 < 0.85
+
+$ wc -l tests_03/fixtures/golden_pre_expansion_03.jsonl eval/golden_03.jsonl eval/golden_expanded_03.jsonl
+   29 tests_03/fixtures/golden_pre_expansion_03.jsonl
+   38 eval/golden_03.jsonl
+    9 eval/golden_expanded_03.jsonl
+   76 total
+=== END SS-E ===

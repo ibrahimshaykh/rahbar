@@ -1,0 +1,15 @@
+# Local-cluster fix, not part of the app: the minikube metrics-server addon has 1 s probes and
+# crash-looped (200+ restarts) on this loaded laptop, so `kubectl top` and the HPA went blind.
+#   kubectl -n kube-system patch deployment metrics-server --patch-file k8s/patch_metrics_server_probe_03.yaml
+# Undo: minikube addons disable metrics-server && minikube addons enable metrics-server
+spec:
+  template:
+    spec:
+      containers:
+        - name: metrics-server
+          livenessProbe:
+            timeoutSeconds: 10
+            failureThreshold: 8
+          readinessProbe:
+            timeoutSeconds: 10
+            failureThreshold: 8

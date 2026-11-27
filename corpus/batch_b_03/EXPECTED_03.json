@@ -1,0 +1,92 @@
+{
+ "_totals": {
+  "standalone": {
+   "accepted": 7,
+   "documents": 14,
+   "quarantined": 7,
+   "superseded_accepted": 0
+  },
+  "with_batch_a_state": {
+   "accepted": 7,
+   "documents": 14,
+   "quarantined": 7,
+   "superseded_accepted": 1
+  }
+ },
+ "academic_rules_handbook_v2026-11_03.md": {
+  "codes": [],
+  "decision": "accept",
+  "with_batch_a_state": {
+   "codes": [
+    "NEWER_VERSION"
+   ],
+   "decision": "supersede"
+  }
+ },
+ "attendance_notice_truncated_03.md": {
+  "codes": [
+   "TRUNCATED"
+  ],
+  "decision": "quarantine"
+ },
+ "corrupt_scan_03.txt": {
+  "codes": [
+   "GARBLED_NON_ASCII"
+  ],
+  "decision": "quarantine"
+ },
+ "empty_stub_03.md": {
+  "codes": [
+   "EMPTY"
+  ],
+  "decision": "quarantine"
+ },
+ "exam_conduct_03.md": {
+  "codes": [],
+  "decision": "accept"
+ },
+ "exam_conduct_copy_03.md": {
+  "codes": [
+   "DUPLICATE_EXACT"
+  ],
+  "decision": "quarantine"
+ },
+ "hostel_rules_03.md": {
+  "codes": [],
+  "decision": "accept"
+ },
+ "hostel_rules_reworded_03.md": {
+  "codes": [
+   "DUPLICATE_NEAR"
+  ],
+  "decision": "quarantine"
+ },
+ "library_policy_03.md": {
+  "codes": [],
+  "decision": "accept"
+ },
+ "library_policy_mirror_03.md": {
+  "codes": [
+   "DUPLICATE_EXACT"
+  ],
+  "decision": "quarantine"
+ },
+ "no_metadata_circular_03.md": {
+  "codes": [
+   "MISSING_METADATA"
+  ],
+  "decision": "quarantine"
+ },
+ "scholarship_rules_03.md": {
+  "codes": [],
+  "decision": "accept"
+ },
+ "student_notice_injected_03.md": {
+  "codes": [],
+  "decision": "accept"
+ },
+ "transport_policy_03.md": {
+  "codes": [],
+  "decision": "accept"
+ }
+}

@@ -1,0 +1,40 @@
+{"id": "LQ-001", "query": "What CGPA do I need to keep so that I do not get a warning?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-001 topic"}
+{"id": "LQ-002", "query": "My CGPA is under 2.0 this semester, will I get a warning for it?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-001 topic"}
+{"id": "LQ-003", "query": "What if my warning count hits three?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-002 topic"}
+{"id": "LQ-004", "query": "Do I need permission from my HoD to register while I am on warning?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-003 topic"}
+{"id": "LQ-005", "query": "If I retake a course, does the new grade replace the old one in my CGPA?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-004 topic"}
+{"id": "LQ-006", "query": "What is an I grade and how long do I have to clear it?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-005 topic"}
+{"id": "LQ-007", "query": "How much money comes back if I drop a course in the first week?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-006 topic"}
+{"id": "LQ-008", "query": "Do I get my refundable deposit back after graduation?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-007 topic"}
+{"id": "LQ-009", "query": "How much is the fee for each credit hour this year?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-008 topic"}
+{"id": "LQ-010", "query": "Can I get the admission fee back if I leave?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-009 topic"}
+{"id": "LQ-011", "query": "Is it okay to use ChatGPT for my assignments?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-010 topic"}
+{"id": "LQ-012", "query": "Can I wear shorts to campus?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-011 topic"}
+{"id": "LQ-013", "query": "What counts as copying someone else's work?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-012 topic"}
+{"id": "LQ-014", "query": "How many students graduated with a bachelor's degree last year?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-013 topic"}
+{"id": "LQ-015", "query": "What GPA gets me onto the Dean's List?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-014 topic"}
+{"id": "LQ-016", "query": "What is the longest time allowed to finish a BS degree?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-015 topic"}
+{"id": "LQ-017", "query": "What happens to a student caught cheating in an exam for the first time?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-016 topic"}
+{"id": "LQ-018", "query": "How do I ask for my paper to be rechecked and what does it cost?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-017 topic"}
+{"id": "LQ-019", "query": "What score on the CGPA scale triggers a probation notice?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-018 topic"}
+{"id": "LQ-020", "query": "How much of my semester fee is returned if I quit within ten days?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-019 topic"}
+{"id": "LQ-021", "query": "After a low semester, how does the warning count change and when does it reset?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-020 topic"}
+{"id": "LQ-022", "query": "Which grade do I get for missing too many classes and what does it signify?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-021 topic"}
+{"id": "LQ-023", "query": "How many days of absence can my department head forgive?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-022 topic"}
+{"id": "LQ-024", "query": "What are the dates and duration of the December mid-term papers?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-023 topic"}
+{"id": "LQ-025", "query": "Can I get a refund of the tuition fee after the third week of classes?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-006 topic"}
+{"id": "LQ-026", "query": "Does the university allow AI tools for research work for projects?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-010 topic"}
+{"id": "LQ-027", "query": "How long can I take to complete my bachelor's if I get readmitted?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-015 topic"}
+{"id": "LQ-028", "query": "Where can I read the grade table with the meaning of FA and W?", "group": "in_domain", "simulated": true, "notes": "paraphrase/variation of G03-021 topic"}
+{"id": "LQ-029", "query": "How do I apply for a hostel room, and who gets priority?", "group": "uncovered", "simulated": true, "notes": "hostel topic (not covered by the original golden set)"}
+{"id": "LQ-030", "query": "What time is the hostel curfew and what is the fine for coming back late?", "group": "uncovered", "simulated": true, "notes": "hostel topic (not covered by the original golden set)"}
+{"id": "LQ-031", "query": "How much is the hostel security deposit and when do I get it back?", "group": "uncovered", "simulated": true, "notes": "hostel topic (not covered by the original golden set)"}
+{"id": "LQ-032", "query": "How many books can I borrow from the library and for how long?", "group": "uncovered", "simulated": true, "notes": "library topic (not covered by the original golden set)"}
+{"id": "LQ-033", "query": "What is the fine for returning a library book late?", "group": "uncovered", "simulated": true, "notes": "library topic (not covered by the original golden set)"}
+{"id": "LQ-034", "query": "What are the library opening hours during final exams?", "group": "uncovered", "simulated": true, "notes": "library topic (not covered by the original golden set)"}
+{"id": "LQ-035", "query": "Which bus routes does the university run and how do I get a seat?", "group": "uncovered", "simulated": true, "notes": "transport topic (not covered by the original golden set)"}
+{"id": "LQ-036", "query": "How much is the semester bus fee for a long route?", "group": "uncovered", "simulated": true, "notes": "transport topic (not covered by the original golden set)"}
+{"id": "LQ-037", "query": "What time does the morning bus leave the first pick-up point?", "group": "uncovered", "simulated": true, "notes": "transport topic (not covered by the original golden set)"}
+{"id": "LQ-038", "query": "How do I apply for the merit scholarship and what GPA is needed?", "group": "uncovered", "simulated": true, "notes": "scholarship topic (not covered by the original golden set)"}
+{"id": "LQ-039", "query": "What does the need-based grant cover and what documents must I submit?", "group": "uncovered", "simulated": true, "notes": "scholarship topic (not covered by the original golden set)"}
+{"id": "LQ-040", "query": "Can I keep a sports scholarship and a merit scholarship together?", "group": "uncovered", "simulated": true, "notes": "scholarship topic (not covered by the original golden set)"}

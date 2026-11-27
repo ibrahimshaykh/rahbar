@@ -1,0 +1,44 @@
+{
+  "schema": "gate_03/1",
+  "name": "candidate_fail",
+  "experiment": "/data/eval/results/experiment_03_candidate_fail_20261126T061318Z.json",
+  "thresholds": {
+    "recall_at_5_max_drop_pp": 2.0,
+    "min_faithfulness": 0.8,
+    "max_p95_latency_ms": 180000.0,
+    "abstention_correctness_min_vs_baseline": 0.0
+  },
+  "checks": [
+    {
+      "name": "recall@5",
+      "value": 6.25,
+      "threshold": 2.0,
+      "label": "recall@5 drop 6.2pp <= 2.0pp",
+      "passed": false
+    },
+    {
+      "name": "faithfulness",
+      "value": 0.9259259259259259,
+      "threshold": 0.8,
+      "label": "faithfulness 0.93 >= 0.80",
+      "passed": true
+    },
+    {
+      "name": "p95",
+      "value": 57141.6119600035,
+      "threshold": 180000.0,
+      "label": "p95 latency 57142ms <= 180000ms",
+      "passed": true
+    },
+    {
+      "name": "abstention",
+      "value": 1.0,
+      "threshold": 1.0,
+      "label": "abstention 1.00 >= 1.00",
+      "passed": true
+    }
+  ],
+  "result": "FAIL",
+  "synthetic_test_fixture": false,
+  "created_at": "20261126T061321Z"
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "gate_03/1",
+  "name": "candidate_pass2",
+  "experiment": "/data/eval/results/experiment_03_candidate_pass2_20261126T080239Z.json",
+  "thresholds": {
+    "recall_at_5_max_drop_pp": 2.0,
+    "min_faithfulness": 0.8,
+    "max_p95_latency_ms": 180000.0,
+    "abstention_correctness_min_vs_baseline": 0.0
+  },
+  "checks": [
+    {
+      "name": "recall@5",
+      "value": 0.0,
+      "threshold": 2.0,
+      "label": "recall@5 drop 0.0pp <= 2.0pp",
+      "passed": true
+    },
+    {
+      "name": "faithfulness",
+      "value": 0.8888888888888888,
+      "threshold": 0.8,
+      "label": "faithfulness 0.89 >= 0.80",
+      "passed": true
+    },
+    {
+      "name": "p95",
+      "value": 101390.51921200007,
+      "threshold": 180000.0,
+      "label": "p95 latency 101391ms <= 180000ms",
+      "passed": true
+    },
+    {
+      "name": "abstention",
+      "value": 0.8333333333333334,
+      "threshold": 1.0,
+      "label": "abstention 0.83 >= 1.00",
+      "passed": false
+    }
+  ],
+  "result": "FAIL",
+  "synthetic_test_fixture": false,
+  "created_at": "20261126T080239Z"
+}

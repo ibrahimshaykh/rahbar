@@ -1,0 +1,11 @@
+# Live patch from measurement (docs/evidence_03/F-T07_kubectl_top_03.txt): chroma peaked at 282Mi with 1160 chunks, so the
+# request is raised above the peak; limits unchanged.
+#   kubectl -n rahbar patch statefulset chroma --patch-file k8s/patch_chroma_resources_03.yaml
+spec:
+  template:
+    spec:
+      containers:
+        - name: chroma
+          resources:
+            requests: {cpu: 100m, memory: 384Mi}
+            limits: {cpu: "1", memory: 1Gi}

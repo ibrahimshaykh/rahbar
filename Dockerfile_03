@@ -1,0 +1,44 @@
+# Image rahbar-ragops-03:dev. Build from the repo root:
+#   docker build -f Dockerfile_03 -t rahbar-ragops-03:dev . && minikube image load rahbar-ragops-03:dev
+# Runs the ingest Job, the eval Job, and (uvicorn app_03:app) the candidate / live API.
+# Adds nothing beyond the A02 requirement files and the two apt packages. No raw corpus, no secrets.
+FROM python:3.12-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/app:/app/api:/app/indexer \
+    RAGOPS_ROOT=/data
+
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y tesseract-ocr poppler-utils \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY api/requirements.txt /tmp/api-req.txt
+COPY indexer/requirements.txt /tmp/idx-req.txt
+RUN pip install --no-cache-dir -r /tmp/api-req.txt -r /tmp/idx-req.txt
+
+COPY api /app/api
+COPY indexer /app/indexer
+COPY eval /app/eval
+COPY config /app/config
+COPY corpus/batch_b_03 /app/corpus/batch_b_03
+# Baked Batch A corpus (populated by `make images`, see Makefile).
+COPY indexer/corpus-baked /corpus-baked
+
+# A Windows checkout with core.autocrlf=true gives CRLF files: sh cannot run such a script.
+RUN sed -i 's/\r$//' /app/eval/job_entry_03.sh /app/corpus/batch_b_03/*
+# Fail the build, not the cluster, when the corpus was never fetched and baked.
+RUN find /corpus-baked -type f ! -name .gitkeep | grep -q . \
+ || { echo "corpus-baked is empty: run 'make corpus' then 'make images' first" >&2; exit 1; }
+
+RUN groupadd --gid 10001 rahbar \
+ && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin rahbar \
+ && mkdir -p /data \
+ && chown -R 10001:10001 /app /data /corpus-baked
+USER 10001
+
+CMD ["python", "-c", "print('rahbar-ragops-03: pass a command')"]

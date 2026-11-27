@@ -1,0 +1,107 @@
+# A2-T08 lifecycle demo (generated 2026-11-23T16:53:34Z); RAGOPS_ROOT=.ragops_03/a2_demo
+
+## STEP 1: ingest Batch A (first run: everything is new)
+{"ts": "2026-11-23T16:54:15Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 4, "accepted": 4, "quarantined": 0, "unchanged_docs": 0, "embedded_chunks": 320, "kept_chunks": 0, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165335Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165335Z.md"}, "collection_version": 1, "seconds": 39.6}
+embedded_chunks=320 kept_chunks=0 deleted_chunks=0 deactivated_chunks=0 collection_version=1
+
+## STEP 2: ingest Batch A again, unchanged (expect embedded_chunks=0, same collection_version)
+{"ts": "2026-11-23T16:54:59Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 4, "accepted": 4, "quarantined": 0, "unchanged_docs": 4, "embedded_chunks": 0, "kept_chunks": 320, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165417Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165417Z.md"}, "collection_version": 1, "seconds": 42.51}
+embedded_chunks=0 kept_chunks=320 deleted_chunks=0 deactivated_chunks=0 collection_version=1
+
+## STEP 3: ingest Batch A + Batch B (A1 quarantines 7; handbook 2026-11 supersedes 2026-06)
+before: active retrieval returns:
+  top active chunk with the rule: academic-rules-handbook:2026-06:0048  ->  'maximum of 20% of the total attendance may be condoned'
+{"ts": "2026-11-23T16:55:41Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 18, "accepted": 11, "quarantined": 7, "unchanged_docs": 3, "embedded_chunks": 41, "kept_chunks": 11, "deleted_chunks": 0, "deactivated_chunks": 309, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165502Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165502Z.md"}, "collection_version": 2, "seconds": 39.78}
+embedded_chunks=41 kept_chunks=11 deleted_chunks=0 deactivated_chunks=309 collection_version=2
+archive of the superseded version:
+academic-rules-handbook-jun-2026.pdf
+meta_03.json
+after: active retrieval returns:
+  top active chunk with the rule: academic-rules-handbook:2026-11:0000  ->  'maximum of 10% of the total attendance may be condoned'
+  handbook version=2026-06 is_active=False superseded=True chunks=309
+  handbook version=2026-11 is_active=True superseded=False chunks=7
+  OK: is_active and superseded are exact complements
+
+## STEP 4: ingest A + B again, nothing changed (expect embedded_chunks=0)
+{"ts": "2026-11-23T16:56:20Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 18, "accepted": 10, "quarantined": 8, "unchanged_docs": 10, "embedded_chunks": 0, "kept_chunks": 52, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165544Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165544Z.md"}, "collection_version": 2, "seconds": 35.54}
+embedded_chunks=0 kept_chunks=52 deleted_chunks=0 deactivated_chunks=0 collection_version=2
+
+## STEP 5: edit ONE paragraph of one Batch B document (hostel_rules deposit amount) and re-ingest
+before:
+  academic-rules-handbook            chunks=316 sha(sorted id=chunk_hash)=8a58c0890e6ee99a
+  exam-conduct                       chunks=  6 sha(sorted id=chunk_hash)=a56619b7bb936e2c
+  fixture-academic-rules-2023        chunks=  4 sha(sorted id=chunk_hash)=f22057ab0348320b
+  fixture-academic-rules-2026        chunks=  4 sha(sorted id=chunk_hash)=0cc1178a307e9df4
+  fixture-fees-2026                  chunks=  3 sha(sorted id=chunk_hash)=6d22c322349a92aa
+  hostel-rules                       chunks=  6 sha(sorted id=chunk_hash)=abbaba06101cfd6b
+  library-policy                     chunks=  6 sha(sorted id=chunk_hash)=66d78d87ec2f8a3b
+  scholarship-rules                  chunks=  6 sha(sorted id=chunk_hash)=192c625ba174ee29
+  student-notice-injected            chunks=  4 sha(sorted id=chunk_hash)=9f29e25060722926
+  transport-policy                   chunks=  6 sha(sorted id=chunk_hash)=cedf66f882b2fea9
+{"ts": "2026-11-23T16:56:55Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 18, "accepted": 10, "quarantined": 8, "unchanged_docs": 9, "embedded_chunks": 1, "kept_chunks": 51, "deleted_chunks": 1, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165622Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165622Z.md"}, "collection_version": 3, "seconds": 33.12}
+embedded_chunks=1 kept_chunks=51 deleted_chunks=1 deactivated_chunks=0 collection_version=3
+after (only hostel-rules may differ):
+  academic-rules-handbook            chunks=316 sha(sorted id=chunk_hash)=8a58c0890e6ee99a
+  exam-conduct                       chunks=  6 sha(sorted id=chunk_hash)=a56619b7bb936e2c
+  fixture-academic-rules-2023        chunks=  4 sha(sorted id=chunk_hash)=f22057ab0348320b
+  fixture-academic-rules-2026        chunks=  4 sha(sorted id=chunk_hash)=0cc1178a307e9df4
+  fixture-fees-2026                  chunks=  3 sha(sorted id=chunk_hash)=6d22c322349a92aa
+  hostel-rules                       chunks=  6 sha(sorted id=chunk_hash)=9a5ed86d58ac163d
+  library-policy                     chunks=  6 sha(sorted id=chunk_hash)=66d78d87ec2f8a3b
+  scholarship-rules                  chunks=  6 sha(sorted id=chunk_hash)=192c625ba174ee29
+  student-notice-injected            chunks=  4 sha(sorted id=chunk_hash)=9f29e25060722926
+  transport-policy                   chunks=  6 sha(sorted id=chunk_hash)=cedf66f882b2fea9
+
+## STEP 6: delete a document and prove there are no orphans
+before delete:
+{
+ "chunks_by_document": {
+  "academic-rules-handbook": 316,
+  "exam-conduct": 6,
+  "fixture-academic-rules-2023": 4,
+  "fixture-academic-rules-2026": 4,
+  "fixture-fees-2026": 3,
+  "hostel-rules": 6,
+  "library-policy": 6,
+  "scholarship-rules": 6,
+  "student-notice-injected": 4,
+  "transport-policy": 6
+ },
+ "orphans": 0,
+ "orphan_ids": [],
+ "missing_from_chroma": []
+}
+{"ts": "2026-11-23T16:56:58Z", "logger": "rahbar.indexer.delete_03", "msg": "orphan report", "orphans": 0}
+orphans=0
+{"ts": "2026-11-23T16:56:58Z", "logger": "rahbar.indexer.delete_03", "msg": "delete finished", "doc_id": "library-policy", "deleted_chunks": 6, "archived_path": "archive/library-policy/2026-09/library_policy_03.md", "collection_version": 4}
+after delete (library-policy row must be absent, orphans=0):
+{
+ "chunks_by_document": {
+  "academic-rules-handbook": 316,
+  "exam-conduct": 6,
+  "fixture-academic-rules-2023": 4,
+  "fixture-academic-rules-2026": 4,
+  "fixture-fees-2026": 3,
+  "hostel-rules": 6,
+  "scholarship-rules": 6,
+  "student-notice-injected": 4,
+  "transport-policy": 6
+ },
+ "orphans": 0,
+ "orphan_ids": [],
+ "missing_from_chroma": []
+}
+{"ts": "2026-11-23T16:56:59Z", "logger": "rahbar.indexer.delete_03", "msg": "orphan report", "orphans": 0}
+orphans=0
+
+## STEP 7: rollback the handbook to 2026-06, then re-ingest (also re-adds the deleted library-policy, still present in Batch B) to get 2026-11 back
+{"ts": "2026-11-23T16:57:01Z", "logger": "rahbar.indexer.rollback_03", "msg": "rollback", "doc_id": "academic-rules-handbook", "from": "2026-11", "to": "2026-06", "reactivated_chunks": 309, "reembedded_chunks": 0, "collection_version": 5}
+  top active chunk with the rule: academic-rules-handbook:2026-06:0048  ->  'maximum of 20% of the total attendance may be condoned'
+{"ts": "2026-11-23T16:57:02Z", "logger": "rahbar.indexer.rollback_03", "msg": "rollback", "doc_id": "academic-rules-handbook", "status": "already_active", "to": "2026-06"}
+(second identical rollback = idempotent, see already_active above)
+{"ts": "2026-11-23T16:57:39Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 18, "accepted": 11, "quarantined": 7, "unchanged_docs": 8, "embedded_chunks": 13, "kept_chunks": 39, "deleted_chunks": 7, "deactivated_chunks": 309, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165704Z.json", "md": ".ragops_03\\a2_demo\\results\\verification_report_03_20261123T165704Z.md"}, "collection_version": 6, "seconds": 35.74}
+embedded_chunks=13 kept_chunks=39 deleted_chunks=7 deactivated_chunks=309 collection_version=6
+  top active chunk with the rule: academic-rules-handbook:2026-11:0000  ->  'maximum of 10% of the total attendance may be condoned'
+
+## STEP 8: final orphan report
+orphans=0

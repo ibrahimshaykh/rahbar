@@ -1,0 +1,11 @@
+# F-T05 ingest run 2 (unchanged corpus) - expect embedded_chunks=0
+$ kubectl -n rahbar get job,pods -l app=ragops-ingest-03
+NAME                         STATUS     COMPLETIONS   DURATION   AGE
+job.batch/ragops-ingest-03   Complete   1/1           6m16s      6m36s
+
+NAME                         READY   STATUS      RESTARTS   AGE
+pod/ragops-ingest-03-hdvz2   0/1     Completed   0          6m36s
+$ kubectl -n rahbar logs job/ragops-ingest-03
+{"ts": "2026-11-25T19:04:02Z", "logger": "rahbar.indexer.ingest_03", "msg": "optional corpus skipped", "corpus": "/data/incoming"}
+{"ts": "2026-11-25T19:10:00Z", "logger": "rahbar.indexer.ingest_03", "msg": "ingest finished", "documents": 23, "accepted": 12, "quarantined": 11, "unchanged_docs": 12, "embedded_chunks": 0, "kept_chunks": 703, "deleted_chunks": 0, "deactivated_chunks": 0, "collection": "rahbar_ragops_03", "dry_run": false, "report": {"json": "/data/eval/results/verification_report_03_20261125T190402Z.json", "md": "/data/eval/results/verification_report_03_20261125T190402Z.md"}, "collection_version": 1, "seconds": 358.39}
+embedded_chunks=0 kept_chunks=703 deleted_chunks=0 deactivated_chunks=0 collection_version=1

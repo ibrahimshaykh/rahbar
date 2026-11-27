@@ -1,0 +1,105 @@
+# Candidate API: a second Deployment, never a replacement of `api` until promoted.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-candidate-03
+  namespace: rahbar
+  labels:
+    app: api-candidate-03
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: api-candidate-03
+  template:
+    metadata:
+      labels:
+        app: api-candidate-03
+        app.kubernetes.io/part-of: rahbar
+        ragops: "03"
+    spec:
+      serviceAccountName: rahbar-ragops-03
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api
+          image: rahbar-ragops-03:dev
+          imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "app_03:app", "--host", "0.0.0.0", "--port", "8000", "--app-dir", "/app/api"]
+          ports:
+            - {name: http, containerPort: 8000}
+          envFrom:
+            - configMapRef:
+                name: rahbar-config                  # shared base, incl. the embedding pin
+            - configMapRef:
+                name: rahbar-config-candidate-03     # later source wins: candidate overrides
+          env:
+            - {name: RAGOPS_ROOT, value: /data}
+            - {name: TRACE_HTTP_ENABLED, value: "false"}
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: {name: rahbar-secret, key: LLM_API_KEY, optional: true}
+          startupProbe:
+            httpGet: {path: /healthz, port: 8000}
+            failureThreshold: 60
+            periodSeconds: 2
+            timeoutSeconds: 3
+          # relaxed like the live patch: the loaded single-node cluster stalls during evals
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8000}
+            periodSeconds: 20
+            failureThreshold: 8
+            timeoutSeconds: 15
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8000}
+            periodSeconds: 10
+            failureThreshold: 6
+            timeoutSeconds: 15
+          resources:                     # initial, not measured; A02 api values as the starting point
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: ragops-data, mountPath: /data}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: ragops-data
+          persistentVolumeClaim:
+            claimName: rahbar-ragops-pvc-03
+        - {name: tmp, emptyDir: {}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-candidate-03
+  namespace: rahbar
+  labels:
+    app: api-candidate-03
+    app.kubernetes.io/part-of: rahbar
+    ragops: "03"
+spec:
+  type: ClusterIP
+  selector:
+    app: api-candidate-03
+  ports:
+    - {name: http, port: 8000, targetPort: http}

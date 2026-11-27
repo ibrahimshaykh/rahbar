@@ -125,7 +125,8 @@ def test_cache_hit_rewrites_the_request_id() -> None:                  # T-ASK-0
     try:
         cache = _FakeCache(hit=_FakeCacheHit(stored))
         response, cached = answer_question(
-            "q", _Retriever(_passages(0.9)), _ExplodingProvider(), settings, cache)
+            "What is the attendance rule?", _Retriever(_passages(0.9)), _ExplodingProvider(),
+            settings, cache)
     finally:
         request_id_var.reset(token)
     assert cached is True
@@ -148,7 +149,7 @@ def test_citations_are_enforced_after_generation() -> None:            # T-ASK-1
     retriever = _Retriever(_passages(0.9))
     provider = _Provider(_answer(
         citations=[Citation(source="invented.pdf", section="9.9", page=1)]))
-    response, _ = answer_question("q", retriever, provider, settings)
+    response, _ = answer_question("What is the grading policy?", retriever, provider, settings)
     assert response.citations == []
     assert response.answered_from_context is False, \
         "every citation was fabricated, so this is not a grounded answer"
@@ -166,7 +167,7 @@ def test_cache_is_written_only_for_a_clean_high_confidence_answer() -> None:  # 
     provider2 = _Provider(_answer(
         citations=[Citation(source="s.pdf", section="1", page=1)]))
     cache2 = _FakeCache()
-    answer_question("q2", retriever2, provider2, settings, cache2)
+    answer_question("What is the refund policy?", retriever2, provider2, settings, cache2)
     assert len(cache2.put_calls) == 1, "a clean, cited, high-confidence answer should be cached"
 
 
@@ -175,7 +176,22 @@ def test_retrieved_list_mirrors_the_passages_exactly() -> None:        # T-ASK-1
     passages = _passages(0.9, 0.8, 0.7)
     retriever = _Retriever(passages)
     provider = _Provider(_answer())
-    response, _ = answer_question("q", retriever, provider, settings)
+    response, _ = answer_question("What is the grading policy?", retriever, provider, settings)
     assert len(response.retrieved) == len(passages)
     assert [r.chunk_id for r in response.retrieved] == [p.chunk_id for p in passages]
     assert [r.score for r in response.retrieved] == [p.score for p in passages]
+
+
+def test_small_talk_is_answered_without_retrieval_or_generation() -> None:  # T-ASK-13
+    # Live-demo bug: "yoo" came back as "Grounded in the documents".
+    settings = get_settings()
+    provider = _ExplodingProvider()
+    retriever = _Retriever(_passages(0.9, 0.8))
+    cache = _FakeCache()
+    response, cached = answer_question("yoo", retriever, provider, settings, cache=cache)
+    assert response.answered_from_context is False
+    assert response.citations == []
+    assert response.retrieved == []
+    assert retriever.calls == 0, "small talk must not reach Chroma"
+    assert provider.calls == 0, "small talk must not reach the model"
+    assert cache.put_calls == [] and cached is False
