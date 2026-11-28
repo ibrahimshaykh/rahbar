@@ -336,3 +336,12 @@ def test_ui_image_unpins_nginx_so_security_fixes_install():
     upgrade = text.index("apk upgrade --no-cache --repository")
     assert unpin < upgrade and "nginx.org/packages/alpine" in text
     assert text.rstrip().splitlines()[-1].startswith("CMD") and "USER 101" in text
+
+
+def test_api_image_installs_debian_security_fixes():
+    """The indexer image ran `apt-get upgrade` but the api image did not, so a newly fixed Debian
+    CVE in the shared base image failed CI's `scan (api)` on unchanged code."""
+    text = (ROOT / "api" / "Dockerfile").read_text(encoding="utf-8")
+    upgrade = text.index("apt-get upgrade -y")
+    assert text.index("apt-get update") < upgrade < text.index("USER 10001")
+    assert "rm -rf /var/lib/apt/lists/*" in text

@@ -13,8 +13,8 @@ Repository: https://github.com/ibrahimshaykh/rahbar (branch `dev`; `main` only t
 Assignment 03 wraps it with RAGOps layers: a verification gate and quarantine, incremental versioned ingest with rollback,
 three-level offline evaluation, an experiment and release gate, JSONL traces with metrics and guardrails, drift and
 query-coverage checks, and a Kubernetes deployment with Jobs, a CronJob, a ConfigMap-driven gate and a controlled
-release. One Assignment 02 file changed, `ui/Dockerfile`, so that nginx security fixes install
-(CI image scan); every new file ends in `_03` (design: `docs/PIPELINE_03.md`).
+release. Two Assignment 02 files changed, `ui/Dockerfile` and `api/Dockerfile`, so that nginx and Debian
+security fixes install (CI image scan); every new file ends in `_03` (design: `docs/PIPELINE_03.md`).
 Results below are copied from files produced by our own runs; a cell reading `PENDING-HUMAN(<id>)` has no run yet.
 
 ## 1. Figure 3 stages mapped to this pipeline (G.1)

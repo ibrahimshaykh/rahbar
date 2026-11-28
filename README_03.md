@@ -105,3 +105,6 @@ CI's `scan (ui)` job failed on 26 November 2026: nginx 1.30.6 in the base image 
 vulnerabilities. The base image pins nginx in `/etc/apk/world`, so `apk upgrade` skipped it. `ui/Dockerfile` now
 drops those pins and upgrades from nginx.org's repository (nginx 1.30.8, Trivy: 0 findings).
 
+On 27 November 2026 `scan (api)` failed the same way on unchanged code: Debian fixed a CVE in a base-image
+package, and unlike the indexer image the api image never ran `apt-get upgrade`. `api/Dockerfile` now does.
+
