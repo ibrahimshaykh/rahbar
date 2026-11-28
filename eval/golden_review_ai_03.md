@@ -63,7 +63,8 @@ was searched for terms that would answer it.
 | G03-028 Dean's List cash prize | clean (near miss) | Dean's List gives "a recognition certificate" and a website listing; no cash |
 | G03-029 clinic weekend hours | **borderline** | annual-report-2023-24.pdf p85: "Operating hours: 8:00 AM to 4:00 PM"; weekends not mentioned |
 
-**G03-029 needs a partner decision.** An answer of "8 AM to 4 PM" is grounded in the corpus, so scoring
+**G03-029 decision (D3-22): kept.** The question asks about weekends, which the corpus never states, and the golden
+set is frozen: every stored baseline and candidate result was scored on it. Original note: An answer of "8 AM to 4 PM" is grounded in the corpus, so scoring
 it as a must-abstain failure is debatable. Options: keep it (the question asks about weekends, which the
 corpus never states), or reword it to something absent, such as the clinic's phone extension.
 
