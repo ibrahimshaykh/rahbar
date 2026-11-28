@@ -345,3 +345,12 @@ def test_api_image_installs_debian_security_fixes():
     upgrade = text.index("apt-get upgrade -y")
     assert text.index("apt-get update") < upgrade < text.index("USER 10001")
     assert "rm -rf /var/lib/apt/lists/*" in text
+
+
+def test_image_builds_skip_the_layer_cache_so_upgrades_stay_current():
+    """With `cache-from: type=gha` the unchanged `apk upgrade`/`apt-get upgrade` layer was reused
+    from an old run, so newly fixed CVEs never installed and `scan (ui)` failed on unchanged code."""
+    for wf in ("ci.yml", "cd.yml"):
+        text = (ROOT / ".github" / "workflows" / wf).read_text(encoding="utf-8")
+        assert "type=gha" not in text, wf
+        assert text.count("uses: docker/build-push-action") == text.count("no-cache: true") == 3, wf

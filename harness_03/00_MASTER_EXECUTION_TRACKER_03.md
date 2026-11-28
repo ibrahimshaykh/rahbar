@@ -156,6 +156,8 @@ _(empty)_
 
 | D3-20 | Edit A02 `api/Dockerfile` to run `apt-get upgrade` (owner asked to fix the pipeline) | a newly fixed Debian CVE failed `scan (api)` on unchanged code; the indexer image already upgraded |
 
+| D3-21 | CI and CD image builds use `no-cache: true` instead of the gha layer cache | the cached `apk`/`apt-get upgrade` layer went stale, so `scan (ui)` failed on unchanged code |
+
 ## Run Log (raw outputs are the committed files)
 | Run | Evidence |
 |---|---|

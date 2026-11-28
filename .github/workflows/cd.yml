@@ -72,24 +72,24 @@ jobs:
           context: api
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-api:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: push indexer
         uses: docker/build-push-action@v6
         with:
           context: indexer
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-indexer:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: push ui
         uses: docker/build-push-action@v6
         with:
           context: ui
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/rahbar-ui:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: record the published tags
         run: |
           echo "### Published images" >> $GITHUB_STEP_SUMMARY

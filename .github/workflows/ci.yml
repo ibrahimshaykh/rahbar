@@ -134,8 +134,8 @@ jobs:
           push: false              # NEVER push from a pull request
           load: true
           tags: rahbar-api:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: build indexer
         uses: docker/build-push-action@v6
         with:
@@ -143,8 +143,8 @@ jobs:
           push: false
           load: true
           tags: rahbar-indexer:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: build ui
         uses: docker/build-push-action@v6
         with:
@@ -152,8 +152,8 @@ jobs:
           push: false
           load: true
           tags: rahbar-ui:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Cached upgrade layers go stale: fresh builds install today's CVE fixes.
+          no-cache: true
       - name: export the images for the e2e job
         run: |
           docker save rahbar-api:ci rahbar-indexer:ci rahbar-ui:ci -o /tmp/rahbar-images.tar
