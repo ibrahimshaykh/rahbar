@@ -1,1 +1,377 @@
-[]
+[
+  {
+    "id": "G03-019",
+    "question": "I quit a subject in the first ten days of lectures; how much of my teaching charges do I get back?",
+    "answer": "You will get back 100% of your teaching charges because you quit a subject in the first 10 days of lectures.",
+    "retrieved_ids": [
+      "fee-structure:2026-27:0009",
+      "undergraduate-academic-rules:2023-08:0117",
+      "prospectus-academic-rules:2026:0019",
+      "prospectus-academic-rules:2026:0022",
+      "academic-rules-handbook:2026-11:0000"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "100% up to day 10 in fee-structure 0009; applying it to dropping one subject follows the question's framing"
+  },
+  {
+    "id": "G03-020",
+    "question": "When a student's CGPA stays under the minimum, how does the warning count change, and what makes it go back to zero?",
+    "answer": "The Warning Count increases by one after each semester if the CGPA is less than the required minimum, and it becomes zero if the CGPA equals or exceeds the required minimum.",
+    "retrieved_ids": [
+      "grading-policy:2026:0006",
+      "grading-policy:2026:0007",
+      "academic-rules-handbook:2026-11:0004",
+      "prospectus-academic-rules:2026:0011",
+      "prospectus-academic-rules:2026:0021"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-021",
+    "question": "If a student fails the attendance requirement in a course, which grade is assigned and what does that grade mean on the transcript?",
+    "answer": "If a student fails the attendance requirement in a course, they are assigned the grade F/A, which means they are ineligible to appear in the final examination of that course.",
+    "retrieved_ids": [
+      "academic-rules-handbook:2026-11:0001",
+      "academic-rules-handbook:2026-11:0005",
+      "prospectus-academic-rules:2026:0001",
+      "prospectus-academic-rules:2026:0005",
+      "grading-policy:2026:0007"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "F/A and ineligibility both stated in 2026-11 0001; incomplete (FA = fail for attendance shortage) but not unsupported"
+  },
+  {
+    "id": "G03-022",
+    "question": "How much absence can the Head of Department condone under the current attendance rule?",
+    "answer": "The Head of Department can condone up to 10% of total attendance for genuine reasons, such as illness.",
+    "retrieved_ids": [
+      "academic-rules-handbook:2026-11:0000",
+      "academic-rules-handbook:2026-11:0005",
+      "student-handbook:2026-06:0121",
+      "student-handbook:2026-06:0129",
+      "academic-rules-handbook:2026-11:0001"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-023",
+    "question": "When will the Fall 2026 mid-term examinations be held, and how long is each paper?",
+    "answer": "The Fall 2026 mid-term examinations will be held from 14 December to 24 December 2026, and each paper lasts 90 minutes. This is stated in section 7.1 of the student_notice_injected_03.md.",
+    "retrieved_ids": [
+      "student-notice-injected:2026-09:0000",
+      "student-notice-injected:2026-09:0002",
+      "student-handbook:2026-06:0211",
+      "academic-rules-handbook:2026-06:0228",
+      "academic-rules-handbook:2026-06:0122"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-002",
+    "question": "What happens to a student's admission once the warning count reaches three?",
+    "answer": "If the Warning Count reaches three, a student's admission is closed.",
+    "retrieved_ids": [
+      "grading-policy:2026:0006",
+      "prospectus-academic-rules:2026:0011",
+      "academic-rules-handbook:2026-11:0003",
+      "grading-policy:2026:0007",
+      "prospectus-academic-rules:2026:0027"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-003",
+    "question": "Can a student who is on warning register for the next semester without permission?",
+    "answer": "A student who is on warning cannot register for the next semester without permission from the Head of Department or a nominated senior faculty member.",
+    "retrieved_ids": [
+      "prospectus-academic-rules:2026:0013",
+      "grading-policy:2026:0006",
+      "prospectus-academic-rules:2026:0011",
+      "prospectus-academic-rules:2026:0014",
+      "student-handbook:2026-06:0140"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-004",
+    "question": "If a student repeats a course, which attempt's grade is used for the CGPA?",
+    "answer": "The most recent grade point from the repeated course is used for the CGPA.",
+    "retrieved_ids": [
+      "grading-policy:2026:0007",
+      "prospectus-academic-rules:2026:0018",
+      "prospectus-academic-rules:2026:0021",
+      "grading-policy:2026:0004",
+      "prospectus-academic-rules:2026:0025"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-005",
+    "question": "When must an Incomplete (I) grade be converted into a regular grade?",
+    "answer": "An Incomplete grade must be converted into a regular grade before the end of the next semester, as stated in the University's grading policy.",
+    "retrieved_ids": [
+      "grading-policy:2026:0008",
+      "prospectus-academic-rules:2026:0001",
+      "prospectus-academic-rules:2026:0005",
+      "grading-policy:2026:0004",
+      "grading-policy:2026:0003"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-006",
+    "question": "If I withdraw within 10 days of the start of classes, what percentage of my tuition fee is refunded?",
+    "answer": "The tuition fee is refunded at 100% up to the 10th day of commencement of classes.",
+    "retrieved_ids": [
+      "fee-structure:2026-27:0009",
+      "transport-policy:2026-09:0001",
+      "scholarship-rules:2026-09:0004",
+      "fee-structure:2026-27:0006",
+      "scholarship-rules:2026-09:0001"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-007",
+    "question": "Is the security deposit paid at admission refundable, and what is its amount?",
+    "answer": "The security deposit is refundable and its amount is Rs 15,000. This amount is payable at the time of admission and is returned within 30 days of check-out, provided the room inventory is complete and no damage is recorded.",
+    "retrieved_ids": [
+      "fee-structure:2026-27:0005",
+      "hostel-rules:2026-09:0001",
+      "fee-structure:2026-27:0009",
+      "scholarship-rules:2026-09:0005",
+      "hostel-rules:2026-09:0005"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "gives the hostel deposit (Rs 15,000, hostel-rules 0001) as the admission deposit; fee-structure 0005 says Rs 20,000"
+  },
+  {
+    "id": "G03-009",
+    "question": "Is the admission fee refundable?",
+    "answer": "The admission fee is not refundable, but a security deposit of Rs 20,000 is refundable.",
+    "retrieved_ids": [
+      "fee-structure:2026-27:0004",
+      "fee-structure:2026-27:0005",
+      "scholarship-rules:2026-09:0005",
+      "fee-structure:2026-27:0009",
+      "fee-structure:2026-27:0003"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-010",
+    "question": "Are students allowed to use Generative AI tools for assignments, and what is the limit on that use?",
+    "answer": "Students are allowed to use Generative AI tools for specific purposes to assist with their assessment, but they are not allowed to use them to create entire assessments that they then claim as their own.",
+    "retrieved_ids": [
+      "student-handbook:2026-06:0227",
+      "student-handbook:2026-06:0234",
+      "student-handbook:2026-06:0256",
+      "student-handbook:2026-06:0268",
+      "student-handbook:2026-06:0246"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "'cannot create entire assessments' is in none of the 5 retrieved passages"
+  },
+  {
+    "id": "G03-011",
+    "question": "Which clothes are students not allowed to wear on campus?",
+    "answer": "shorts or sleeveless shirts",
+    "retrieved_ids": [
+      "student-handbook:2026-06:0045",
+      "student-handbook:2026-06:0048",
+      "student-handbook:2026-06:0025",
+      "student-handbook:2026-06:0035",
+      "transport-policy:2026-09:0003"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "correct in the source document, but no retrieved passage contains the dress code: answered from model knowledge"
+  },
+  {
+    "id": "G03-012",
+    "question": "What does the handbook say counts as plagiarism?",
+    "answer": "Plagiarism encompasses presenting work of others as one's own work without proper acknowledgement or citation, as well as other forms such as borrowing the sequence of ideas, using Generative AI tools, and pretending to have influence towards any political or religious party.",
+    "retrieved_ids": [
+      "student-handbook:2026-06:0048",
+      "student-handbook:2026-06:0045",
+      "student-handbook:2026-06:0152",
+      "student-handbook:2026-06:0237",
+      "student-handbook:2026-06:0200"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "'political or religious party' and 'sequence of ideas' are in none of the retrieved passages"
+  },
+  {
+    "id": "G03-013",
+    "question": "According to the 2023-24 annual report, how many Bachelor's degrees were conferred?",
+    "answer": "According to the 2023-24 annual report, at least 11 Bachelor's degrees were conferred, as shown in the table on page 11.",
+    "retrieved_ids": [
+      "annual-report-2023-24:2023-24:0018",
+      "academic-rules-handbook:2026-11:0002",
+      "academic-rules-handbook:2026-06:0198",
+      "annual-report-2023-24:2023-24:0021",
+      "undergraduate-academic-rules:2023-08:0009"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "'at least 11 Bachelor's degrees' misreads a programme table (0021); the report states 483"
+  },
+  {
+    "id": "G03-014",
+    "question": "Which SGPA range qualifies a student for the Dean's List of Honors?",
+    "answer": "A student with an SGPA of 3.50 or above qualifies for the Dean's List of Honors.",
+    "retrieved_ids": [
+      "prospectus-academic-rules:2026:0011",
+      "prospectus-academic-rules:2026:0010",
+      "grading-policy:2026:0000",
+      "grading-policy:2026:0004",
+      "fee-structure:2026-27:0000"
+    ],
+    "human_label": false,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "'3.50 or above' drops the upper bound; prospectus 0010 says 3.50 to 3.99"
+  },
+  {
+    "id": "G03-017",
+    "question": "How much does a recount request cost and how soon after results must it be made?",
+    "answer": "A recount request costs Rs 1,000 per paper and must be made within 5 working days of the publication of provisional results.",
+    "retrieved_ids": [
+      "exam-conduct:2026-09:0005",
+      "fee-structure:2026-27:0009",
+      "fee-structure:2026-27:0008",
+      "student-handbook:2026-06:0110",
+      "student-handbook:2026-06:0118"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-103",
+    "question": "How much is the refundable hostel security deposit and how soon is it returned after check-out?",
+    "answer": "The refundable security deposit is Rs 15,000, and it is returned within 30 days of check-out, provided the room inventory is complete and no damage is recorded.",
+    "retrieved_ids": [
+      "hostel-rules:2026-09:0001",
+      "fee-structure:2026-27:0005",
+      "hostel-rules:2026-09:0005",
+      "hostel-rules:2026-09:0002",
+      "library-policy:2026-09:0001"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-104",
+    "question": "How many books can an undergraduate student borrow from the library, and for how many days?",
+    "answer": "An undergraduate student can borrow at most 5 books from the library for 14 days.",
+    "retrieved_ids": [
+      "library-policy:2026-09:0000",
+      "student-handbook:2026-06:0138",
+      "student-handbook:2026-06:0147",
+      "student-handbook:2026-06:0152",
+      "library-policy:2026-09:0001"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-105",
+    "question": "What fine is charged per day for an overdue library book?",
+    "answer": "The library charges Rs 10 per day per book for an overdue book.",
+    "retrieved_ids": [
+      "library-policy:2026-09:0001",
+      "student-handbook:2026-06:0138",
+      "student-handbook:2026-06:0147",
+      "student-handbook:2026-06:0152",
+      "student-handbook:2026-06:0156"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-106",
+    "question": "How much is the semester bus fee for routes longer than 15 kilometres?",
+    "answer": "The semester bus fee for routes longer than 15 kilometres is Rs 24,000. This fee is non-refundable after the first 3 weeks of the semester.",
+    "retrieved_ids": [
+      "transport-policy:2026-09:0001",
+      "transport-policy:2026-09:0000",
+      "fee-structure:2026-27:0006",
+      "fee-structure:2026-27:0008",
+      "transport-policy:2026-09:0002"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-107",
+    "question": "At what time does the morning bus leave the first pick-up point?",
+    "answer": "The morning bus leaves the first pick-up point at 06:45.",
+    "retrieved_ids": [
+      "transport-policy:2026-09:0002",
+      "transport-policy:2026-09:0004",
+      "transport-policy:2026-09:0005",
+      "hostel-rules:2026-09:0000",
+      "transport-policy:2026-09:0000"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-108",
+    "question": "Which semester GPA earns a 50 percent tuition waiver under the merit scholarship?",
+    "answer": "A semester GPA of 3.80 or higher earns a 50 percent tuition waiver under the merit scholarship.",
+    "retrieved_ids": [
+      "scholarship-rules:2026-09:0001",
+      "annual-report-2019-20:2019-20:0060",
+      "annual-report-2023-24:2023-24:0195",
+      "scholarship-rules:2026-09:0003",
+      "annual-report-2023-24:2023-24:0198"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  },
+  {
+    "id": "G03-109",
+    "question": "Which documents must be submitted to apply for the need-based grant?",
+    "answer": "Applicants must submit the application form, the family income certificate, and the latest utility bills to the Financial Aid Office before the deadline of the 30th of June for the Fall semester.",
+    "retrieved_ids": [
+      "scholarship-rules:2026-09:0002",
+      "student-handbook:2026-06:0208",
+      "faculty-entrepreneurship-policy:2022-05:0015",
+      "student-handbook:2026-06:0265",
+      "student-handbook:2026-06:0277"
+    ],
+    "human_label": true,
+    "labeller": "Claude Opus 5.5 (AI), instructor-permitted; not a partner label",
+    "note": "every claim stated in the retrieved passages"
+  }
+]

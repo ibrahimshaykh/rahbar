@@ -9,6 +9,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+# The base image lags Debian's security updates; without this, a newly fixed
+# CVE fails CI's Trivy gate on unchanged code (the indexer image already did it).
+RUN apt-get update \
+ && apt-get upgrade -y \
+ && rm -rf /var/lib/apt/lists/*
+
 # Requirements first: this layer is cached unless the pins change.
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

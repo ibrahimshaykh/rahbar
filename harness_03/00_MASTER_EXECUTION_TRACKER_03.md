@@ -154,6 +154,12 @@ _(empty)_
 | D3-18 | Judge calls Ollama with its own schema and a reworded prompt (checked on 3 hand-written cases) | the A02 provider forced the answer schema |
 | D3-19 | Edit A02 `ui/Dockerfile` (the owner asked to fix the pipeline) | base image pins nginx, so `apk upgrade` skipped fixed CVEs and `scan (ui)` failed |
 
+| D3-20 | Edit A02 `api/Dockerfile` to run `apt-get upgrade` (owner asked to fix the pipeline) | a newly fixed Debian CVE failed `scan (api)` on unchanged code; the indexer image already upgraded |
+
+| D3-21 | CI and CD image builds use `no-cache: true` instead of the gha layer cache | the cached `apk`/`apt-get upgrade` layer went stale, so `scan (ui)` failed on unchanged code |
+
+| D3-22 | Keep golden item G03-029 (clinic weekend hours) as unanswerable | the corpus gives weekday hours only; rewording would change the frozen golden set every stored baseline and candidate was scored on |
+
 ## Run Log (raw outputs are the committed files)
 | Run | Evidence |
 |---|---|
