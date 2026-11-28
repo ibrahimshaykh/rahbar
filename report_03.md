@@ -81,8 +81,12 @@ stray NUL byte quarantined a 26-page PDF.
 
 <!-- src: eval/golden_03.jsonl -->
 Golden set: 38 items = 26 answerable, 6 unanswerable, 6 hard (2 paraphrase, 2 multi-chunk, 2 Batch B). **All 38 are
-agent-drafted (`origin: synthetic`) and none is human-reviewed yet**: PENDING-HUMAN(B-T01) (at least 8 human-written
-and 8 reviewed). Judge-versus-human agreement needs at least 8 human labels: PENDING-HUMAN(B-T07).
+agent-drafted (`origin: synthetic`) and none is partner-reviewed yet**: PENDING-HUMAN(B-T01). With the instructor's
+permission Claude checked every item against its source (`eval/golden_review_ai_03.md`): all 31 answerable and hard
+items are supported on the stated page; of 6 unanswerable items, G03-029 is borderline (the corpus gives clinic hours,
+8:00 AM to 4:00 PM, but not weekend hours). Faithfulness labels for all 25 answered baseline items were also made by
+Claude, not by us (`eval/human_faithfulness_03.json`): 19 supported, 6 unsupported (G03-007 gives the hostel deposit as
+the admission deposit; G03-011 answers correctly from no retrieved passage).
 
 <!-- src: eval/results/summary_03_20261126T024641Z.md -->
 Live cluster, `llama3.2:3b` on CPU, collection `rahbar_ragops_03`, seed 1337:
@@ -270,7 +274,8 @@ makes the old version unrecoverable, and old traces would cite chunk ids that no
 **4(d) Which metric in your suite do you trust least, and why?**
 LLM-judged faithfulness. The judge is the same 3B model that writes the answers: during setup its first prompt rejected
 a plainly supported sanity sentence, and a wrong output schema made every answer score 0. It moved from 0.96 to
-0.926 between identical runs. Agreement with human labels is not yet measured: PENDING-HUMAN(B-T07).
+0.926 between identical runs. Agreement with the labels is computed on the next live suite run: PENDING-HUMAN(B-T07). Because those labels are
+AI-made, that agreement compares two models, not a model and a person.
 
 **4(e) Which of the paper's ideas was hardest to apply to your pipeline, and what did you change from the paper?**
 The release gate. The idea assumes the offline metrics are stable enough to decide a release; on a small golden set
@@ -299,7 +304,8 @@ Chroma by the A02 policy, so "read only" is enforced by its code, not by the net
 AI disclosure: Claude Code (Anthropic) drafted the harness, code, tests, golden questions and report text, and ran the
 cluster commands that produced the result files, under our direction. Numbers in this report come from files produced by
 those runs. The appendix captures were also taken by Claude Code, with `scripts/evidence_03/capture_screens_03.ps1`.
-Our own review, hand-written golden questions and faithfulness labels: PENDING-HUMAN(G-T05).
+With the instructor's permission Claude also reviewed the golden set and labelled faithfulness (Part B); those files
+name Claude as labeller. Our own review and hand-written golden questions: PENDING-HUMAN(G-T05).
 
 Limitations: queries for Part E are simulated; models run on a laptop CPU; the evaluation set is small and not yet
 human-reviewed; the live API's semantic cache is not keyed by retrieval settings, so a candidate sharing Redis could
